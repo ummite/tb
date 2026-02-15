@@ -394,19 +394,10 @@ struct _c11threads_win32_timespec64_t {
 #endif
 	long tv_nsec;
 };
-#if !defined(_UCRT) && !defined(_TIMESPEC_DEFINED)
-#ifdef _USE_32BIT_TIME_T
-struct timespec {
-	long tv_sec;
-	long tv_nsec;
-};
-#elif !defined(_USE_32BIT_TIME_T)
-struct timespec {
-	__int64 tv_sec;
-	long tv_nsec;
-};
-#endif	/* !defined(_USE_32BIT_TIME_T) */
-#endif	/* !defined(_UCRT) && !defined(_TIMESPEC_DEFINED) */
+/* Skip timespec redefinition - it's already defined in system time.h */
+#ifndef _TIMESPEC_DEFINED
+#define _TIMESPEC_DEFINED
+#endif
 
 /* Thread functions. */
 

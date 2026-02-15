@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make clean)",
+      "Bash(echo $PATH)",
+      "Bash(gcc --version)",
+      "Bash(pacman -Ss zstd)",
+      "Bash(ls -la /mingw64/include/zstd*)",
+      "Bash(/usr/bin/sh -c 'make all 2>&1')",
+      "Bash(where make)",
+      "Bash(pacman -Sy --noconfirm mingw-w64-x86_64-make)",
+      "Bash(ls /mingw64/bin/make*)",
+      "Bash(ls /mingw64/msys/2.0/bin/make*)",
+      "Bash(ls /c/Program Files/Git/usr/bin/make*)",
+      "Bash(ls /usr/bin/make*)",
+      "Bash(ls /c/Programmation/tb-1/src/*.c)",
+      "Bash(ls /mingw64/bin/*.exe)",
+      "Bash(ls /usr/bin/pacman*)",
+      "Bash(ls /bin/pacman*)",
+      "Bash(/mingw64/bin/bash -c 'pacman -Sy --noconfirm --color never mingw-w64-x86_64-make 2>&1 | tail -15')",
+      "Bash(ls /mingw64/bin/sh*)",
+      "Bash(curl -sL \"https://github.com/bmikolaj/make/releases/download/v3.81/make.exe\" -o /tmp/make.exe)",
+      "Bash(chmod +x /c/Programmation/tb-1/src/make.exe)",
+      "Bash(/c/Programmation/tb-1/src/make.exe --version)",
+      "Bash(curl -s \"https://sourceforge.net/projects/mingw-w64/files/mingw-w64-runtime/mingw-w64-runtime-5.0.4.tar.bz2/download\" -o /tmp/test.tar.bz2)",
+      "Bash(FLAGS=\"-DREGULAR -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6\")",
+      "Bash(CFLAGS=\"-O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto\")",
+      "Bash(gcc -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto -DREGULAR -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6 -c board.c -o objsr/board.o)",
+      "Bash(gcc -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto -DREGULAR -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6 -c bmi2.c -o objsr/bmi2.o)",
+      "Bash(gcc -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto -DREGULAR -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6 -c magic.c -o objsr/magic.o)",
+      "Bash(gcc -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto -DREGULAR -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6 -c hyper.c -o objsr/hyper.o)",
+      "Bash(gcc -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto -DREGULAR -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6 -c util.c -o objsr/util.o)",
+      "Bash(make:*)",
+      "Bash(where gcc)",
+      "Bash(dir:*)",
+      "Bash(gcc:*)",
+      "Bash(ls *.h)",
+      "Bash(grep:*)"
+    ]
+  }
+}

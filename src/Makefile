@@ -13,11 +13,10 @@ FLAGS += -DUSE_POPCNT
 # Specify maximum number of pieces. More than 7 won't work.
 FLAGS += -DTBPIECES=7
 
-# Use libzstd instead of LZ4 for compression of temporary files, and set
-# compression level. Comment out ("#") the next two lines if the ZSTD library
-# or header files are not found.
-FLAGS += -DUSE_ZSTD -DZSTD_LEVEL=6
-LDFLAGS += -lzstd
+# Using LZ4 for compression (no external dependencies required)
+# To use ZSTD instead, uncomment the next two lines and install libzstd-dev
+# FLAGS += -DUSE_ZSTD -DZSTD_LEVEL=6
+# LDFLAGS += -lzstd
 
 # Specify number of threads used for (de)compression of temporary files.
 FLAGS += -DCOMPRESSION_THREADS=6
