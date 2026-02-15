@@ -3,7 +3,9 @@
 # -DHYPER requires a processor with SSE3 support.
 #FLAGS = -DMAGIC
 #FLAGS = -DHYPER
-FLAGS = -DBMI2
+#FLAGS = -DBMI2
+# Older MinGW without BMI2 intrinsics:
+FLAGS = -DMAGIC
 
 # Specify -DUSE_POPCNT on a machine with popcnt support.
 # For pawnful tables this seems slightly faster. For pawnless tables it
@@ -23,9 +25,10 @@ FLAGS += -DCOMPRESSION_THREADS=6
 
 # Specify the compiler
 # regular linux
-CC = gcc -pthread
+CC = gcc
 # cross compiling from Linux to Windows
-#CC = x86_64-w64-mingw32-gcc -pthread
+#CC = x86_64-w64-mingw32-gcc
+# Windows with MinGW (threads disabled by default, add -pthread -lpthread if pthreads-w32 is installed)
 
 # Compilation flags
 #CFLAGS = -g3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11

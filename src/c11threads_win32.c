@@ -36,6 +36,11 @@ Main project site: https://github.com/jtsiomb/c11threads
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+/* Older MinGW may not define PTHREAD_START_ROUTINE */
+#ifndef PTHREAD_START_ROUTINE
+#define PTHREAD_START_ROUTINE LPTHREAD_START_ROUTINE
+#endif
+
 #define _WIN32_WINNT_VISTA 0x0600
 #define THREAD_QUERY_LIMITED_INFORMATION (0x0800)
 
