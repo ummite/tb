@@ -1,7 +1,7 @@
-GENTBNAME = stbgen
-GENTBPNAME = stbgenp
-VERTBNAME = stbver
-VERTBPNAME = stbverp
+GENTBNAME = ../bin/stbgen.exe
+GENTBPNAME = ../bin/stbgenp.exe
+VERTBNAME = ../bin/stbver.exe
+VERTBPNAME = ../bin/stbverp.exe
 CLEAN = sclean
 
 DEPDIR = .depss

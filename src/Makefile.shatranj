@@ -1,7 +1,7 @@
-GENTBNAME = jtbgen
-GENTBPNAME = jtbgenp
-VERTBNAME = jtbver
-VERTBPNAME = jtbverp
+GENTBNAME = ../bin/jtbgen.exe
+GENTBPNAME = ../bin/jtbgenp.exe
+VERTBNAME = ../bin/jtbver.exe
+VERTBPNAME = ../bin/jtbverp.exe
 CLEAN = jclean
 
 DEPDIR = .depsj

@@ -36,18 +36,29 @@ $(DEPDIR)/%.P: %.c
 $(CLEAN):
 	rm -f $(TBOBJS:%=$(OBJDIR)/%)
 
+# Extract just the base name from GENTBNAME (remove path and .exe)
+GENTB_BASE = $(notdir $(GENTBNAME:.exe=))
+GENTBP_BASE = $(notdir $(GENTBPNAME:.exe=))
+VERTB_BASE = $(notdir $(VERTBNAME:.exe=))
+VERTBP_BASE = $(notdir $(VERTBPNAME:.exe=))
+
 $(GENTBNAME): $(GENTBOBJS)
+	@mkdir -p $(dir $(GENTBNAME))
 	$(CC) $(CFLAGS) -o $(GENTBNAME) $(GENTBOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
 
 $(GENTBPNAME): $(GENTBPOBJS)
+	@mkdir -p $(dir $(GENTBPNAME))
 	$(CC) $(CFLAGS) -o $(GENTBPNAME) $(GENTBPOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
 
 $(VERTBNAME): $(VERTBOBJS)
+	@mkdir -p $(dir $(VERTBNAME))
 	$(CC) $(CFLAGS) -o $(VERTBNAME) $(VERTBOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
 
 $(VERTBPNAME): $(VERTBPOBJS)
+	@mkdir -p $(dir $(VERTBPNAME))
 	$(CC) $(CFLAGS) -o $(VERTBPNAME) $(VERTBPOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
 
 tbcheck: $(TBCHECKOBJS)
+	@mkdir -p $(dir tbcheck)
 	$(CC) $(CFLAGS) -o tbcheck $(TBCHECKOBJS:%=$(OBJDIR)/%)
 

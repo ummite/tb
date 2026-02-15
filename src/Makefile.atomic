@@ -1,7 +1,7 @@
-GENTBNAME = atbgen
-GENTBPNAME = atbgenp
-VERTBNAME = atbver
-VERTBPNAME = atbverp
+GENTBNAME = ../bin/atbgen.exe
+GENTBPNAME = ../bin/atbgenp.exe
+VERTBNAME = ../bin/atbver.exe
+VERTBPNAME = ../bin/atbverp.exe
 CLEAN = aclean
 
 DEPDIR = .depsa

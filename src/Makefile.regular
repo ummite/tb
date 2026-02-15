@@ -1,7 +1,7 @@
-GENTBNAME = rtbgen
-GENTBPNAME = rtbgenp
-VERTBNAME = rtbver
-VERTBPNAME = rtbverp
+GENTBNAME = ../bin/rtbgen.exe
+GENTBPNAME = ../bin/rtbgenp.exe
+VERTBNAME = ../bin/rtbver.exe
+VERTBPNAME = ../bin/rtbverp.exe
 CLEAN = clean
 
 DEPDIR = .depsr

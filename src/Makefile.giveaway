@@ -1,7 +1,7 @@
-GENTBNAME = gtbgen
-GENTBPNAME = gtbgenp
-VERTBNAME = gtbver
-VERTBPNAME = gtbverp
+GENTBNAME = ../bin/gtbgen.exe
+GENTBPNAME = ../bin/gtbgenp.exe
+VERTBNAME = ../bin/gtbver.exe
+VERTBPNAME = ../bin/gtbverp.exe
 CLEAN = gclean
 
 DEPDIR = .depsg
