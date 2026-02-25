@@ -1,3 +1,8 @@
+#include "types.h"
+#include "defs.h"
+#include "board.h"
+#include "threads.h"
+
 int probe_tb(int *pieces, int *pos, int wtm, bitboard occ, int alpha, int beta);
 
 #define SET_CAPT_VALUE(x,v) \

@@ -35,7 +35,10 @@
       "Bash(dir:*)",
       "Bash(gcc:*)",
       "Bash(ls *.h)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Skill(ralph-loop:ralph-loop)",
+      "Bash(cd:*)",
+      "Bash(echo:*)"
     ]
   }
 }
