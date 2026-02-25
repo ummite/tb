@@ -4,20 +4,6 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
-#include "types.h"
-#include "defs.h"
-#include "board.h"
-#include "threads.h"
-#include "board.c"
-#include "permute.c"
-#define EVALUATOR(f,t) f
-#define T u8
-#include "reducep_tmpl.c"
-#undef T
-#define T u16
-#include "reducep_tmpl.c"
-#undef T
-
 #define REDUCE_PLY 118
 #define REDUCE_PLY_RED1 118
 #define REDUCE_PLY_RED2 118

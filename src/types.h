@@ -2,7 +2,6 @@
 #define TYPES_H
 
 #include <inttypes.h>
-#include "defs.h"
 
 typedef uint64_t bitboard;
 typedef uint16_t Move;
@@ -11,6 +10,8 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 
 enum { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };
+
+#include "defs.h"
 
 enum {
   WPAWN = 1, WKNIGHT, WBISHOP, WROOK, WQUEEN, WKING,

@@ -42,6 +42,10 @@ all: rtbgen rtbgenp rtbver rtbverp tbcheck
 rtbgen rtbgenp rtbver rtbverp tbcheck clean:
 	@$(MAKE) -f Makefile.regular $@
 
+# Add tbgen target as an alias
+tbgen:
+	@$(MAKE) -f Makefile.regular tbgen
+
 atbgen atbgenp atbver atbverp aclean:
 	@$(MAKE) -f Makefile.atomic $@
 

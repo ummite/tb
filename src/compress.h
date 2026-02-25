@@ -2,6 +2,7 @@
 #define COMPRESS_H
 
 #include "defs.h"
+#define TBPIECES 7
 #include "huffman.h"
 #include "types.h"
 

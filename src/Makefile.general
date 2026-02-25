@@ -17,8 +17,7 @@ VERTBPOBJS = tbverp.o decompress.o threads.o checksum.o city-c.o util.o
 
 TBCHECKOBJS = tbcheck.o threads.o checksum.o city-c.o lz4.o util.o
 
-CFILES = $(filter $(wildcard *.c), $(OBJS:%.o=%.c))
-
+CFILES = tbgen.c tbgenp.c tbver.c tbverp.c permute.c compress.c huffman.c threads.c lz4.c decompress.c checksum.c city-c.c tbcheck.c util.c
 include $(CFILES:%.c=$(DEPDIR)/%.P)
 include $(TBOBJS:%.o=$(DEPDIR)/%.P)
 
@@ -44,7 +43,7 @@ VERTBP_BASE = $(notdir $(VERTBPNAME:.exe=))
 
 $(GENTBNAME): $(GENTBOBJS)
 	@mkdir -p $(dir $(GENTBNAME))
-	$(CC) $(CFLAGS) -o $(GENTBNAME) $(GENTBOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(GENTBNAME) $(OBJDIR)/tbgen.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
 
 $(GENTBPNAME): $(GENTBPOBJS)
 	@mkdir -p $(dir $(GENTBPNAME))

@@ -9,5 +9,41 @@ OBJDIR = objsr
 
 FLAGS += -DREGULAR
 
+# Rename targets to use tbgen instead of rtbgen to avoid compiling variant files
+TBGENNAME = ../bin/tbgen.exe
+
 include Makefile.general
+
+# Add targets for tbgen
+$(TBGENNAME): $(GENTBOBJS)
+	@mkdir -p $(dir $(TBGENNAME))
+	$(CC) $(CFLAGS) -o $(TBGENNAME) $(OBJDIR)/tbgen.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+
+# Rename tbgen to rtbgen
+rtbgen: $(TBGENNAME)
+	@cp $(TBGENNAME) $(GENTBNAME)
+
+# Rename tbgenp to rtbgenp
+TBGENPNAME = ../bin/tbgenp.exe
+$(TBGENPNAME): $(GENTBPOBJS)
+	@mkdir -p $(dir $(TBGENPNAME))
+	$(CC) $(CFLAGS) -o $(TBGENPNAME) $(OBJDIR)/tbgenp.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+rtbgenp: $(TBGENPNAME)
+	@cp $(TBGENPNAME) $(GENTBPNAME)
+
+# Rename tbver to rtbver
+VERTBTPNAME = ../bin/tbver.exe
+$(VERTBTPNAME): $(VERTBOBJS)
+	@mkdir -p $(dir $(VERTBTPNAME))
+	$(CC) $(CFLAGS) -o $(VERTBTPNAME) $(OBJDIR)/tbver.o $(OBJDIR)/decompress.o $(OBJDIR)/threads.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+rtbver: $(VERTBTPNAME)
+	@cp $(VERTBTPNAME) $(VERTBNAME)
+
+# Rename tbverp to rtbverp
+VERTBTP2NAME = ../bin/tbverp.exe
+$(VERTBTP2NAME): $(VERTBPOBJS)
+	@mkdir -p $(dir $(VERTBTP2NAME))
+	$(CC) $(CFLAGS) -o $(VERTBTP2NAME) $(OBJDIR)/tbverp.o $(OBJDIR)/decompress.o $(OBJDIR)/threads.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+rtbverp: $(VERTBTP2NAME)
+	@cp $(VERTBTP2NAME) $(VERTBPNAME)
 
