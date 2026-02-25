@@ -163,7 +163,7 @@ static void count_pairs_wdl(struct thread_data *thread)
   }
 }
 
-#define max(a,b) (((a) > (b)) ? (a) : (b))
+static inline int max_int(int a, int b) { return a > b ? a : b; }
 
 static void remove_wdl_worker(struct thread_data *thread)
 {
@@ -404,20 +404,20 @@ struct HuffCode *construct_pairs_wdl(uint8_t *restrict data, uint64_t size,
         if (s2 == t1) break;
         if (s1 == t2) break;
         if (s2 < 5 && t1 < 5) {
-          for (k = max(d[s2], d[t1]); k < 9; k++)
+          for (k = max_int(d[s2], d[t1]); k < 9; k++)
             if (pairfreq[s1][k] && pairfreq[k][t2]) goto lab;
           if (s1 < 5)
             for (l = d[s1]; l < 9; l++)
-              for (k = max(d[s2], d[t1]); k < 9; k++)
+              for (k = max_int(d[s2], d[t1]); k < 9; k++)
                 if (pairfreq[l][k] && pairfreq[k][t2]) goto lab;
           if (t2 < 5)
             for (l = d[t2]; l < 9; l++)
-              for (k = max(d[s2], d[t1]); k < 9; k++)
+              for (k = max_int(d[s2], d[t1]); k < 9; k++)
                 if (pairfreq[s1][k] && pairfreq[k][l]) goto lab;
           if (s1 < 5 && t2 < 5)
             for (l = d[s1]; l < 9; l++)
               for (m = d[t2]; m < 9; m++)
-                for (k = max(d[s2], d[t1]); k < 9; k++)
+                for (k = max_int(d[s2], d[t1]); k < 9; k++)
                   if (pairfreq[l][k] && pairfreq[k][m]) goto lab;
         }
         if (t2 < 5 && s1 < 5) {

@@ -60,7 +60,7 @@ size_t file_size(FD fd)
 #else
   DWORD sizeLow, sizeHigh;
   sizeLow = GetFileSize(fd, &sizeHigh);
-  return ((size_t)sizeHigh << 32) | sizeLow;
+  return ((uint64_t)sizeHigh << 32) | sizeLow;
 #endif
 }
 
@@ -72,7 +72,7 @@ void *map_file(FD fd, bool shared, map_t *map)
   void *data = mmap(NULL, *map, PROT_READ,
       shared ? MAP_SHARED : MAP_PRIVATE | MAP_POPULATE, fd, 0);
 #else
-  void *data = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+  void *data = mmap(NULL, *map, PROT_READ, MAP_SHARED, fd, 0);
 #endif
 #ifdef MADV_RANDOM
   madvise(data, *map, MADV_RANDOM);
