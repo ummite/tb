@@ -24,9 +24,8 @@
 
 static struct dtz_map *dtz_map;
 
-extern int split;
-extern int numpcs;
-extern int numpawns;
+/* Extern variables from tbgen.c */
+extern int split, numpcs, numpawns, total_work;
 
 static void calc_symbol_tweaks(struct HuffCode *restrict c);
 struct HuffCode *construct_pairs_wdl(uint8_t *restrict data, uint64_t size,
