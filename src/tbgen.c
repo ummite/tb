@@ -110,6 +110,162 @@ static int generate_dtz = 1;
 static int generate_wdl = 1;
 
 char *tablename;
+static int auto_mode = 0;
+static int num_pieces_to_generate = 0;
+
+/* Auto-generation mode helper functions */
+static void run_rtbgen(const char *tablename);
+static void run_rtbgenp(const char *tablename);
+static void generate_pawnless_all(int n);
+static void generate_pawnful_all(int n);
+static void gen_combos_wb(int w, int b, int *wp, int *bp, int start_type);
+
+/* Piece types for generation: Q=QUEEN, R=ROOK, B=BISHOP, N=KNIGHT, P=PAWN */
+#define NUM_PIECE_TYPES 5
+static const char PIECE_CHARS[] = "QRBNP";
+
+/* Run rtbgen */
+static void run_rtbgen(const char *tablename) {
+  char cmd[256];
+  fprintf(stderr, "  Generating %s...\n", tablename);
+  snprintf(cmd, sizeof(cmd), "C:\\Programmation\\tb-1\\bin\\rtbgen.exe %s", tablename);
+  system(cmd);
+}
+
+/* Generate all combinations where white has 'w' pieces and black has 'b' pieces */
+static void gen_combos_wb(int w, int b, int *wp, int *bp, int start_type) {
+  int i;
+
+  if (w == 0 && b == 0) {
+    /* Build and run the tablebase */
+    char tbname[64] = "K";
+    int idx = 1;
+
+    for (i = 0; i < NUM_PIECE_TYPES; i++) {
+      for (int j = 0; j < wp[i]; j++) {
+        tbname[idx++] = PIECE_CHARS[i];
+      }
+    }
+    tbname[idx++] = 'v';
+
+    for (i = 0; i < NUM_PIECE_TYPES; i++) {
+      for (int j = 0; j < bp[i]; j++) {
+        tbname[idx++] = PIECE_CHARS[i];
+      }
+    }
+    tbname[idx++] = 'K';
+    tbname[idx] = '\0';
+
+    run_rtbgen(tbname);
+    return;
+  }
+
+  /* Add pieces to white side (non-decreasing order to avoid duplicates) */
+  if (w > 0) {
+    for (i = start_type; i < NUM_PIECE_TYPES; i++) {
+      wp[i]++;
+      gen_combos_wb(w - 1, b, wp, bp, i);
+      wp[i]--;
+    }
+  }
+
+  /* Add pieces to black side (non-decreasing order to avoid duplicates) */
+  if (b > 0) {
+    for (i = start_type; i < NUM_PIECE_TYPES; i++) {
+      bp[i]++;
+      gen_combos_wb(w, b - 1, wp, bp, i);
+      bp[i]--;
+    }
+  }
+}
+
+/* Generate all combinations for N pieces (pawnless) */
+static void generate_pawnless_all(int n) {
+  int white_pieces[NUM_PIECE_TYPES] = {0};
+  int black_pieces[NUM_PIECE_TYPES] = {0};
+  int i, j;
+
+  printf("Generating all %d-piece pawnless tablebases...\n", n);
+
+  /* Start with K vs K (both kings already implied) */
+  /* We need n-2 additional pieces total (since kings are fixed) */
+  int remaining = n - 2;
+
+  /* For each possible distribution of pieces between sides */
+  /* Both sides must have at least 1 piece for valid endgame */
+  for (i = 1; i < remaining; i++) {
+    int white_count = i;
+    int black_count = remaining - i;
+
+    /* Reset arrays */
+    for (j = 0; j < NUM_PIECE_TYPES; j++) {
+      white_pieces[j] = 0;
+      black_pieces[j] = 0;
+    }
+
+    /* Generate all combinations with non-decreasing piece order */
+    gen_combos_wb(white_count, black_count, white_pieces, black_pieces, 0);
+  }
+
+  printf("Done.\n");
+}
+
+/* Generate all combinations for N pieces (pawnless) */
+static void generate_pawnless_all(int n) {
+  int white_pieces[NUM_PIECE_TYPES] = {0};
+  int black_pieces[NUM_PIECE_TYPES] = {0};
+  int i;
+
+  printf("Generating all %d-piece pawnless tablebases...\n", n);
+
+  /* Start with K vs K (both kings already implied) */
+  /* We need n-2 additional pieces total (since kings are fixed) */
+  int remaining = n - 2;
+
+  /* For each possible distribution of pieces between sides */
+  /* One side can have 0 pieces (e.g., KQvK has Q on white, 0 on black) */
+  for (i = 0; i <= remaining; i++) {
+    int white_count = i;
+    int black_count = remaining - i;
+
+    /* Reset arrays */
+    for (int j = 0; j < NUM_PIECE_TYPES; j++) {
+      white_pieces[j] = 0;
+      black_pieces[j] = 0;
+    }
+
+    gen_pawnless_rec(white_count, black_count, white_pieces, black_pieces);
+  }
+
+  printf("Done.\n");
+}
+
+/* Generate all pawnful combinations */
+static void generate_pawnful_all(int n) {
+  int white_pieces[NUM_PIECE_TYPES] = {0};
+  int black_pieces[NUM_PIECE_TYPES] = {0};
+  int i;
+
+  printf("Generating all %d-piece pawnful tablebases...\n", n);
+
+  int remaining = n - 2;
+
+  /* For each possible distribution of pieces between sides */
+  for (i = 1; i < remaining; i++) {
+    int white_count = i;
+    int black_count = remaining - i;
+
+    /* Reset arrays */
+    for (int j = 0; j < NUM_PIECE_TYPES; j++) {
+      white_pieces[j] = 0;
+      black_pieces[j] = 0;
+    }
+
+    gen_pawnless_rec(white_count, black_count, white_pieces, black_pieces);
+  }
+
+  printf("Done.\n");
+}
 
 #include "stats.c"
 
@@ -706,6 +862,8 @@ static struct option options[] = {
   { "stats", 0, NULL, 's' },
   { "disk", 0, NULL, 'd' },
   { "affinity", 0, NULL, 'a' },
+  { "auto", 0, NULL, 'A' },
+  { "pieces", 1, NULL, 'n' },
   { 0, 0, NULL, 0 }
 };
 
@@ -720,7 +878,7 @@ int main(int argc, char **argv)
   int switched = 0;
 
   numthreads = 1;
-  while ((val = getopt_long(argc, argv, "at:gwzsdp", options, &longindex)) != -1) {
+  while ((val = getopt_long(argc, argv, "at:gwzsdpA:n", options, &longindex)) != -1) {
     switch (val) {
     case 'a':
       thread_affinity = 1;
@@ -747,8 +905,25 @@ int main(int argc, char **argv)
     case 'p':
       plyacc = 1;
       break;
+    case 'A':
+      auto_mode = 1;
+      break;
+    case 'n':
+      num_pieces_to_generate = atoi(optarg);
+      break;
     }
-  } while (val != EOF);
+  }
+
+  /* Auto-generation mode */
+  if (auto_mode) {
+    if (num_pieces_to_generate < 3 || num_pieces_to_generate > 7) {
+      fprintf(stderr, "Number of pieces must be between 3 and 7.\n");
+      exit(1);
+    }
+    printf("Auto-generating all %d-piece tablebases...\n", num_pieces_to_generate);
+    generate_pawnless_all(num_pieces_to_generate);
+    exit(0);
+  }
 
   if (optind >= argc) {
     fprintf(stderr, "No tablebase specified.\n");
