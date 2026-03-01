@@ -1,7 +1,16 @@
-### Overview
+# Chess Tablebase Generator
 
-This a generator for generating chess endgame database ("tablebases") for up
-to 7 pieces.
+## Overview
+
+This is a generator for generating chess endgame database ("tablebases") for up
+to 7 pieces. It supports multiple chess variants including regular chess, atomic,
+suicide, giveaway, and shatranj.
+
+**Build Status:** The project supports dual compilation with both GCC/MinGW and
+Visual Studio 2026. Pre-built executables are available in the `bin/` directory.
+
+**Current Generation:** 78 tablebases generated (3-5 piece combinations) with both
+WDL (.rtbw) and DTZ (.rtbz) files in the `src/` directory.
 
 The generator requires at least 16 GB of RAM for 6-piece tables and at least
 1 TB of RAM for 7-piece tables.
@@ -10,6 +19,50 @@ Probing code for adding tablebase support to a chess engine or GUI
 as well as a simple command line tool for probing the tablebases can be
 found here:
 https://github.com/syzygy1/probetool
+
+
+### Quick Start
+
+**Build with GCC (Linux/WSL):**
+```bash
+./build.sh
+```
+
+**Build with VS2026 (Windows):**
+```cmd
+.\build.bat
+```
+
+**Build with CMake (Cross-platform):**
+```bash
+# Create build directory
+mkdir build && cd build
+
+# Configure with default options (LZ4, BMI2 attack generation)
+cmake .. -DCMAKE_BUILD_TYPE=Release
+
+# Build all variants
+cmake --build . --config Release --target build_all
+
+# Or configure with specific options
+cmake .. -DCMAKE_BUILD_TYPE=Release -DATTACK_METHOD=BMI2 -DUSE_ZSTD=ON
+```
+
+**Generate tablebases (requires RTBPATH):**
+```cmd
+set RTBPATH=C:\Programmation\tb-1\src
+.\generate_all.bat
+```
+
+**Verify all tablebases:**
+```cmd
+.\verify_all.bat
+```
+
+**Check generation status:**
+```cmd
+.\status.bat
+```
 
 
 ### Tablebase files
@@ -57,69 +110,69 @@ to run rtbver and rtbverp.
 known as well, and these can also be used to verify integrity.
 See http://kirill-kryukov.com/chess/tablebases-online/
 
-**Usage:** `rtbgen KQRvKR`   (or `rtbgenp KRPvKR`)  
+**Usage:** `rtbgen KQRvKR`   (or `rtbgenp KRPvKR`)
 Produces two compressed files: KQRvKR.rtbw and KQRvKR.rtbz. Both files
-contain an embedded checksum.  
+contain an embedded checksum.
 
-**Options:**  
---threads n  (or -t n)  
+**Options:**
+--threads n  (or -t n)
 Use n threads. If no other tasks are running, it is recommended to
 set n to the number of CPU cores, or if the CPU supports hyperthreading,
 to the number of CPU hyperthreads.
 
---wdl  (or -w)  
+--wdl  (or -w)
 Only compress and save the WDL file (with .rtbw suffix).
 
---dtz  (or -z)  
+--dtz  (or -z)
 Only compress and save the DTZ file (with .rtbz suffix).
 
--g  
+-g
 Generate the table but do not compress and save.
 
---stats  (or -s)  
+--stats  (or -s)
 Save statistics. Statistics are written to $RTBSTATSDIR/KQRvKR.txt
 or to ./KQRvKR.txt if $RTBSTATSDIR is not set.
 
---disk  (or -d)  
+--disk  (or -d)
 Reduce RAM usage during compression. This takes a bit more time because
 tables are temporarily saved to disk. **This option is necessary to
 generate 6-piece tables on systems with 16 GB RAM.** This option is
 not needed on systems with 24 GB RAM or more.
 
--p  
+-p
 Always store DTZ values for non-cursed positions ply-accurate (at the
 cost of slightly larger DTZ tables). Without this option, DTZ can be off
 by one unless the table has position with DTZ=100 ply. The original Syzygy
 tables were generated without this option.
 
-**Usage:** `rtbver KQRvKR`   (or `rtbverp KRPvKR`)  
+**Usage:** `rtbver KQRvKR`   (or `rtbverp KRPvKR`)
 Verifies consistency of KQRvKR.rtbw and KQRvKR.rtbz. This should detect
 (hardware) errors during generation and compression. For technical reasons
 pawnful tables with symmetric material such as KPvKP and KRPvKRP cannot
 (at least currently) be verified.
 
-**Options:**  
---threads n  (or -t n)  
+**Options:**
+--threads n  (or -t n)
 See above.
 
---log  (or -l)  
+--log  (or -l)
 Log verification results to rtblog.txt.
 
--d  
+-d
 Look for the WDL file in directory $RTBWDIR and look for the DTZ file in
 directory $RTBZDIR. Without this option, both files should be present in
 the current working directory.
 
-**Usage:** `tbcheck KQRvKR.rtbw KRPvKR.rtbz`  
+**Usage:** `tbcheck KQRvKR.rtbw KRPvKR.rtbz`
 Recalculates a checksum for each specified tablebase file and compares with
 the embedded checksums. This should detect disk errors and transmission
 errors.
 
-**Options:**  
---threads n  (or -t n)  
+**Options:**
+--threads n  (or -t n)
 See above.
 
---print  (or -p)  
+--print  (or -p)
 Print embedded checksums. Do not check correctness.
 
 **Alternative usage:** `tbcheck --compare wdl345.txt`
@@ -140,30 +193,31 @@ of rtbgen, rtbgenp, rtbver and rtbverp is in your $PATH environment variable.
 
 **Usage:** `run.pl --generate` (or `run.py --generate`)
 
-**Options:**  
---threads n  (or -t n)  
+**Options:**
+--threads n  (or -t n)
 See above.
 
---generate  
+--generate
 Generate tablebases. Tablebases that already have been generated and are
 found in the current working directory are skipped.
 
---verify  
+--verify
 Verify tablebases.
 
---min n  
+--min n
 Only treat tablebases with at least n pieces.
 
---max n  
+--max n
 Only treat tablebases with at most n pieces.
 
---disk  
+--disk
 Use this option to generate 6-piece tables on a system with 16 GB of RAM.
 
 
 ### Adding tablebase support to your program
 See here:
 https://github.com/syzygy1/probetool
+
 
 ### Terms of use
 
@@ -189,6 +243,5 @@ and under EU law (following Football Dataco and Others v. Yahoo! UK Ltd and
 Others (C-604/10)).
 
 
-Ronald de Man  
+Ronald de Man
 syzygy\_tb@yahoo.com
-

@@ -49,9 +49,22 @@ enum { MAXSYMB = 4095 + 8 };
 #if defined(__GNUC__) || defined(__clang__)
 #define likely(x) __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
+#elif defined(_MSC_VER)
+/* MSVC: use __predict_true/__predict_false if available, otherwise passthrough */
+#define likely(x) (x)
+#define unlikely(x) (x)
 #else
 #define likely(x) (x)
 #define unlikely(x) (x)
+#endif
+
+/* assume() for compiler optimizations - hints that condition is always true */
+#if defined(__GNUC__) || defined(__clang__)
+#define assume(x) do { if (!(x)) __builtin_unreachable(); } while (0)
+#elif defined(_MSC_VER)
+#define assume(x) do { if (!(x)) __assume(0); } while (0)
+#else
+#define assume(x) do { if (!(x)) {} } while (0)
 #endif
 
 #define PASTER(x,y) x##_##y

@@ -22,7 +22,8 @@ Tu es en mode \*\*Phil's Autonomous Loop\*\* (loop infini avec 400 turns).
 
 &nbsp; PROJECT COMPLETE
 
-\- Ensuite tu peux arrêter.
+\- Ensuite Analyse le projet dans son ensemble, et essaie de voir ce qui pourrait être amélioré. Par exemple, être un code de meilleure qualité, supporter la compilation avec visual studio 2026 et GCC (si applicable)
+etc. Si tu n'es pas certain, laisse trainer des idées pour la prochaine fois que tu es relancé avec cette même question afin de l'enrichir et finir par savoir ce que tu pourras faire. Ne termine pas sans avoir modifié un fichier.
 
 
 

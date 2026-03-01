@@ -1,22 +1,58 @@
 @echo off
-REM Comprehensive Tablebase Generator
-REM Generates all possible combinations for specified number of pieces
+REM =============================================================================
+REM tb-1 Tablebase Generator - All Combinations
+REM =============================================================================
+REM Generates all 3-5 piece tablebase combinations systematically
+REM
+REM Requirements:
+REM   - RTBPATH environment variable must be set
+REM   - Executables (rtbgen.exe, rtbgenp.exe) in current directory
+REM =============================================================================
 
 cd /d C:\Programmation\tb-1\bin
+
+REM Check for required executables
+if not exist "rtbgen.exe" (
+    echo ERROR: rtbgen.exe not found in bin/
+    echo Please build the project first: build.bat
+    exit /b 1
+)
+
+if not exist "rtbgenp.exe" (
+    echo ERROR: rtbgenp.exe not found in bin/
+    echo Please build the project first: build.bat
+    exit /b 1
+)
+
+REM Check RTBPATH (required for generation)
+if "%RTBPATH%"=="" (
+    echo WARNING: RTBPATH not set.
+    echo Setting default: C:\Programmation\tb-1\src
+    set RTBPATH=C:\Programmation\tb-1\src
+)
 
 echo ==========================================
 echo Tablebase Generator - All Combinations
 echo ==========================================
+echo RTBPATH: %RTBPATH%
 echo.
 
+REM Counter
+set /a PASS=0
+set /a SKIP=0
+set /a FAIL=0
+
 REM Function to generate combinations
+call :generate_pieces 3 0
 call :generate_pieces 3 1
+call :generate_pieces 4 0
 call :generate_pieces 4 1
-call :generate_pieces 5 1
+call :generate_pieces 5 0
 
 echo.
 echo ==========================================
 echo Generation Complete!
+echo Passed: %PASS%, Skipped: %SKIP%, Failed: %FAIL%
 echo ==========================================
 goto :eof
 

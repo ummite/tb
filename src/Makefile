@@ -165,6 +165,7 @@ variants: regular atomic suicide giveaway shatranj
 
 # === CLEAN TARGETS ===
 
+# Clean all variants
 clean:
 	@$(MAKE) -f Makefile.regular clean
 	@$(MAKE) -f Makefile.atomic clean
@@ -173,6 +174,7 @@ clean:
 	@$(MAKE) -f Makefile.shatranj clean
 	@echo "Clean complete."
 
+# Clean specific variant
 aclean:
 	@$(MAKE) -f Makefile.atomic clean
 
@@ -193,27 +195,63 @@ tbgenp: rtbgenp
 tbver: rtbver
 tbverp: rtbverp
 
-# === SUB-MODULES ===
+# === VARIANT BUILD TARGETS ===
 
-# Regular Linux build
-rtbgen rtbgenp rtbver rtbverp tbcheck clean:
-	@$(MAKE) -f Makefile.regular $@
+# Regular (standard chess)
+rtbgen:
+	@$(MAKE) -f Makefile.regular rtbgen
+
+rtbgenp:
+	@$(MAKE) -f Makefile.regular rtbgenp
+
+rtbver:
+	@$(MAKE) -f Makefile.regular rtbver
+
+rtbverp:
+	@$(MAKE) -f Makefile.regular rtbverp
+
+tbcheck:
+	@$(MAKE) -f Makefile.regular tbcheck
 
 # Atomic chess
-atbgen atbgenp atbver atbverp aclean:
-	@$(MAKE) -f Makefile.atomic $@
+atbgen:
+	@$(MAKE) -f Makefile.atomic atbgen
+
+atbgenp:
+	@$(MAKE) -f Makefile.atomic atbgenp
+
+atbver:
+	@$(MAKE) -f Makefile.atomic atbver
+
+atbverp:
+	@$(MAKE) -f Makefile.atomic atbverp
 
 # Suicide chess
-stbgen stbgenp sclean:
-	@$(MAKE) -f Makefile.suicide $@
+stbgen:
+	@$(MAKE) -f Makefile.suicide stbgen
+
+stbgenp:
+	@$(MAKE) -f Makefile.suicide stbgenp
 
 # Giveaway chess
-gtbgen gtbgenp gclean:
-	@$(MAKE) -f Makefile.giveaway $@
+gtbgen:
+	@$(MAKE) -f Makefile.giveaway gtbgen
+
+gtbgenp:
+	@$(MAKE) -f Makefile.giveaway gtbgenp
 
 # Shatranj
-jtbgen jtbgenp jtbver jtbverp jclean:
-	@$(MAKE) -f Makefile.shatranj $@
+jtbgen:
+	@$(MAKE) -f Makefile.shatranj jtbgen
+
+jtbgenp:
+	@$(MAKE) -f Makefile.shatranj jtbgenp
+
+jtbver:
+	@$(MAKE) -f Makefile.shatranj jtbver
+
+jtbverp:
+	@$(MAKE) -f Makefile.shatranj jtbverp
 
 .PHONY: all clean debug release variants regular atomic suicide giveaway shatranj \
         rtbgen rtbgenp rtbver rtbverp tbcheck aclean sclean gclean jclean \
