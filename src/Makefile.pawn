@@ -1,0 +1,19 @@
+.PHONY: all clean
+
+CC = gcc
+CFLAGS = -O0 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto
+CFLAGS += -DMAGIC -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6 -DREGULAR
+
+OBJS = tbgenp.o permute.o compress.o huffman.o threads.o lz4.o checksum.o city-c.o util.o
+
+all: ../bin/tbgenp.exe
+
+../bin/tbgenp.exe: $(OBJS)
+	@mkdir -p ../bin
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f *.o ../bin/tbgenp.exe

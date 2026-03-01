@@ -45,18 +45,13 @@ enum { MAXSYMB = 4095 + 8 };
 #define SUICIDE
 #endif
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
-#define assume(x) do { if (!(x)) __builtin_unreachable(); } while (0)
+/* likely/unlikely hints - compiler-specific for portability */
+#if defined(__GNUC__) || defined(__clang__)
+#define likely(x) __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
 #else
-#define assume(x) do { } while (0)
-#endif
-
-#if 0
 #define likely(x) (x)
 #define unlikely(x) (x)
-#else
-#define likely(x) __builtin_expect(!!(x),1)
-#define unlikely(x) __builtin_expect(!!(x),0)
 #endif
 
 #define PASTER(x,y) x##_##y

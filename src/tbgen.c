@@ -4,12 +4,17 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
-#include <getopt.h>
+#include "compat.h"
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <getopt.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#endif
 
 #include "compress.h"
 #include "defs.h"
@@ -115,12 +120,12 @@ static int num_pieces_to_generate = 0;
 
 /* Auto-generation mode helper functions */
 static void run_rtbgen(const char *tablename);
-static void run_rtbgenp(const char *tablename);
+/* static void run_rtbgenp(const char *tablename); */
 static void generate_pawnless_all(int n);
 static void generate_pawnful_all(int n);
 static void gen_combos_wb(int w, int b, int *wp, int *bp, int start_type);
 
-/* Piece types for generation: Q=QUEEN, R=ROOK, B=BISHOP, N=KNIGHT, P=PAWN */
+/* Piece types for generation (in descending value order): Q=QUEEN, R=ROOK, B=BISHOP, N=KNIGHT, P=PAWN */
 #define NUM_PIECE_TYPES 5
 static const char PIECE_CHARS[] = "QRBNP";
 
@@ -130,6 +135,15 @@ static void run_rtbgen(const char *tablename) {
   fprintf(stderr, "  Generating %s...\n", tablename);
   snprintf(cmd, sizeof(cmd), "C:\\Programmation\\tb-1\\bin\\rtbgen.exe %s", tablename);
   system(cmd);
+}
+
+/* Validate tablebase name format (must be K-first, e.g., KQvK not QKvK) */
+static int validate_tbname(const char *name) {
+  if (name[0] != 'K') return 0;
+  char *v = strchr(name, 'v');
+  if (!v) return 0;
+  if (v[1] != 'K') return 0;
+  return 1;
 }
 
 /* Generate all combinations where white has 'w' pieces and black has 'b' pieces */
@@ -156,6 +170,11 @@ static void gen_combos_wb(int w, int b, int *wp, int *bp, int start_type) {
     tbname[idx++] = 'K';
     tbname[idx] = '\0';
 
+    /* Validate generated name is in correct format */
+    if (!validate_tbname(tbname)) {
+      fprintf(stderr, "Error: Generated invalid tablebase name: %s\n", tbname);
+      exit(1);
+    }
     run_rtbgen(tbname);
     return;
   }
@@ -193,7 +212,7 @@ static void generate_pawnless_all(int n) {
 
   /* For each possible distribution of pieces between sides */
   /* Both sides must have at least 1 piece for valid endgame */
-  for (i = 1; i < remaining; i++) {
+  for (i = 1; i <= remaining; i++) {
     int white_count = i;
     int black_count = remaining - i;
 
@@ -210,61 +229,9 @@ static void generate_pawnless_all(int n) {
   printf("Done.\n");
 }
 
-/* Generate all combinations for N pieces (pawnless) */
-static void generate_pawnless_all(int n) {
-  int white_pieces[NUM_PIECE_TYPES] = {0};
-  int black_pieces[NUM_PIECE_TYPES] = {0};
-  int i;
-
-  printf("Generating all %d-piece pawnless tablebases...\n", n);
-
-  /* Start with K vs K (both kings already implied) */
-  /* We need n-2 additional pieces total (since kings are fixed) */
-  int remaining = n - 2;
-
-  /* For each possible distribution of pieces between sides */
-  /* One side can have 0 pieces (e.g., KQvK has Q on white, 0 on black) */
-  for (i = 0; i <= remaining; i++) {
-    int white_count = i;
-    int black_count = remaining - i;
-
-    /* Reset arrays */
-    for (int j = 0; j < NUM_PIECE_TYPES; j++) {
-      white_pieces[j] = 0;
-      black_pieces[j] = 0;
-    }
-
-    gen_pawnless_rec(white_count, black_count, white_pieces, black_pieces);
-  }
-
-  printf("Done.\n");
-}
-
-/* Generate all pawnful combinations */
+/* Generate all pawnful combinations (not yet implemented) */
 static void generate_pawnful_all(int n) {
-  int white_pieces[NUM_PIECE_TYPES] = {0};
-  int black_pieces[NUM_PIECE_TYPES] = {0};
-  int i;
-
-  printf("Generating all %d-piece pawnful tablebases...\n", n);
-
-  int remaining = n - 2;
-
-  /* For each possible distribution of pieces between sides */
-  for (i = 1; i < remaining; i++) {
-    int white_count = i;
-    int black_count = remaining - i;
-
-    /* Reset arrays */
-    for (int j = 0; j < NUM_PIECE_TYPES; j++) {
-      white_pieces[j] = 0;
-      black_pieces[j] = 0;
-    }
-
-    gen_pawnless_rec(white_count, black_count, white_pieces, black_pieces);
-  }
-
-  printf("Done.\n");
+  printf("Pawnful generation not yet implemented.\n");
 }
 
 #include "stats.c"
@@ -856,14 +823,14 @@ void prepare_dtz_map_u16(u16 *v, struct dtz_map *map)
 extern char *optarg;
 
 static struct option options[] = {
-  { "threads", 1, NULL, 't' },
-  { "wdl", 0, NULL, 'w' },
-  { "dtz", 0, NULL, 'z' },
-  { "stats", 0, NULL, 's' },
-  { "disk", 0, NULL, 'd' },
-  { "affinity", 0, NULL, 'a' },
-  { "auto", 0, NULL, 'A' },
-  { "pieces", 1, NULL, 'n' },
+  { "threads", required_argument, NULL, 't' },
+  { "wdl", no_argument, NULL, 'w' },
+  { "dtz", no_argument, NULL, 'z' },
+  { "stats", no_argument, NULL, 's' },
+  { "disk", no_argument, NULL, 'd' },
+  { "affinity", no_argument, NULL, 'a' },
+  { "auto", no_argument, NULL, 'A' },
+  { "pieces", required_argument, NULL, 'n' },
   { 0, 0, NULL, 0 }
 };
 
@@ -916,8 +883,13 @@ int main(int argc, char **argv)
 
   /* Auto-generation mode */
   if (auto_mode) {
+    if (num_pieces_to_generate == 0) {
+      fprintf(stderr, "Error: -n flag required with -A for auto-generation.\n");
+      fprintf(stderr, "Usage: tbgen -A -n <num_pieces> (e.g., tbgen -A -n 3)\n");
+      exit(1);
+    }
     if (num_pieces_to_generate < 3 || num_pieces_to_generate > 7) {
-      fprintf(stderr, "Number of pieces must be between 3 and 7.\n");
+      fprintf(stderr, "Error: Number of pieces must be between 3 and 7.\n");
       exit(1);
     }
     printf("Auto-generating all %d-piece tablebases...\n", num_pieces_to_generate);
@@ -930,6 +902,26 @@ int main(int argc, char **argv)
     exit(1);
   }
   tablename = argv[optind];
+
+  /* Validate naming convention: must start with K and have proper format */
+  if (tablename[0] != 'K') {
+    fprintf(stderr, "Error: Tablebase name must start with K (King).\n");
+    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
+    exit(1);
+  }
+
+  /* Find 'v' separator and validate both sides start with K */
+  char *v_pos = strchr(tablename, 'v');
+  if (!v_pos) {
+    fprintf(stderr, "Error: Tablebase name must contain 'v' separator.\n");
+    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
+    exit(1);
+  }
+  if (v_pos[1] != 'K') {
+    fprintf(stderr, "Error: Black side must also start with K (King).\n");
+    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
+    exit(1);
+  }
 
   init_tablebases();
 

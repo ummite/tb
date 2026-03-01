@@ -65,19 +65,19 @@ static __inline__ bitboard BishopRange(int sq, bitboard occ)
   bitboard diag135, diag45, reverse;
 
   diag135 = occ & hyper->diagmask135;
-  reverse = __builtin_bswap64(diag135);
+  reverse = bswap64(diag135);
   diag135 -= hyper->bitmask;
-//  reverse -= __builtin_bswap64(hyper->bitmask);
+//  reverse -= bswap64(hyper->bitmask);
   reverse -= bit[sq ^ 0x38];
-  diag135 ^= __builtin_bswap64(reverse);
+  diag135 ^= bswap64(reverse);
   diag135 &= hyper->diagmask135;
 
   diag45 = occ & hyper->diagmask45;
-  reverse = __builtin_bswap64(diag45);
+  reverse = bswap64(diag45);
   diag45 -= hyper->bitmask;
-//  reverse -= __builtin_bswap64(hyper->bitmask);
+//  reverse -= bswap64(hyper->bitmask);
   reverse -= bit[sq ^ 0x38];
-  diag45 ^= __builtin_bswap64(reverse);
+  diag45 ^= bswap64(reverse);
   diag45 &= hyper->diagmask45;
 
   return diag135 | diag45;

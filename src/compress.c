@@ -9,7 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#else
 #include <unistd.h>
+#endif
 
 #include "checksum.h"
 #include "compress.h"

@@ -11,12 +11,14 @@
 #include "threads.h"
 #include "util.h"
 
-#if defined(__STDC_NO_THREADS__) || !__has_include(<threads.h>)
+#ifdef _MSC_VER
+#include "wincompat.h"
 #include "c11threads_win32.c"
-#endif
-
+#else
+#include <threads.h>
 #ifdef __linux__
 #include <sched.h>
+#endif
 #endif
 
 struct thread_data *thread_data;

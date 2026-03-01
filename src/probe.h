@@ -113,7 +113,21 @@ struct TBEntry {
   uint8_t num;
   uint8_t symmetric;
   uint8_t has_pawns;
-} __attribute__((__may_alias__));
+};
+#ifdef _MSC_VER
+#define MAY_ALIAS __declspec(align(1))
+#else
+#define MAY_ALIAS __attribute__((__may_alias__))
+#endif
+
+struct TBEntry_may_alias {
+  uint8_t *data;
+  uint32_t key;
+  uint8_t ready;
+  uint8_t num;
+  uint8_t symmetric;
+  uint8_t has_pawns;
+} MAY_ALIAS;
 
 struct TBEntry_piece {
   uint8_t *data;

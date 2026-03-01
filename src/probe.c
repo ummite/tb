@@ -6,13 +6,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#else
 #include <unistd.h>
-
-
-
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <assert.h>
+#endif
 
 #include "board.h"
 #include "defs.h"
@@ -2385,7 +2387,7 @@ uint8_t decompress_pairs(struct PairsData *d, uint64_t idx)
   int sym, bitcnt;
 
 #ifndef LOOKUP
-  uint64_t code = __builtin_bswap64(*((uint64_t *)ptr));
+  uint64_t code = bswap64(*((uint64_t *)ptr));
   ptr += 2;
   bitcnt = 0; // number of "empty bits" in code
   for (;;) {
@@ -2398,11 +2400,11 @@ uint8_t decompress_pairs(struct PairsData *d, uint64_t idx)
     bitcnt += l;
     if (bitcnt >= 32) {
       bitcnt -= 32;
-      code |= (uint64_t)(__builtin_bswap32(*ptr++)) << bitcnt;
+      code |= (uint64_t)(bswap32(*ptr++)) << bitcnt;
     }
   }
 #else
-  uint64_t code = __builtin_bswap64(*(uint64_t *)ptr);
+  uint64_t code = bswap64(*(uint64_t *)ptr);
   ptr += 2;
   bitcnt = 0; // number of "empty bits" in code
   for (;;) {
@@ -2432,7 +2434,7 @@ uint8_t decompress_pairs(struct PairsData *d, uint64_t idx)
     bitcnt += l;
     if (bitcnt >= 32) {
       bitcnt -= 32;
-      code |= (uint64_t)(__builtin_bswap32(*ptr++)) << bitcnt;
+      code |= (uint64_t)(bswap32(*ptr++)) << bitcnt;
     }
   }
 #endif

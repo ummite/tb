@@ -30,35 +30,33 @@
 #define CAPT_CWIN (WIN_IN_ONE + DRAW_RULE)
 #define CAPT_CWIN_RED (WIN_IN_ONE + 1)
 
+/* SET_CHANGED - atomic compare-and-swap using standard C11 atomics */
 #define SET_CHANGED(x) \
-do { uint8_t dummy = CHANGED; \
-__asm__( \
-"movb %2, %%al\n\t" \
-"lock cmpxchgb %1, %0" \
-: "+m" (x), "+r" (dummy) : "i" (UNKNOWN) : "eax"); } while (0)
+do { \
+  uint8_t expected = CHANGED; \
+  uint8_t desired = UNKNOWN; \
+  atomic_compare_exchange_strong((_Atomic uint8_t*)(x), &expected, desired); \
+} while (0)
 
-#define SET_CAPT_VALUE(x,v) \
-do { uint8_t dummy = v; __asm__( \
-"movb %0, %%al\n" \
-"0:\n\t" \
-"cmpb %1, %%al\n\t" \
-"jbe 1f\n\t" \
-"lock cmpxchgb %1, %0\n\t" \
-"jnz 0b\n" \
-"1:" \
-: "+m" (x), "+r" (dummy) : : "eax"); } while (0)
+/* SET_CAPT_VALUE - atomic update if new value is worse (larger = better for capturer) */
+#define SET_CAPT_VALUE(x, v) \
+do { \
+  uint8_t* ptr = (uint8_t*)(x); \
+  uint8_t expected = *ptr, desired = (v); \
+  while (expected < desired && \
+         !atomic_compare_exchange_strong((_Atomic uint8_t*)(x), &expected, desired)) \
+    ; \
+} while (0)
 
-#define SET_WIN_VALUE(x,v) \
-do { uint8_t dummy = v; \
-__asm__( \
-"movb %0, %%al\n" \
-"0:\n\t" \
-"cmpb %1, %%al\n\t" \
-"jbe 1f\n\t" \
-"lock cmpxchgb %1, %0\n\t" \
-"jnz 0b\n" \
-"1:" \
-: "+m" (x), "+r" (dummy) : : "eax"); } while (0)
+/* SET_WIN_VALUE - atomic update if new value is better (smaller = worse) */
+#define SET_WIN_VALUE(x, v) \
+do { \
+  uint8_t* ptr = (uint8_t*)(x); \
+  uint8_t expected = *ptr, desired = (v); \
+  while (expected > desired && \
+         !atomic_compare_exchange_strong((_Atomic uint8_t*)(x), &expected, desired)) \
+    ; \
+} while (0)
 
 uint8_t win_loss[256];
 uint8_t loss_win[256];

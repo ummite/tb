@@ -4,12 +4,16 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
-#include <getopt.h>
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#include <getopt.h>
+#endif
 
 #include "board.h"
 #include "decompress.h"

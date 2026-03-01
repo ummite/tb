@@ -1,13 +1,37 @@
+# Build output
 *.o
+*.obj
 *.P
 *.swp
-*.txt
-*.rtbw
-*.rtbz
-rtbgen
-rtbgenp
-rtbver
-rtbverp
-tbcheck
 build/
 bin/
+obj*/
+Debug/
+Release/
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.sln
+*.suo
+*.user
+*.ilk
+*.pdb
+*.lib
+*.exp
+UpgradeLog*.htm
+
+# Backup folders
+Backup*/
+
+# Partial/incomplete tablebase files
+*.rtbw.*
+*.rtbz.*
+
+# Device files
+nul
+
+# Helper scripts and auto-generated files (optional)
+FromPowerShell.ps1
+claude-loop.ps1
+CMakeLists.txt

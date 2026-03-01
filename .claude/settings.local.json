@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(export PATH=\"/c/Programmation/tb-1/bin:$PATH\")",
       "Bash(make clean)",
       "Bash(echo $PATH)",
       "Bash(gcc --version)",
@@ -38,7 +39,25 @@
       "Bash(grep:*)",
       "Skill(ralph-loop:ralph-loop)",
       "Bash(cd:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(./bin/tbgen.exe:*)",
+      "Bash(rm:*)",
+      "Bash(/c/Programmation/tb-1/bin/tbgen.exe:*)",
+      "Bash(/c/Programmation/tb-1/bin/rtbgen.exe:*)",
+      "Bash(./rtbgen:*)",
+      "Bash(ls:*)",
+      "Bash(./rtbgen.exe:*)",
+      "Bash(./rebuild.bat:*)",
+      "Bash(/c/Programmation/tb-1/bin/rtbgen_new.exe:*)",
+      "Bash(xxd:*)",
+      "Bash(objdump:*)",
+      "Bash(./rtbgen_new.exe:*)",
+      "Bash(where rtbgen:*)",
+      "Bash(printf:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git clean:*)",
+      "Bash(git add:*)"
     ]
-  }
+  },
+  "outputStyle": "Explanatory"
 }

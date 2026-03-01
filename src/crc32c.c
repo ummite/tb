@@ -73,14 +73,14 @@ static const uint32_t crc_c[256] = {
   0xBE2DA0A5, 0x4C4623A6, 0x5F16D052, 0xAD7D5351,
 };
 
-uint64_t _mm_crc32_u64(uint64_t crc, uint64_t v)
+static uint64_t mm_crc32_u64_impl(uint64_t crc, uint64_t v)
 {
   int i;
   union {
     uint8_t buf[8];
     uint64_t v;
   } in;
-  uint32_t crc32 = crc;
+  uint32_t crc32 = (uint32_t)crc;
 
   in.v = v;
   for (i = 0; i < 8; i++)
@@ -88,4 +88,8 @@ uint64_t _mm_crc32_u64(uint64_t crc, uint64_t v)
 
   return (uint64_t)crc32;
 }
+
+#ifdef _MSC_VER
+#define _mm_crc32_u64 mm_crc32_u64_impl
+#endif
 

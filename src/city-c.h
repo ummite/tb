@@ -56,8 +56,13 @@ struct Pair {
 };
 typedef struct Pair uint128;
 
+#ifdef _MSC_VER
+static __inline uint64_t Uint128Low64(const uint128 x) { return x.first; }
+static __inline uint64_t Uint128High64(const uint128 x) { return x.second; }
+#else
 static uint64_t __inline__ Uint128Low64(const uint128 x) { return x.first; }
 static uint64_t __inline__ Uint128High64(const uint128 x) { return x.second; }
+#endif
 
 // Hash function for a byte array.
 uint64_t CityHash64(const char *buf, size_t len);

@@ -4,15 +4,20 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
-#include <fcntl.h>
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#else
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#endif
 
 #include "compress.h"
 #include "defs.h"

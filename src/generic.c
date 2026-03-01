@@ -99,20 +99,18 @@ static uint64_t __inline__ MakeMove(uint64_t idx, int k, int sq)
 #define PIVOT_ON_DIAG(idx) (flag && idx >= diagonal)
 #define PIVOT_MIRROR(idx) (MIRROR_A1H8(idx) | (idx & mask[0]))
 
-// use bit_set
-#if 1
+/* Portable bit_set implementation (replaces GCC inline assembly) */
+#define bit_set(x, y) bit_set_standard(&(x), (y))
 
-#define bit_set(x,y) { uint64_t dummy = y; __asm__("bts %1,%0" : "+r" (x) : "r" (dummy));}
-#define bit_set(x,y) { uint64_t dummy = y; __asm__("bts %1,%0" : "+r" (x) : "r" (dummy));}
+static inline void bit_set_standard(uint64_t* x, uint64_t y)
+{
+  *x |= (1ULL << y);
+}
 
-#define jump_bit_set(x,y,lab) \
-  __asm__ goto ("bt %1, %0; jc %l[lab]" : : "r" (x), "r" ((uint64_t)(y)) : : lab);
-
-#define jump_bit_clear(x,y,lab) \
-  __asm__ goto ("bt %1, %0; jnc %l[lab]" : : "r" (x), "r" ((uint64_t)(y)) : : lab);
-
-#define bit_set_jump_set(x,y,lab) \
-  __asm__ goto ("bts %1, %0; jc %l[lab]" : "+r" (x) : "r" ((uint64_t)(y)) : : lab);
+/* Simple bit test macros - replaces __asm__ goto */
+#define jump_bit_set(x,y,lab) do { if ((x) & (1ULL << (y))) goto lab; } while(0)
+#define jump_bit_clear(x,y,lab) do { if (!((x) & (1ULL << (y)))) goto lab; } while(0)
+#define bit_set_jump_set(x,y,lab) do { bit_set_standard(&(x), (y)); if ((x) & (1ULL << (y))) goto lab; } while(0)
 
 #define FILL_OCC64_cheap \
   occ = 0; \

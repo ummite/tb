@@ -14,15 +14,11 @@ extern bitboard bit[64];
 
 static __inline__ int FirstOne(bitboard x)
 {
-  return __builtin_ctzll(x);
+  /* Portable implementation using stdintrin.h */
+  return ctz64(x);
 }
 
-#ifdef USE_POPCNT
-static __inline__ int PopCount(bitboard x)
-{
-  return __builtin_popcountll(x);
-}
-#endif
+#define PopCount(x) popcount64(x)
 
 #define ClearFirst(x) ((x)&=(x)-1)
 

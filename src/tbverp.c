@@ -7,9 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <getopt.h>
 #include <stdarg.h>
 #include <inttypes.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#include <getopt.h>
+#endif
 
 #define HAS_PAWNS
 #define VERIFICATION

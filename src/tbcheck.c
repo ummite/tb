@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
 #include <string.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#include <getopt.h>
+#endif
 
 #include "defs.h"
 #include "threads.h"

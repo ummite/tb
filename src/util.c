@@ -4,7 +4,9 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
+#ifndef _MSC_VER
 #include <stdatomic.h>
+#endif
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -16,6 +18,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#else
+#include "wincompat.h"
 #endif
 
 #ifdef USE_ZSTD
