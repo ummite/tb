@@ -29,7 +29,13 @@
   int _getopt(int argc, char *argv[], const char *optstring);
   #define getopt(argc, argv, optstring) _getopt(argc, argv, optstring)
 
-  /* inttypes.h macros for MSVC - skip as MSVC CRT already provides them */
+  /* inttypes.h macros for MSVC - explicit definitions for compatibility */
+  #define PRId64 "I64d"
+  #define PRIu64 "I64u"
+  #define PRIx64 "I64x"
+  #define PRId32 "d"
+  #define PRIu32 "u"
+  #define PRIx32 "x"
 
   /* usleep replacement */
   #define usleep(x) Sleep((x) / 1000)

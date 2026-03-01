@@ -15,11 +15,13 @@ This document tracks potential improvements and ideas for future development.
 - [x] tbcheck verification works for most files
 - [x] CMake cross-platform build system
 - [x] MSVC compatibility in defs.h (likely/unlikely/assume macros)
+- [x] MSVC compatibility in wincompat.h (inttypes.h macros)
 - [x] CMakeLists.txt with all chess variants
 - [x] CMake support for BMI2, MAGIC, HYPER attack methods
 - [x] CMake support for ZSTD compression option
 - [x] README.md with Quick Start section
 - [x] PROJECT_STATUS.md documentation
+- [x] Clean project structure documentation
 
 ### Known Issues
 - [ ] KQQRvK.rtbw file size not aligned to 64 bytes
@@ -75,6 +77,9 @@ This document tracks potential improvements and ideas for future development.
   - C11 standard (LanguageStandard_C=stdc11)
   - LTCG (Link Time Code Generation)
   - Multi-processor compilation (/MP)
+  - Permissive mode (/permissive)
+  - /OPT:REF /OPT:ICF linker optimizations
+  - InlineFunctionExpansion=OnlyExplicitInline
 
 ### 3. Chess Variant Support
 
@@ -170,6 +175,42 @@ Potential additions:
 - [ ] `--disk` option not fully tested
 - [ ] `--stats` option needs documentation
 - [ ] Multi-threading needs testing on different platforms
+
+## Latest Improvements (This Session)
+
+### CMakeLists.txt Enhancements
+- Fixed GIVEAWAY_FLAGS to include -DSUICIDE (giveaway is a subset of suicide)
+- Added COMPRESSION_THREADS_COUNT option (default: 6)
+- Added MAX_TBPIECES option (default: 7)
+- Added stbver and stbverp to suicide target
+- Added gtbver and gtbverp to giveaway target
+- Improved build configuration for all variants
+
+### Makefile Improvements
+- Fixed suicide target to include stbver and stbverp
+- Fixed giveaway target to include gtbver and gtbverp
+- Added target rules for stbver, stbverp, gtbver, gtbverp
+- Ensures complete build consistency with CMakeLists.txt
+
+### VS2026 Project File Enhancements
+All .vcxproj files (tbgen, tbgenp, tbver, tbverp, tbcheck) enhanced with:
+- **Permissive mode**: `<Permissive>false</Permissive>` for stricter C11 compliance
+- **BMI2 support**: `<AdditionalOptions>/arch:AVX2</AdditionalOptions>`
+- **LTCG optimizations**: `/LTCG /OPT:REF /OPT:ICF` linker flags
+- **Inline expansion**: `InlineFunctionExpansion=OnlyExplicitInline`
+- **Multi-processor compilation**: `<MultiProcessorCompilation>true</MultiProcessorCompilation>`
+
+### Cross-Platform Compatibility
+- **defs.h**: MSVC compatibility for likely/unlikely/assume macros
+- **wincompat.h**: MSVC inttypes.h macros (PRId64 "I64d", PRIu64 "I64u", PRIx64 "I64x")
+- **CMakeLists.txt**: Configured for both MSVC and GCC/Clang with platform-specific optimizations
+
+### Documentation Updates
+- README.md enhanced with CMake Quick Start section
+- PROJECT_STATUS.md created with comprehensive status report
+- docs/IMPROVEMENTS.md updated with completed items and latest improvements
+
+---
 
 ## Notes
 

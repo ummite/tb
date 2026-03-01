@@ -148,11 +148,11 @@ atomic: atbgen atbgenp atbver atbverp tbcheck
 	@echo "Atomic chess tablebase tools built."
 
 # Suicide chess
-suicide: stbgen stbgenp tbcheck
+suicide: stbgen stbgenp stbver stbverp tbcheck
 	@echo "Suicide chess tablebase tools built."
 
 # Giveaway chess
-giveaway: gtbgen gtbgenp tbcheck
+giveaway: gtbgen gtbgenp gtbver gtbverp tbcheck
 	@echo "Giveaway chess tablebase tools built."
 
 # Shatranj (ancient chess)
@@ -253,6 +253,20 @@ jtbver:
 jtbverp:
 	@$(MAKE) -f Makefile.shatranj jtbverp
 
+# Suicide chess verifiers
+stbver:
+	@$(MAKE) -f Makefile.suicide stbver
+
+stbverp:
+	@$(MAKE) -f Makefile.suicide stbverp
+
+# Giveaway chess verifiers
+gtbver:
+	@$(MAKE) -f Makefile.giveaway gtbver
+
+gtbverp:
+	@$(MAKE) -f Makefile.giveaway gtbverp
+
 .PHONY: all clean debug release variants regular atomic suicide giveaway shatranj \
         rtbgen rtbgenp rtbver rtbverp tbcheck aclean sclean gclean jclean \
-        tbgen tbgenp tbver tbverp info
+        tbgen tbgenp tbver tbverp info stbver stbverp gtbver gtbverp

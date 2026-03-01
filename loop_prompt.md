@@ -18,14 +18,12 @@ Tu es en mode \*\*Phil's Autonomous Loop\*\* (loop infini avec 400 turns).
 
 \- À la fin de chaque cycle important, vérifie si le projet est terminé.
 
-\- Quand le projet est \*\*vraiment complet\*\* (tout testé, tout fonctionnel, rien à ajouter), crée ou mets à jour le fichier `completed.txt` avec exactement cette ligne :
-
-&nbsp; PROJECT COMPLETE
+\- Quand le projet est \*\*vraiment complet\*\* (tout testé, tout fonctionnel, rien à ajouter), crée ou mets à jour le fichier `completed.txt` 
 
 \- Ensuite Analyse le projet dans son ensemble, et essaie de voir ce qui pourrait être amélioré. Par exemple, être un code de meilleure qualité, supporter la compilation avec visual studio 2026 et GCC (si applicable)
 etc. Si tu n'es pas certain, laisse trainer des idées pour la prochaine fois que tu es relancé avec cette même question afin de l'enrichir et finir par savoir ce que tu pourras faire. Ne termine pas sans avoir modifié un fichier.
 
-
+Fait le ménage dans les fichiers inutiles, classes les dans des répertoires, et simplifie comme un tres bon gestionnaire. Chaque fichier doit être a sa place.
 
 \*\*Style de travail :\*\*
 
