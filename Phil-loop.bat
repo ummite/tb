@@ -1,81 +1,47 @@
 @echo off
 chcp 65001 >nul
+setlocal enabledelayedexpansion
 
-:: Initialisation du compteur de loops (Phil's Loop)
+:: ====================== CONFIG FINALE ======================
+set ANTHROPIC_BASE_URL=http://127.0.0.1:11434
+set ANTHROPIC_API_KEY=ollama
+
+echo.
+echo [DEBUG ENV] ANTHROPIC_BASE_URL = %ANTHROPIC_BASE_URL%
+echo [DEBUG ENV] ANTHROPIC_API_KEY  = ollama   ← C'EST ÇA QUI MARCHE POUR TOI
+echo [DEBUG ENV] Model              = Qwen35-Q8-MaxSpeed
+echo.
+
+set CLAUDE_CODE_MAX_OUTPUT_TOKENS=12288
+set MAX_THINKING_TOKENS=3072
+set CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=72
+set CLAUDE_CODE_DISABLE_1M_CONTEXT=1
+
 set /a LOOP_COUNT=0
-
-title Claude Code - Phil's Loop (Local LLM - Zero Cost)
+title Claude Code - Phil's Loop v14 (Sans max-turns)
 
 echo =============================================
-echo     Claude Code - Phil's Loop
-echo     Autonomous Agent Loop (Local LLM - Zero Cost)
-echo =============================================
-echo.
-
-:: === INITIAL QUESTION ===
-set /p CREATE_BRANCH="Do you want to create a dedicated branch (claude-autonomous) for Phil's Loop? (Y/N): "
-
-if /I "%CREATE_BRANCH%"=="Y" (
-    git checkout claude-autonomous 2>nul || (
-        echo [INFO] Creating branch claude-autonomous for Phil's Loop...
-        git checkout -b claude-autonomous
-    )
-    echo [INFO] Phil's Loop is now running on branch: claude-autonomous
-) else (
-    echo [INFO] Phil's Loop is running directly on the current branch.
-    git branch --show-current
-)
-
-echo.
-echo Phil's Loop started (Local LLM - max-turns 400)
-echo Press Ctrl+C to stop at any time.
+echo Claude Code - Phil's Loop v14
+echo Mode "un gros cycle puis stop" • Batch relance
 echo =============================================
 echo.
 
 :loop
 set /a LOOP_COUNT+=1
-title Claude Code - Phil's Loop - Cycle %LOOP_COUNT% (Local LLM)
+title Claude Code - Phil's Loop v14 - Cycle %LOOP_COUNT%
 
+echo.
 echo [%date% %time%] === PHIL'S LOOP - CYCLE %LOOP_COUNT% ===
 
-claude -p "@loop_prompt.md" --continue --allowedTools "Read,Write,Edit,Bash,Glob,Grep" --dangerously-skip-permissions --max-turns 400 > cycle.log 2>&1
+call claude -p "@loop_prompt.md" ^
+  --continue ^
+  --dangerously-skip-permissions ^
+  --model Qwen35-Q8-MaxSpeed ^
+  --debug "api,tools,compact,context" ^
+  --verbose
 
-:: Detect completion
-findstr /C:"PROJECT COMPLETE" completed.txt >nul
-if %errorlevel% == 0 (
-    echo.
-    echo =============================================
-    echo PROJECT COMPLETE DETECTED - Phil's Loop finished after %LOOP_COUNT% cycles!
-    echo =============================================
-    echo.
-    echo Current file status:
-    git status --short
-    echo.
-
-    set /p SATISFIED="Are you satisfied with Phil's Loop results? Do you want to commit now? (Y/N): "
-
-    if /I "%SATISFIED%"=="Y" (
-        echo.
-        echo Committing Phil's Loop results...
-        git add .
-        git commit -m "Phil's Loop - Cycle %LOOP_COUNT% - Project Complete [Local LLM]"
-        echo ✅ Phil's Loop commit completed successfully!
-
-        if /I "%CREATE_BRANCH%"=="Y" (
-            set /p MERGE="Do you want to merge claude-autonomous into main now? (Y/N): "
-            if /I "%MERGE%"=="Y" (
-                git checkout main
-                git merge claude-autonomous --no-ff -m "Merge Phil's Loop - Cycle %LOOP_COUNT% - Project Complete"
-                echo ✅ Merge of Phil's Loop into main completed!
-            )
-        )
-    ) else (
-        echo No commit was made. All Phil's Loop changes remain uncommitted.
-    )
-    pause
-    exit
-)
-
-echo Phil's Loop cycle %LOOP_COUNT% completed. Starting new cycle in 2 seconds...
+echo.
+echo Cycle %LOOP_COUNT% terminé.
+echo Relance dans 2 secondes...
 timeout /t 2 /nobreak >nul
 goto loop

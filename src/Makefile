@@ -1,74 +1,220 @@
-# Specify sliding attacks generation method. One of -DMAGIC, -DHYPER, -DBMI2.
-# -DBMI2 requires a processor with (fast) BMI2 support.
-# -DHYPER requires a processor with SSE3 support.
-#FLAGS = -DMAGIC
-#FLAGS = -DHYPER
-#FLAGS = -DBMI2
-# Older MinGW without BMI2 intrinsics:
-FLAGS = -DMAGIC
+# =============================================================================
+# tb-1 Tablebase Generator Build System
+# =============================================================================
+# Features:
+# - Parallel build support (make -j N)
+# - Debug and Release build modes
+# - Platform auto-detection
+# - Compression library selection
+# - Variant builds (regular, atomic, suicide, giveaway, shatranj)
+# =============================================================================
 
-# Specify -DUSE_POPCNT on a machine with popcnt support.
-# For pawnful tables this seems slightly faster. For pawnless tables it
-# does not seem to matter.
+# === BUILD CONFIGURATION ===
+
+# Build optimization level: 0, 1, 2, 3, s, z
+BUILD_LEVEL ?= 3
+
+# Debug mode: set to 1 for debug build
+DEBUG ?= 0
+
+# === PLATFORM DETECTION ===
+
+# Auto-detect compiler and platform
+UNAME_S := $(shell sh -c 'uname -s 2>/dev/null || echo Windows')
+UNAME_M := $(shell sh -c 'uname -m 2>/dev/null || echo x86_64')
+
+# Compiler detection (use gcc/g++ for MinGW/MinGW-w64)
+CC ?= gcc
+CXX ?= g++
+
+# Platform-specific flags
+ifeq ($(UNAME_S),Linux)
+    PLATFORM_FLAGS += -D_GNU_SOURCE
+    PLATFORM_LIBS += -pthread
+    COMPILER_NAME = GCC
+else ifeq ($(UNAME_S),Darwin)
+    PLATFORM_FLAGS += -D_DARWIN_C_SOURCE
+    PLATFORM_LIBS += -pthread
+    COMPILER_NAME = Clang/GCC
+else
+    # Windows/MinGW
+    PLATFORM_FLAGS += -DWIN32 -D_USE_MATH_DEFINES
+    PLATFORM_LIBS += -lpthread
+    COMPILER_NAME = MinGW
+endif
+
+# === COMPILER FLAGS ===
+
+# Base optimization flags based on BUILD_LEVEL
+ifeq ($(BUILD_LEVEL),0)
+    OPT_FLAGS = -O0 -g3
+else ifeq ($(BUILD_LEVEL),1)
+    OPT_FLAGS = -O1
+else ifeq ($(BUILD_LEVEL),2)
+    OPT_FLAGS = -O2
+else ifeq ($(BUILD_LEVEL),3)
+    OPT_FLAGS = -O3
+else ifeq ($(BUILD_LEVEL),s)
+    OPT_FLAGS = -Os
+else ifeq ($(BUILD_LEVEL),z)
+    OPT_FLAGS = -Oz
+else
+    OPT_FLAGS = -O3
+endif
+
+# Debug mode overrides
+ifeq ($(DEBUG),1)
+    OPT_FLAGS = -O0 -g3 -DDEBUG
+endif
+
+# Common compiler flags
+CFLAGS_BASE = $(OPT_FLAGS) -march=native -pipe -Wall -Wextra -std=c11
+CFLAGS_BASE += -ffast-math -funroll-loops -fomit-frame-pointer -flto=auto
+
+# Platform flags
+CFLAGS = $(CFLAGS_BASE) $(PLATFORM_FLAGS)
+
+# Linker flags
+LDFLAGS = -flto=auto $(PLATFORM_LIBS)
+
+# === FEATURE FLAGS ===
+
+# Attack generation method: -DMAGIC, -DHYPER, or -DBMI2
+ATTACK_METHOD ?= MAGIC
+FLAGS += -D$(ATTACK_METHOD)
+
+# CPU feature flags
 FLAGS += -DUSE_POPCNT
 
-# Specify maximum number of pieces. More than 7 won't work.
-FLAGS += -DTBPIECES=7
+# Maximum pieces (3-7)
+TBPIECES ?= 7
+FLAGS += -DTBPIECES=$(TBPIECES)
 
-# Using LZ4 for compression (no external dependencies required)
-# To use ZSTD instead, uncomment the next two lines and install libzstd-dev
-# FLAGS += -DUSE_ZSTD -DZSTD_LEVEL=6
-# LDFLAGS += -lzstd
+# Compression: LZ4 (default) or ZSTD
+USE_COMPRESSION ?= LZ4
+ifeq ($(USE_COMPRESSION),ZSTD)
+    FLAGS += -DUSE_ZSTD -DZSTD_LEVEL=6
+    LDFLAGS += -lzstd
+    COMPILER_NAME += (ZSTD)
+else
+    FLAGS += -DLZ4
+    COMPILER_NAME += (LZ4)
+endif
 
-# Specify number of threads used for (de)compression of temporary files.
-FLAGS += -DCOMPRESSION_THREADS=6
+# Compression threads
+COMPRESSION_THREADS ?= 6
+FLAGS += -DCOMPRESSION_THREADS=$(COMPRESSION_THREADS)
 
-# Specify the compiler
-# regular linux
-CC = gcc
-# cross compiling from Linux to Windows
-#CC = x86_64-w64-mingw32-gcc
-# Windows with MinGW (threads disabled by default, add -pthread -lpthread if pthreads-w32 is installed)
+# Export variables to sub-makefiles
+export CC CFLAGS LDFLAGS FLAGS
 
-# Compilation flags
-#CFLAGS = -g3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11
-CFLAGS = -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -flto=auto
-#CFLAGS = -O3 -march=native -pipe -D_GNU_SOURCE -Wall -std=c11 -fsanitize=undefined
+# === TARGETS ===
 
-export FLAGS CC CFLAGS LDFLAGS
+.PHONY: all clean release debug variants
 
+# Default: regular tablebase tools
 all: rtbgen rtbgenp rtbver rtbverp tbcheck
 
+# Debug build
+debug:
+	@$(MAKE) DEBUG=1 all
+
+# Release build (optimized)
+release:
+	@$(MAKE) BUILD_LEVEL=3 all
+
+# Show configuration info
+info:
+	@echo "============================================"
+	@echo "tb-1 Build Configuration"
+	@echo "============================================"
+	@echo "Platform: $(UNAME_S) $(UNAME_M)"
+	@echo "Compiler: $(CC) ($(COMPILER_NAME))"
+	@echo "Build Level: $(BUILD_LEVEL)"
+	@echo "Debug Mode: $(DEBUG)"
+	@echo "Attack Method: $(ATTACK_METHOD)"
+	@echo "Compression: $(USE_COMPRESSION)"
+	@echo "Max Pieces: $(TBPIECES)"
+	@echo "============================================"
+
+# === VARIANT TARGETS ===
+
+# Regular (standard chess)
+regular: rtbgen rtbgenp rtbver rtbverp tbcheck
+	@echo "Regular tablebase tools built."
+
+# Atomic chess
+atomic: atbgen atbgenp atbver atbverp tbcheck
+	@echo "Atomic chess tablebase tools built."
+
+# Suicide chess
+suicide: stbgen stbgenp tbcheck
+	@echo "Suicide chess tablebase tools built."
+
+# Giveaway chess
+giveaway: gtbgen gtbgenp tbcheck
+	@echo "Giveaway chess tablebase tools built."
+
+# Shatranj (ancient chess)
+shatranj: jtbgen jtbgenp jtbver jtbverp tbcheck
+	@echo "Shatranj tablebase tools built."
+
+# Build all variants
+variants: regular atomic suicide giveaway shatranj
+	@echo "All variant tools built."
+
+# === CLEAN TARGETS ===
+
+clean:
+	@$(MAKE) -f Makefile.regular clean
+	@$(MAKE) -f Makefile.atomic clean
+	@$(MAKE) -f Makefile.suicide clean
+	@$(MAKE) -f Makefile.giveaway clean
+	@$(MAKE) -f Makefile.shatranj clean
+	@echo "Clean complete."
+
+aclean:
+	@$(MAKE) -f Makefile.atomic clean
+
+sclean:
+	@$(MAKE) -f Makefile.suicide clean
+
+gclean:
+	@$(MAKE) -f Makefile.giveaway clean
+
+jclean:
+	@$(MAKE) -f Makefile.shatranj clean
+
+# === ALIASES ===
+
+# tbgen aliases (for convenience)
+tbgen: rtbgen
+tbgenp: rtbgenp
+tbver: rtbver
+tbverp: rtbverp
+
+# === SUB-MODULES ===
+
+# Regular Linux build
 rtbgen rtbgenp rtbver rtbverp tbcheck clean:
 	@$(MAKE) -f Makefile.regular $@
 
-# Add tbgen target as an alias
-tbgen:
-	@$(MAKE) -f Makefile.regular tbgen
-
+# Atomic chess
 atbgen atbgenp atbver atbverp aclean:
 	@$(MAKE) -f Makefile.atomic $@
 
+# Suicide chess
 stbgen stbgenp sclean:
 	@$(MAKE) -f Makefile.suicide $@
 
+# Giveaway chess
 gtbgen gtbgenp gclean:
 	@$(MAKE) -f Makefile.giveaway $@
 
+# Shatranj
 jtbgen jtbgenp jtbver jtbverp jclean:
 	@$(MAKE) -f Makefile.shatranj $@
 
-#atbgen atbgenp atbver atbverp aclean:
-atomic: atbgen atbgenp atbver atbverp tbcheck
-
-suicide: stbgen stbgenp tbcheck
-
-giveaway: gtbgen gtbgenp tbcheck
-
-shatranj: jtbgen jtbgenp tbcheck
-
-.PHONY: rtbgen rtbgenp rtbver rtbverp tbcheck clean \
-	atbgen atbgenp atbver atbverp aclean \
-	stbgen stbgenp sclean \
-	gtbgen gtbgenp gclean \
-	jtbgen jtbgenp jtbver jtbverp jclean
+.PHONY: all clean debug release variants regular atomic suicide giveaway shatranj \
+        rtbgen rtbgenp rtbver rtbverp tbcheck aclean sclean gclean jclean \
+        tbgen tbgenp tbver tbverp info

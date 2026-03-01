@@ -1,63 +1,130 @@
-SHELL = /bin/sh
+# =============================================================================
+# Makefile.general - Common build rules for tb-1 tablebase generator
+# =============================================================================
+# Features:
+# - Automatic dependency generation
+# - Parallel build support
+# - Incremental compilation
+# - Clean build artifacts
+# =============================================================================
 
+SHELL := /bin/sh
+
+# Avoid multiple .SUFFIXES declarations
 .SUFFIXES:
 .SUFFIXES: .c .o .P
 
-vpath %.o
+# Object file locations
 vpath %.o $(OBJDIR)
-
-vpath %.P
 vpath %.P $(DEPDIR)
 
-TBOBJS = tbgen.o tbgenp.o permute.o compress.o huffman.o threads.o lz4.o tbver.o tbverp.o decompress.o checksum.o city-c.o tbcheck.o util.o
-GENTBOBJS = tbgen.o permute.o compress.o huffman.o threads.o lz4.o checksum.o city-c.o util.o
-GENTBPOBJS = tbgenp.o permute.o compress.o huffman.o threads.o lz4.o checksum.o city-c.o util.o
-VERTBOBJS = tbver.o decompress.o threads.o checksum.o city-c.o util.o
-VERTBPOBJS = tbverp.o decompress.o threads.o checksum.o city-c.o util.o
+# Compiler flags
+CFLAGS ?= -O3 -march=native -pipe -Wall -std=c11
+LDFLAGS ?=
 
-TBCHECKOBJS = tbcheck.o threads.o checksum.o city-c.o lz4.o util.o
+# Feature flags
+FLAGS ?=
 
-CFILES = tbgen.c tbgenp.c tbver.c tbverp.c permute.c compress.c huffman.c threads.c lz4.c decompress.c checksum.c city-c.c tbcheck.c util.c
-include $(CFILES:%.c=$(DEPDIR)/%.P)
-include $(TBOBJS:%.o=$(DEPDIR)/%.P)
+# Default directories
+DEPDIR ?= .deps
+OBJDIR ?= objs
 
-$(NAME): $(OBJS) # $(OBJS:%=$(OBJDIR)/%)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS:%=$(OBJDIR)/%)
+# =============================================================================
+# Object file lists per target
+# =============================================================================
 
-%.o $(OBJDIR)/%.o: %.c
+TBOBJS := tbgen.o tbgenp.o permute.o compress.o huffman.o threads.o lz4.o tbver.o tbverp.o decompress.o checksum.o city-c.o tbcheck.o util.o
+GENTBOBJS := tbgen.o permute.o compress.o huffman.o threads.o lz4.o checksum.o city-c.o util.o
+GENTBPOBJS := tbgenp.o permute.o compress.o huffman.o threads.o lz4.o checksum.o city-c.o util.o
+VERTBOBJS := tbver.o decompress.o threads.o checksum.o city-c.o util.o
+VERTBPOBJS := tbverp.o decompress.o threads.o checksum.o city-c.o util.o
+TBCHECKOBJS := tbcheck.o threads.o checksum.o city-c.o lz4.o util.o
+
+# Source files for dependency generation
+CFILES := tbgen.c tbgenp.c tbver.c tbverp.c permute.c compress.c huffman.c threads.c lz4.c decompress.c checksum.c city-c.c tbcheck.c util.c
+
+# Include auto-generated dependencies
+-include $(CFILES:%.c=$(DEPDIR)/%.P)
+-include $(TBOBJS:%.o=$(DEPDIR)/%.P)
+
+# =============================================================================
+# Main build targets
+# =============================================================================
+
+# Default target
+all: $(NAME)
+
+# Build target executable
+$(NAME): $(OBJS)
+	@echo "Linking $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJS:%=$(OBJDIR)/%) $(LDFLAGS)
+
+# Compile source to object file
+$(OBJDIR)/%.o: %.c
+	@echo "Compiling $<..."
 	@mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -c $*.c $(FLAGS) -o $(OBJDIR)/$*.o
+	$(CC) $(CFLAGS) -c $< $(FLAGS) -o $@
 
+# Generate dependency files
 $(DEPDIR)/%.P: %.c
+	@echo "Generating dependencies for $<..."
 	@mkdir -p $(DEPDIR)
-	$(SHELL) -ec '$(CC) -M $(FLAGS) $*.c | sed s/$*\.o/$*\.o\ $*\.P/ >$@'
+	@$(CC) -M $(FLAGS) $< | sed "s/$*.o/$*.o $*.P/" >$@
 
-$(CLEAN):
-	rm -f $(TBOBJS:%=$(OBJDIR)/%)
+# =============================================================================
+# Alias targets (base names)
+# =============================================================================
 
-# Extract just the base name from GENTBNAME (remove path and .exe)
-GENTB_BASE = $(notdir $(GENTBNAME:.exe=))
-GENTBP_BASE = $(notdir $(GENTBPNAME:.exe=))
-VERTB_BASE = $(notdir $(VERTBNAME:.exe=))
-VERTBP_BASE = $(notdir $(VERTBPNAME:.exe=))
+# Extract base name from full path
+GENTB_BASE := $(notdir $(GENTBNAME:.exe=))
+GENTBP_BASE := $(notdir $(GENTBPNAME:.exe=))
+VERTB_BASE := $(notdir $(VERTBNAME:.exe=))
+VERTBP_BASE := $(notdir $(VERTBPNAME:.exe=))
+TB_CHECK_BASE := $(notdir $(TB_CHECK_NAME:.exe=))
 
+# =============================================================================
+# Variant build targets
+# =============================================================================
+
+# Generic tablebase generator
 $(GENTBNAME): $(GENTBOBJS)
-	@mkdir -p $(dir $(GENTBNAME))
-	$(CC) $(CFLAGS) -o $(GENTBNAME) $(OBJDIR)/tbgen.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+	@echo "Linking $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJDIR)/tbgen.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
 
+# Generic pawnful tablebase generator
 $(GENTBPNAME): $(GENTBPOBJS)
-	@mkdir -p $(dir $(GENTBPNAME))
-	$(CC) $(CFLAGS) -o $(GENTBPNAME) $(GENTBPOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
+	@echo "Linking $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJDIR)/tbgenp.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
 
+# Tablebase verifier
 $(VERTBNAME): $(VERTBOBJS)
-	@mkdir -p $(dir $(VERTBNAME))
-	$(CC) $(CFLAGS) -o $(VERTBNAME) $(VERTBOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
+	@echo "Linking $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJDIR)/tbver.o $(OBJDIR)/decompress.o $(OBJDIR)/threads.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
 
+# Pawnful tablebase verifier
 $(VERTBPNAME): $(VERTBPOBJS)
-	@mkdir -p $(dir $(VERTBPNAME))
-	$(CC) $(CFLAGS) -o $(VERTBPNAME) $(VERTBPOBJS:%=$(OBJDIR)/%) $(LDFLAGS)
+	@echo "Linking $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJDIR)/tbverp.o $(OBJDIR)/decompress.o $(OBJDIR)/threads.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
 
+# Integrity checker
 tbcheck: $(TBCHECKOBJS)
-	@mkdir -p $(dir tbcheck)
-	$(CC) $(CFLAGS) -o tbcheck $(TBCHECKOBJS:%=$(OBJDIR)/%)
+	@echo "Linking $@..."
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $(OBJDIR)/tbcheck.o $(OBJDIR)/threads.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/lz4.o $(OBJDIR)/util.o $(LDFLAGS)
 
+# =============================================================================
+# Clean targets
+# =============================================================================
+
+clean:
+	@echo "Cleaning build artifacts..."
+	@rm -rf $(OBJDIR) $(DEPDIR)
+	@rm -f *.o
+	@echo "Clean complete."
+
+.PHONY: all clean
