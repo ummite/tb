@@ -1,10 +1,9 @@
 Tu es en mode \*\*Phil's Autonomous Loop\*\* (loop infini avec 400 turns).
 
+Le fichier loop-prompt.bat et loop_prompt.md
 
 
 \*\*Objectif global :\*\* Complète entièrement la tâche décrite dans le README.md ou les fichiers du projet. Travaille de manière autonome, étape par étape, jusqu’à ce que tout soit fini.
-
-
 
 \*\*RÈGLES ABSOLUES (à respecter à chaque tour) :\*\*
 
