@@ -4,25 +4,32 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
+/* Include all required headers first for MSVC compatibility */
 #include "compat.h"
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <getopt.h>
 
 #ifdef _MSC_VER
 #include "wincompat.h"
+#else
+#include <inttypes.h>
 #endif
 
-#include "compress.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#ifndef _WIN32
+#include <sys/time.h>
+#include <getopt.h>
+#endif
+
 #include "defs.h"
+#include "types.h"
+#include "probe.h"
+#include "board.h"
+#include "compress.h"
 #include "permute.h"
 #include "threads.h"
 #include "util.h"
-
-#include "board.h"
 
 #ifndef SUICIDE
 static int white_king, black_king;
@@ -87,6 +94,7 @@ u8 *transform_tbl_u8;
 u16 *transform_v_u16;
 u16 *transform_tbl_u16;
 
+/* Include generic.c before variant-specific code - macros are needed */
 #if defined(SMALL)
 #include "generics.c"
 #elif defined(SMALL2)
@@ -95,6 +103,7 @@ u16 *transform_tbl_u16;
 #include "generic.c"
 #endif
 
+/* Now include the variant-specific code after generic.c macros are defined */
 #if defined(REGULAR)
 #include "rtbgen.c"
 #elif defined(SUICIDE)

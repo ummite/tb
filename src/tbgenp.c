@@ -5,14 +5,19 @@
 */
 
 #include "compat.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <inttypes.h>
-#include <getopt.h>
 
 #ifdef _MSC_VER
 #include "wincompat.h"
+#else
+#include <inttypes.h>
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifndef _WIN32
+#include <sys/time.h>
+#include <getopt.h>
 #endif
 
 #include "compress.h"

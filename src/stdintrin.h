@@ -38,25 +38,8 @@
     _InterlockedCompareExchange((long volatile*)(ptr), (long)(newval), (long)(oldval))
 
 #else
-  /* GCC - use built-in atomics */
-  #include <stdatomic.h>
-
-  #define __sync_fetch_and_add(ptr, val) atomic_fetch_add((_Atomic long*)(ptr), (long)(val))
-  #define __sync_fetch_and_sub(ptr, val) atomic_fetch_sub((_Atomic long*)(ptr), (long)(val))
-  #define __sync_fetch_and_or(ptr, val) atomic_fetch_or((_Atomic long*)(ptr), (long)(val))
-  #define __sync_fetch_and_and(ptr, val) atomic_fetch_and((_Atomic long*)(ptr), (long)(val))
-  #define __sync_fetch_and_xor(ptr, val) atomic_fetch_xor((_Atomic long*)(ptr), (long)(val))
-
-  #define __sync_add_and_fetch(ptr, val) atomic_add_fetch((_Atomic long*)(ptr), (long)(val))
-  #define __sync_sub_and_fetch(ptr, val) atomic_sub_fetch((_Atomic long*)(ptr), (long)(val))
-  #define __sync_or_and_fetch(ptr, val) atomic_or_fetch((_Atomic long*)(ptr), (long)(val))
-  #define __sync_and_and_fetch(ptr, val) atomic_and_fetch((_Atomic long*)(ptr), (long)(val))
-  #define __sync_xor_and_fetch(ptr, val) atomic_xor_fetch((_Atomic long*)(ptr), (long)(val))
-
-  #define __sync_bool_compare_and_swap(ptr, oldval, newval) \
-    atomic_compare_exchange_strong((_Atomic long*)(ptr), (long*)(oldval), (long)(newval))
-  #define __sync_val_compare_and_swap(ptr, oldval, newval) \
-    atomic_compare_exchange_strong((_Atomic long*)(ptr), (long*)(oldval), (long)(newval))
+  /* GCC - use built-in atomics (already available) */
+  /* __sync_* builtins are available in GCC/Clang without additional includes */
 #endif
 
 /* Bit manipulation functions - portable C++ implementations */

@@ -6,11 +6,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+
+#ifdef _MSC_VER
+#include "wincompat.h"
+#else
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#endif
 
 #include "decompress.h"
 #include "defs.h"

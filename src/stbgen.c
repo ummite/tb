@@ -53,6 +53,49 @@
 //#define VOLATILE volatile
 #define VOLATILE
 
+/* Atomic operations - portable for MSVC and GCC/Clang */
+#ifdef _MSC_VER
+#include <intrin.h>
+
+#define SET_CHANGED(x) \
+do { uint8_t expected = CHANGED; \
+uint8_t desired = UNKNOWN; \
+_InterlockedCompareExchange8((char*)(x), desired, expected); } while (0)
+
+#define SET_CAPT_VALUE(x,v) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr, desired = (v); \
+while (expected < desired && \
+       _InterlockedCompareExchange8((char*)(x), desired, expected) != expected) \
+  expected = *ptr; } while (0)
+
+#define SET_WIN_VALUE(x,v) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr, desired = (v); \
+while (expected > desired && \
+       _InterlockedCompareExchange8((char*)(x), desired, expected) != expected) \
+  expected = *ptr; } while (0)
+
+/* SET_THREAT_CWIN: table[idx] > THREAT_CWIN2 -> THREAT_CWIN2, BASE_WIN+101 -> THREAT_CWIN1 */
+#define SET_THREAT_CWIN(x) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr; \
+uint8_t desired = (expected > THREAT_CWIN2) ? THREAT_CWIN2 : \
+                 (expected == (BASE_WIN + DRAW_RULE + 1)) ? THREAT_CWIN1 : expected; \
+if (desired != expected) \
+  _InterlockedCompareExchange8((char*)(x), desired, expected); } while (0)
+
+/* SET_CWIN_IN_1: table[idx] > THREAT_CWIN2 -> BASE_WIN+101, THREAT_CWIN2 -> THREAT_CWIN1 */
+#define SET_CWIN_IN_1(x) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr; \
+uint8_t desired = (expected > THREAT_CWIN2) ? (BASE_WIN + DRAW_RULE + 1) : \
+                 (expected == THREAT_CWIN2) ? THREAT_CWIN1 : expected; \
+if (desired != expected) \
+  _InterlockedCompareExchange8((char*)(x), desired, expected); } while (0)
+
+#else
+/* GCC/Clang version using inline assembly */
 #define SET_CHANGED(x) \
 { uint8_t dummy = CHANGED; \
 __asm__( \
@@ -84,8 +127,6 @@ __asm__( \
 "1:" \
 : "+m" (x), "+r" (dummy) : : "eax"); }
 
-// table[idx] > THREAT_CWIN2, then table[idx] = THREAT_CWIN2
-// table[idx] == BASE_WIN + 101, then table[idx] = THREAT_CWIN1
 #define SET_THREAT_CWIN(x) \
 { uint8_t dummy = THREAT_CWIN2; \
 __asm__( \
@@ -104,10 +145,6 @@ __asm__( \
 "2:" \
 : "+m" (x), "+r" (dummy) : "i" (BASE_WIN + DRAW_RULE + 1) : "eax"); }
 
-// FIXME: analyse the case table[idx] = THREAT_CWIN1. test + loop needed?
-
-// table[idx] > THREAT_CWIN2, then table[idx] = BASE_WIN + 101
-// table[idx] == THREAT_CWIN2, then table[idx] = THREAT_CWIN1
 #define SET_CWIN_IN_1(x) \
 { uint8_t dummy = BASE_WIN + DRAW_RULE + 1; \
 __asm__( \
@@ -124,6 +161,7 @@ __asm__( \
 "jnz 0b\n" \
 "2:" \
 : "+m" (x), "+r" (dummy) : "i" (THREAT_CWIN2) : "eax"); }
+#endif
 
 uint8_t win_loss[256];
 uint8_t loss_win[256];

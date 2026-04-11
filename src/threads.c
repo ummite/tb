@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 
 #include "threads.h"
 #include "util.h"
@@ -15,6 +14,9 @@
 #include "wincompat.h"
 #include "c11threads_win32.c"
 #else
+#ifndef _WIN32
+#include <sys/time.h>
+#endif
 #include <threads.h>
 #ifdef __linux__
 #include <sched.h>

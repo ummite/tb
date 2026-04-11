@@ -4,6 +4,9 @@
 // Based on:
 // https://raw.github.com/torvalds/linux/v2.6.12/net/sctp/crc32c.c
 
+#include "compat.h"
+#include <stdint.h>
+
 #define CRC32C(c,d) (c=(c>>8)^crc_c[(c^(d))&0xFF])
 
 static const uint32_t crc_c[256] = {

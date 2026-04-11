@@ -4,6 +4,16 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "defs.h"
+#include "types.h"
+#include "probe.h"
+#include "threads.h"
+
 static char pc[] = { 0, 'P', 'N', 'B', 'R', 'Q', 'K', 0, 0, 'p', 'n', 'b', 'r', 'q', 'k', 0};
 
 static void print_fen(FILE *F, uint64_t idx, int wtm, int switched)

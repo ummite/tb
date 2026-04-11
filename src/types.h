@@ -1,7 +1,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+/* Include stdint.h for basic types - works on both MSVC and GCC */
+#include <stdint.h>
+
+/* Include inttypes.h on GCC/Clang for format macros */
+#ifndef _MSC_VER
 #include <inttypes.h>
+#endif
 
 typedef uint64_t bitboard;
 typedef uint16_t Move;

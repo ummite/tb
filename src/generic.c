@@ -4,6 +4,10 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
+#include "compat.h"
+#include "defs.h"
+#include "types.h"
+
 //static uint64_t mask_a1h1, mask_a1a8, mask_a1h8;
 static uint64_t mask_a1h8;
 static uint64_t idx_mask1[8], idx_mask2[8];

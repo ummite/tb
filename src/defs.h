@@ -7,7 +7,23 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+/* Include standard types - must come first for all platforms */
+#include <stdint.h>
+
+/* MSVC has inttypes.h since VS2013, but we define macros for compatibility */
+#ifdef _MSC_VER
+/* Define format macros if not already defined */
+#ifndef PRId64
+#define PRId64 "I64d"
+#define PRIu64 "I64u"
+#define PRIx64 "I64x"
+#define PRId32 "d"
+#define PRIu32 "u"
+#define PRIx32 "x"
+#endif
+#else
 #include <inttypes.h>
+#endif
 
 #if defined(REGULAR) || defined(SHATRANJ)
 #define SMALL
@@ -62,7 +78,7 @@ enum { MAXSYMB = 4095 + 8 };
 #if defined(__GNUC__) || defined(__clang__)
 #define assume(x) do { if (!(x)) __builtin_unreachable(); } while (0)
 #elif defined(_MSC_VER)
-#define assume(x) do { if (!(x)) __assume(0); } while (0)
+#define assume(x) __assume(x)
 #else
 #define assume(x) do { if (!(x)) {} } while (0)
 #endif

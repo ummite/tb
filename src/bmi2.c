@@ -8,7 +8,7 @@
 
 #ifdef BMI2
 
-static uint16_t attacks_table[107648];
+static uint16_t bmi2_attacks_table[107648];
 struct BMI2Info bishop_bmi2[64];
 struct BMI2Info rook_bmi2[64];
 
@@ -28,7 +28,7 @@ static int init_bmi2(struct BMI2Info *info, signed char dir[][2], int idx)
   int squares[12];
 
   for (sq = 0; sq < 64; sq++) {
-    info[sq].data = &attacks_table[idx];
+    info[sq].data = &bmi2_attacks_table[idx];
 
     // calculate mask
     sq88 = sq + (sq & ~7);
@@ -62,7 +62,7 @@ static int init_bmi2(struct BMI2Info *info, signed char dir[][2], int idx)
       }
       if (i == 0)
 	info[sq].mask2 = bb2;
-      attacks_table[idx++] = _pext_u64(bb2, info[sq].mask2);
+      bmi2_attacks_table[idx++] = _pext_u64(bb2, info[sq].mask2);
     }
   }
 
@@ -74,7 +74,7 @@ void set_up_move_gen(void)
   int i;
 
   for (i = 0; i < 97264; i++)
-    attacks_table[i] = 0ULL;
+    bmi2_attacks_table[i] = 0ULL;
   i = init_bmi2(bishop_bmi2, m_bishop_dir, 0);
   init_bmi2(rook_bmi2, m_rook_dir, i);
 }

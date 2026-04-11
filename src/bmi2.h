@@ -3,7 +3,12 @@
 
 #ifdef BMI2
 
+/* Include x86 intrinsics - available in MSVC and GCC */
+#if defined(_MSC_VER)
+#include <intrin.h>
+#else
 #include <x86intrin.h>
+#endif
 
 // implementations of _pext_u64 and _pdep_u64 for testing
 #if 0
@@ -47,6 +52,7 @@ extern uint16_t attack_table[107648];
 extern struct BMI2Info bishop_bmi2[64];
 extern struct BMI2Info rook_bmi2[64];
 
+#ifndef BishopRange
 static __inline__ bitboard BishopRange(int sq, bitboard occ)
 {
   struct BMI2Info *info = &bishop_bmi2[sq];
@@ -59,7 +65,10 @@ static __inline__ bitboard RookRange(int sq, bitboard occ)
   return _pdep_u64(info->data[_pext_u64(occ, info->mask1)], info->mask2);
 }
 
+#ifndef QueenRange
 #define QueenRange(sq,occ) (BishopRange(sq,occ)|RookRange(sq,occ))
+#endif
+#endif
 
 #endif
 

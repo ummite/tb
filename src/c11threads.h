@@ -81,7 +81,9 @@ enum {
 #include <errno.h>
 #include <pthread.h>
 #include <sched.h>	/* for sched_yield */
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 
 #ifndef thread_local
 #define thread_local		_Thread_local

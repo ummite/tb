@@ -5,11 +5,9 @@
 */
 
 #ifndef THREADS_H
-#ifndef _WIN32
-#include <stdalign.h>
-#include <stdatomic.h>
-#endif
 #define THREADS_H
+
+#include "compat.h"
 #include "defs.h"
 #include "types.h"
 
@@ -29,8 +27,8 @@
 #define LOCK(x) do { _mm_mfence(); mtx_lock(&(x)); } while (0)
 #define UNLOCK(x) do { mtx_unlock(&(x)); _mm_mfence(); } while (0)
 #else
-#define LOCK(x) do { atomic_signal_fence(memory_order_seq_cst); mtx_lock(&(x)); } while (0)
-#define UNLOCK(x) do { mtx_unlock(&(x)); atomic_signal_fence(memory_order_seq_cst); } while (0)
+#define LOCK(x) do { __sync_synchronize(); mtx_lock(&(x)); } while (0)
+#define UNLOCK(x) do { mtx_unlock(&(x)); __sync_synchronize(); } while (0)
 #endif
 
 struct thread_data {

@@ -4,14 +4,18 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <stdarg.h>
-#include <inttypes.h>
-
 #ifdef _MSC_VER
 #include "wincompat.h"
+#else
+#include <inttypes.h>
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
+#ifndef _WIN32
+#include <sys/time.h>
 #include <getopt.h>
 #endif
 

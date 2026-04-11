@@ -567,7 +567,7 @@ lab:
     }
 
   // remove unused symbols
-  uint16_t map[num_syms];
+  uint16_t map[MAXSYMB];
   for (i = 0, k = 0; i < 5; i++)
     if (wdl_vals[i])
       map[i] = k++;

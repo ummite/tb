@@ -43,6 +43,7 @@
 #ifndef CITY_HASH_H_
 #define CITY_HASH_H_
 
+#include "compat.h"
 #include <stdlib.h>  // for size_t.
 #include <stdint.h>
 #include "citycrc.h"

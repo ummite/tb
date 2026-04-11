@@ -30,6 +30,30 @@
 #define CAPT_CWIN (WIN_IN_ONE + DRAW_RULE)
 #define CAPT_CWIN_RED (WIN_IN_ONE + 1)
 
+/* SET_CHANGED - atomic compare-and-swap for all platforms */
+#ifdef _MSC_VER
+/* MSVC version using intrinsics */
+#include <intrin.h>
+#define SET_CHANGED(x) \
+do { uint8_t expected = CHANGED; \
+uint8_t desired = UNKNOWN; \
+_InterlockedCompareExchange8((char*)(x), desired, expected); } while (0)
+
+#define SET_CAPT_VALUE(x,v) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr, desired = (v); \
+while (expected < desired && \
+       _InterlockedCompareExchange8((char*)(x), desired, expected) != expected) \
+  expected = *ptr; } while (0)
+
+#define SET_WIN_VALUE(x,v) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr, desired = (v); \
+while (expected > desired && \
+       _InterlockedCompareExchange8((char*)(x), desired, expected) != expected) \
+  expected = *ptr; } while (0)
+#else
+/* GCC/Clang version using inline assembly */
 #define SET_CHANGED(x) \
 do { uint8_t dummy = CHANGED; \
 __asm__( \
@@ -59,6 +83,7 @@ __asm__( \
 "jnz 0b\n" \
 "1:" \
 : "+m" (x), "+r" (dummy) : : "eax"); } while (0)
+#endif
 
 uint8_t win_loss[256];
 uint8_t loss_win[256];

@@ -2459,7 +2459,11 @@ extern int numpcs;
 extern int numpawns;
 #endif
 
-static __attribute__ ((noinline)) void probe_failed(int *pieces);
+#ifdef _MSC_VER
+static __declspec(noinline) void probe_failed(int *pieces)
+#else
+static __attribute__ ((noinline)) void probe_failed(int *pieces)
+#endif;
 
 int probe_table(int *restrict pieces, int *restrict gpos, int wtm)
 {
@@ -3273,7 +3277,11 @@ int probe_tb(int *pieces, int *gpos, int wtm, bitboard occ, int alpha, int beta)
 }
 #endif
 
+#ifdef _MSC_VER
+static __declspec(noinline) void probe_failed(int *pieces)
+#else
 static __attribute__ ((noinline)) void probe_failed(int *pieces)
+#endif
 {
   int i, j, k;
   char str[32];

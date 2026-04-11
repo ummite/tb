@@ -9,10 +9,8 @@ obj*/
 Debug/
 Release/
 
-# Visual Studio
+# Visual Studio (ignore only user-specific and temp files)
 .vs/
-*.vcxproj
-*.sln
 *.suo
 *.user
 *.ilk
@@ -34,4 +32,3 @@ nul
 # Helper scripts and auto-generated files (optional)
 FromPowerShell.ps1
 claude-loop.ps1
-CMakeLists.txt
