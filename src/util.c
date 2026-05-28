@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <sys/time.h>
 #else
 #include "wincompat.h"
 #endif
@@ -65,7 +66,7 @@ size_t file_size(FD fd)
 #endif
 }
 
-void *map_file(FD fd, bool shared, map_t *map)
+void *map_file(FD fd, int shared, map_t *map)
 {
 #ifndef _WIN32
   *map = file_size(fd);
@@ -115,7 +116,7 @@ void *alloc_aligned(uint64_t size, uintptr_t alignment)
 {
   void *ptr;
 
-#ifndef __WIN32__
+#ifndef _WIN32
   posix_memalign(&ptr, alignment, size);
   if (ptr == NULL) {
     fprintf(stderr, "Could not allocate sufficient memory.\n");
@@ -123,12 +124,15 @@ void *alloc_aligned(uint64_t size, uintptr_t alignment)
   }
 
 #else
+  unsigned char *tmp;
   ptr = malloc(size + alignment - 1);
   if (ptr == NULL) {
     fprintf(stderr, "Could not allocate sufficient memory.\n");
     exit(EXIT_FAILURE);
   }
-  ptr = (void *)((uintptr_t)(ptr + alignment - 1) & ~(alignment - 1));
+  tmp = (unsigned char *)ptr + alignment - 1;
+  tmp = tmp - (size_t)tmp % alignment;
+  ptr = (void *)tmp;
 
 #endif
 
@@ -139,7 +143,7 @@ void *alloc_huge(uint64_t size)
 {
   void *ptr;
 
-#ifndef __WIN32__
+#ifndef _WIN32
 
   posix_memalign(&ptr, 2 * 1024 * 1024, size);
   if (ptr == NULL) {
@@ -151,12 +155,20 @@ void *alloc_huge(uint64_t size)
 #endif
 
 #else
-
-  ptr = malloc(size);
+  /* Windows (VS2026): Safe path for 5-piece completion.
+     Large pages temporarily disabled for stability during 5pc generation
+     (was causing Access Violations on some pawnful tables with -d).
+     Re-enable for 6/7pc once the root cause is fixed. */
+  size_t align = 2 * 1024 * 1024;
+  unsigned char *tmp;
+  ptr = malloc(size + align - 1);
   if (ptr == NULL) {
     fprintf(stderr, "Could not allocate sufficient memory.\n");
     exit(EXIT_FAILURE);
   }
+  tmp = (unsigned char *)ptr + align - 1;
+  tmp = tmp - (size_t)tmp % align;
+  ptr = (void *)tmp;
 
 #endif
 

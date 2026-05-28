@@ -23,7 +23,7 @@ static const char mirror[] = {
   0, 1, 1, 1, 1, 1, 1, 0
 };
 
-static const int inv_tri0x40[] = {
+const int inv_tri0x40[] = {
   1, 2, 3, 10, 11, 19, 0, 9, 18, 27
 };
 
@@ -79,19 +79,19 @@ void init_tables(void)
 //#define MIRROR_A1A8(x) ((x) ^ mask_a1a8)
 #define MIRROR_A1H8(x) ((((x) & mask_a1h8) << 3) | (((x) >> 3) & mask_a1h8))
 
-static uint64_t __inline__ MakeMove0(uint64_t idx, int sq)
+static uint64_t inline MakeMove0(uint64_t idx, int sq)
 {
   idx ^= sq_mask[sq];
   if (mirror[sq] < 0) idx = MIRROR_A1H8(idx);
   return idx | tri0x40[sq];
 }
 
-static uint64_t __inline__ MakeMove1(uint64_t idx, int k, int sq)
+static uint64_t inline MakeMove1(uint64_t idx, int k, int sq)
 {
   return idx | ((uint64_t)sq << shift[k]);
 }
 
-static uint64_t __inline__ MakeMove(uint64_t idx, int k, int sq)
+static inline uint64_t MakeMove(uint64_t idx, int k, int sq)
 {
   if (k) return idx | ((uint64_t)sq << shift[k]);
   idx ^= sq_mask[sq];
@@ -123,13 +123,6 @@ static inline void bit_set_standard(uint64_t* x, uint64_t y)
   bit_set(occ, inv_tri0x40[idx2]); \
   if (PopCount(occ) == n - 1)
 
-#define FILL_OCC64 \
-  occ = 0; \
-  for (i = n - 2, idx2 = idx >> 6; i > 0; i--, idx2 >>= 6) \
-    bit_set(occ, p[i] = idx2 & 0x3f); \
-  bit_set(occ, p[0] = inv_tri0x40[idx2]); \
-  if (PopCount(occ) == n - 1)
-
 #define FILL_OCC64_asmgoto \
   occ = 0; \
   i = n - 2; \
@@ -141,62 +134,71 @@ static inline void bit_set_standard(uint64_t* x, uint64_t y)
   } while (i > 0); \
   bit_set_jump_set(occ, p[0] = inv_tri0x40[idx2], lab)
 
-#define FILL_OCC \
-  occ = 0; \
-  for (i = n - 1, idx2 = idx; i > 0; i--, idx2 >>= 6) \
-    bit_set(occ, p[i] = idx2 & 0x3f); \
-  bit_set(occ, p[0] = inv_tri0x40[idx2])
+#ifdef USE_BITSET
+  /* bit_set version */
+  #define FILL_OCC64 \
+    occ = 0; \
+    for (i = n - 2, idx2 = idx >> 6; i > 0; i--, idx2 >>= 6) \
+      bit_set(occ, p[i] = idx2 & 0x3f); \
+    bit_set(occ, p[0] = inv_tri0x40[idx2]); \
+    if (PopCount(occ) == n - 1)
 
-#define FILL_OCC_CAPTS \
-  uint64_t idx2 = idx; \
-  occ = 0; \
-  for (k = n - 1; k > 0; k--) \
-    if (k != i) { \
+  #define FILL_OCC \
+    occ = 0; \
+    for (i = n - 1, idx2 = idx; i > 0; i--, idx2 >>= 6) \
+      bit_set(occ, p[i] = idx2 & 0x3f); \
+    bit_set(occ, p[0] = inv_tri0x40[idx2])
+
+  #define FILL_OCC_CAPTS \
+    uint64_t idx2 = idx; \
+    occ = 0; \
+    for (k = n - 1; k > 0; k--) \
+      if (k != i) { \
+        bit_set(occ, p[k] = idx2 & 0x3f); \
+        idx2 >>= 6; \
+      } \
+    bit_set(occ, p[0] = inv_tri0x40[idx2]); \
+    if (PopCount(occ) == n - 1)
+
+  #define FILL_OCC_CAPTS_PIVOT \
+    uint64_t idx2 = idx; \
+    occ = 0; \
+    for (k = n - 1; k > 0; k--, idx2 >>= 6) \
       bit_set(occ, p[k] = idx2 & 0x3f); \
-      idx2 >>= 6; \
-    } \
-  bit_set(occ, p[0] = inv_tri0x40[idx2]); \
-  if (PopCount(occ) == n - 1)
-
-#define FILL_OCC_CAPTS_PIVOT \
-  uint64_t idx2 = idx; \
-  occ = 0; \
-  for (k = n - 1; k > 0; k--, idx2 >>= 6) \
-    bit_set(occ, p[k] = idx2 & 0x3f); \
-  if (PopCount(occ) == n - 1)
+    if (PopCount(occ) == n - 1)
 
 #else
+  /* occ |= bit[] version */
+  #define FILL_OCC64 \
+    occ = 0; \
+    for (i = n - 2, idx2 = idx >> 6; i > 0; i--, idx2 >>= 6) \
+      occ |= bit[p[i] = idx2 & 0x3f]; \
+    occ |= bit[p[0] = inv_tri0x40[idx2]]; \
+    if (PopCount(occ) == n - 1)
 
-#define FILL_OCC64 \
-  occ = 0; \
-  for (i = n - 2, idx2 = idx >> 6; i > 0; i--, idx2 >>= 6) \
-    occ |= bit[p[i] = idx2 & 0x3f]; \
-  occ |= bit[p[0] = inv_tri0x40[idx2]]; \
-  if (PopCount(occ) == n - 1)
+  #define FILL_OCC \
+    occ = 0; \
+    for (i = n - 1, idx2 = idx; i > 0; i--, idx2 >>= 6) \
+      occ |= bit[p[i] = idx2 & 0x3f]; \
+    occ |= bit[p[0] = inv_tri0x40[idx2]]
 
-#define FILL_OCC \
-  occ = 0; \
-  for (i = n - 1, idx2 = idx; i > 0; i--, idx2 >>= 6) \
-    occ |= bit[p[i] = idx2 & 0x3f]; \
-  occ |= bit[p[0] = inv_tri0x40[idx2]]
+  #define FILL_OCC_CAPTS \
+    uint64_t idx2 = idx; \
+    occ = 0; \
+    for (k = n - 1; k > 0; k--) \
+      if (k != i) { \
+        occ |= bit[p[k] = idx2 & 0x3f]; \
+        idx2 >>= 6; \
+      } \
+    occ |= bit[p[k] = inv_tri0x40[idx2]]; \
+    if (PopCount(occ) == n - 1)
 
-#define FILL_OCC_CAPTS \
-  uint64_t idx2 = idx; \
-  occ = 0; \
-  for (k = n - 1; k > 0; k--) \
-    if (k != i) { \
+  #define FILL_OCC_CAPTS_PIVOT \
+    uint64_t idx2 = idx; \
+    occ = 0; \
+    for (k = n - 1; k > 0; k--, idx2 >>= 6) \
       occ |= bit[p[k] = idx2 & 0x3f]; \
-      idx2 >>= 6; \
-    } \
-  occ |= bit[p[k] = inv_tri0x40[idx2]]; \
-  if (PopCount(occ) == n - 1)
-
-#define FILL_OCC_CAPTS_PIVOT \
-  uint64_t idx2 = idx; \
-  occ = 0; \
-  for (k = n - 1; k > 0; k--, idx2 >>= 6) \
-    occ |= bit[p[k] = idx2 & 0x3f]; \
-  if (PopCount(occ) == n - 1)
+    if (PopCount(occ) == n - 1)
 
 #endif
 
@@ -206,13 +208,75 @@ static inline void bit_set_standard(uint64_t* x, uint64_t y)
 #define MAKE_IDX2_PIVOT \
   idx2 = idx
 
+#ifdef _MSC_VER
+// MSVC doesn't support ##__VA_ARGS__, so we need separate macros for each case
+
+#define MARK(func) \
+static void func(int k, uint8_t *table, uint64_t idx, bitboard occ, int *p)
+
+#define MARK_1_ARG(func, arg1) \
+static void func(int k, uint8_t *table, uint64_t idx, bitboard occ, int *p, arg1)
+
+#define MARK_PIVOT(func) \
+static void func##_pivot(uint8_t *table, uint64_t idx, bitboard occ, int *p)
+
+#define MARK_PIVOT_1_ARG(func, arg1) \
+static void func##_pivot(uint8_t *table, uint64_t idx, bitboard occ, int *p, arg1)
+
+// MARK_PIVOT0 - variant with no extra parameters
+#define MARK_PIVOT0(func) \
+static void func##_pivot0(uint8_t *table, uint64_t idx, bitboard occ, int *p)
+
+// MARK_PIVOT0_1_ARG - MARK_PIVOT0 with one extra parameter (type, name)
+#define MARK_PIVOT0_1_ARG(func, type, name) \
+static void func##_pivot0(uint8_t *table, uint64_t idx, bitboard occ, int *p, type name)
+
+// MARK_PIVOT1 - variant with no extra parameters
+#define MARK_PIVOT1(func) \
+static void func##_pivot1(uint8_t *table, uint64_t idx, bitboard occ, int *p)
+
+// MARK_PIVOT1_1_ARG - MARK_PIVOT1 with one extra parameter (type, name)
+#define MARK_PIVOT1_1_ARG(func, type, name) \
+static void func##_pivot1(uint8_t *table, uint64_t idx, bitboard occ, int *p, type name)
+#else
 #define MARK(func, ...) \
 static void func(int k, uint8_t *table, uint64_t idx, bitboard occ, int *p, ##__VA_ARGS__)
 
 #define MARK_PIVOT(func, ...) \
 static void func##_pivot(uint8_t *table, uint64_t idx, bitboard occ, int *p, ##__VA_ARGS__)
 
+// MARK_PIVOT0 - variant with no extra parameters
+#define MARK_PIVOT0(func, ...) \
+static void func##_pivot0(uint8_t *table, uint64_t idx, bitboard occ, int *p, ##__VA_ARGS__)
+
+// MARK_PIVOT1 - variant with one extra parameter
+#define MARK_PIVOT1(func, ...) \
+static void func##_pivot1(uint8_t *table, uint64_t idx, bitboard occ, int *p, ##__VA_ARGS__)
+#endif
+
 #define MARK_BEGIN_PIVOT \
+  int sq; \
+  uint64_t idx2; \
+  bitboard bb; \
+  CHECK_DIAG; \
+  bb = PieceMoves(p[0], pt[0], occ); \
+  while (bb) { \
+    sq = FirstOne(bb); \
+    idx2 = MakeMove0(idx, sq)
+
+// MARK_BEGIN_PIVOT0 - variant for pivot with no extra parameters
+#define MARK_BEGIN_PIVOT0 \
+  int sq; \
+  uint64_t idx2; \
+  bitboard bb; \
+  CHECK_DIAG; \
+  bb = PieceMoves(p[0], pt[0], occ); \
+  while (bb) { \
+    sq = FirstOne(bb); \
+    idx2 = MakeMove0(idx, sq)
+
+// MARK_BEGIN_PIVOT1 - variant for pivot with one extra parameter
+#define MARK_BEGIN_PIVOT1 \
   int sq; \
   uint64_t idx2; \
   bitboard bb; \
@@ -386,6 +450,41 @@ static void func##_pivot(uint8_t *table, uint64_t idx, bitboard occ, int *p, ##_
 #define LOOP_ITER \
   for (idx = thread->begin; idx < end; idx++)
 
+#ifdef _MSC_VER
+// MSVC doesn't support ##__VA_ARGS__, so we need separate macros
+// Note: func##_pivot0 is used because MARK_PIVOT0 defines func##_pivot0
+#define RETRO_NO_ARG(func) \
+  do { int j; \
+    j = 0; \
+    if (pcs_opp[0] == 0) { \
+      func##_pivot0(table_opp, idx & ~mask[0], occ, p); \
+      j = 1; \
+    } \
+    for (; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p); \
+    } \
+  } while (0)
+
+#define RETRO_1_ARG(func, arg1) \
+  do { int j; \
+    j = 0; \
+    if (pcs_opp[0] == 0) { \
+      func##_pivot1(table_opp, idx & ~mask[0], occ, p, arg1); \
+      j = 1; \
+    } \
+    for (; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p, arg1); \
+    } \
+  } while (0)
+
+// Fallback - use RETRO_NO_ARG for MSVC compatibility
+#define RETRO(func, ...) RETRO_NO_ARG(func)
+
+/* Debug: verify _MSC_VER is defined */
+#define DEBUG_MSC_VER_DEFINED 1
+#else
 #define RETRO(func, ...) \
   do { int j; \
     j = 0; \
@@ -398,6 +497,10 @@ static void func##_pivot(uint8_t *table, uint64_t idx, bitboard occ, int *p, ##_
       func(k, table_opp, idx & ~mask[k], occ, p , ##__VA_ARGS__); \
     } \
   } while (0)
+
+/* Debug: verify _MSC_VER is not defined */
+#define DEBUG_MSC_VER_DEFINED 0
+#endif
 
 #if 0
 #define RETRO_BLACK(func, ...) \

@@ -1,0 +1,18 @@
+GENTBNAME = ../bin/ltbgen.exe
+GENTBPNAME = ../bin/ltbgenp.exe
+VERTBNAME = ../bin/ltbver.exe
+VERTBPNAME = ../bin/ltbverp.exe
+CLEAN = lclean
+
+DEPDIR = .depsl
+OBJDIR = objsl
+
+FLAGS += -DGIVEAWAY -DSUICIDE -DLOSER
+
+include Makefile.general
+
+# Short targets for delegation from top-level Makefile
+ltbgen: $(GENTBNAME)
+ltbgenp: $(GENTBPNAME)
+ltbver: $(VERTBNAME)
+ltbverp: $(VERTBPNAME)

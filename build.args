@@ -1,0 +1,5 @@
+tbgen.sln
+/p:Configuration=Release
+/p:Platform=x64
+/verbosity:minimal
+/nologo

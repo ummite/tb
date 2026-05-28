@@ -10,17 +10,11 @@
 /* Include standard types - must come first for all platforms */
 #include <stdint.h>
 
-/* MSVC has inttypes.h since VS2013, but we define macros for compatibility */
+/* Include inttypes.h for format macros (PRId64, PRIu64, etc.) */
+/* MSVC includes this via Windows SDK, GCC/Clang via stdint.h chain */
 #ifdef _MSC_VER
-/* Define format macros if not already defined */
-#ifndef PRId64
-#define PRId64 "I64d"
-#define PRIu64 "I64u"
-#define PRIx64 "I64x"
-#define PRId32 "d"
-#define PRIu32 "u"
-#define PRIx32 "x"
-#endif
+/* Windows SDK 10.0.17763.0+ includes inttypes.h with proper format macros */
+/* Don't define our own - let the SDK handle it */
 #else
 #include <inttypes.h>
 #endif
@@ -58,7 +52,9 @@ enum { MAXSYMB = 4095 + 8 };
 
 // GIVEAWAY is a variation on SUICIDE
 #ifdef GIVEAWAY
+#ifndef SUICIDE
 #define SUICIDE
+#endif
 #endif
 
 /* likely/unlikely hints - compiler-specific for portability */

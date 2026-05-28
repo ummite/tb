@@ -1,5 +1,26 @@
 int probe_tb(int *pieces, int *pos, int wtm, bitboard occ, int alpha, int beta);
 
+#ifdef _MSC_VER
+#include <intrin.h>
+
+// MSVC-compatible atomic operations using _InterlockedCompareExchange8
+#define SET_CAPT_VALUE(x,v) \
+{ uint8_t dummy = v; \
+  uint8_t old; \
+  do { \
+    old = (x); \
+    if (old >= dummy) break; \
+  } while (_InterlockedCompareExchange8((char*)&(x), old, dummy) != old); }
+
+#define SET_CAPT_LOSS(x) \
+{ uint8_t dummy = CAPT_LOSS; \
+  uint8_t old = (x); \
+  if (old == 0) { \
+    _InterlockedCompareExchange8((char*)&(x), dummy, old); \
+  } }
+
+#else
+// GCC inline assembly version
 #define SET_CAPT_VALUE(x,v) \
 { uint8_t dummy = v; \
 __asm__( \
@@ -22,6 +43,7 @@ __asm__( \
 "lock cmpxchgb %1, %0\n\t" \
 "0:" \
 : "+m" (x), "+r" (dummy) : : "eax"); }
+#endif
 
 #define CAPT_MATE 1
 #define CAPT_LOSS 2

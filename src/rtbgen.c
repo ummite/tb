@@ -4,6 +4,56 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
+/* Debug: check if macros are defined */
+#ifdef DEBUG_MSC_VER_DEFINED
+#define DEBUG_MSC_VER_IS_DEFINED_IN_RTBGEN 1
+#else
+#define DEBUG_MSC_VER_IS_DEFINED_IN_RTBGEN 0
+#endif
+
+#ifdef RETRO_NO_ARG
+#define DEBUG_RETRO_NO_ARG_DEFINED 1
+#else
+#define DEBUG_RETRO_NO_ARG_DEFINED 0
+#endif
+
+#ifdef RETRO_1_ARG
+#define DEBUG_RETRO_1_ARG_DEFINED 1
+#else
+#define DEBUG_RETRO_1_ARG_DEFINED 0
+#endif
+
+/* Fallback macro definitions for MSVC if not already defined by generic.c */
+#ifndef RETRO_NO_ARG
+#ifdef _MSC_VER
+#define RETRO_NO_ARG(func) \
+  do { int j; \
+    j = 0; \
+    if (pcs_opp[0] == 0) { \
+      func##_pivot0(table_opp, idx & ~mask[0], occ, p); \
+      j = 1; \
+    } \
+    for (; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p); \
+    } \
+  } while (0)
+
+#define RETRO_1_ARG(func, arg1) \
+  do { int j; \
+    j = 0; \
+    if (pcs_opp[0] == 0) { \
+      func##_pivot1(table_opp, idx & ~mask[0], occ, p, arg1); \
+      j = 1; \
+    } \
+    for (; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p, arg1); \
+    } \
+  } while (0)
+#endif
+#endif
+
 #define REDUCE_PLY 122
 #define REDUCE_PLY_RED 119
 
@@ -265,7 +315,11 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT0_1_ARG(mark_capt_value, uint8_t, v)
+#else
 MARK_PIVOT0(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT0;
   SET_CAPT_VALUE(table[idx2], v);
@@ -276,7 +330,11 @@ MARK_PIVOT0(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT1_1_ARG(mark_capt_value, uint8_t, v)
+#else
 MARK_PIVOT1(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT1;
   SET_CAPT_VALUE(table[idx2], v);
@@ -287,7 +345,11 @@ MARK_PIVOT1(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_capt_value, uint8_t v)
+#else
 MARK(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], v);
@@ -328,7 +390,11 @@ MARK(mark_changed)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT0_1_ARG(mark_wins, int, v)
+#else
 MARK_PIVOT0(mark_wins, int v)
+#endif
 {
   MARK_BEGIN_PIVOT0;
   if (table[idx2]) {
@@ -341,7 +407,11 @@ MARK_PIVOT0(mark_wins, int v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT1_1_ARG(mark_wins, int, v)
+#else
 MARK_PIVOT1(mark_wins, int v)
+#endif
 {
   MARK_BEGIN_PIVOT1;
   if (table[idx2]) {
@@ -354,7 +424,11 @@ MARK_PIVOT1(mark_wins, int v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_wins, int v)
+#else
 MARK(mark_wins, int v)
+#endif
 {
   MARK_BEGIN;
   if (table[idx2])
@@ -557,16 +631,16 @@ static void iter(struct thread_data *thread)
       v = check_loss(pcs, idx, table_opp, occ, p);
       if (v) {
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }
       break;
     case 2: /* normal WIN, including CAPT_WIN, WIN_IN_ONE */
-      RETRO(mark_changed);
+      RETRO_NO_ARG(mark_changed);
       break;
     case 3: /* MATE */
-      RETRO(mark_win_in_1);
+      RETRO_NO_ARG(mark_win_in_1);
       break;
     case 4: /* CAPT_CLOSS */
       v  = check_loss(pcs, idx, table_opp, occ, p);
@@ -574,7 +648,7 @@ static void iter(struct thread_data *thread)
         if (v > LOSS_IN_ONE - DRAW_RULE)
           v = LOSS_IN_ONE - DRAW_RULE;
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }

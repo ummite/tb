@@ -6,6 +6,31 @@
 
 int probe_tb(int *pieces, int *pos, int wtm, bitboard occ, int alpha, int beta);
 
+#ifdef _MSC_VER
+#include <intrin.h>
+
+// MSVC doesn't support ##__VA_ARGS__, so MARK is not defined in genericp.c
+// Add a fallback for functions with no extra parameters
+#define MARK(func) MARK_NO_ARG(func)
+
+// MSVC-compatible atomic operations using _InterlockedCompareExchange8
+#define SET_CAPT_VALUE(x,v) \
+{ uint8_t dummy = v; \
+  uint8_t old; \
+  do { \
+    old = (x); \
+    if (old >= dummy) break; \
+  } while (_InterlockedCompareExchange8((char*)&(x), old, dummy) != old); }
+
+#define SET_CAPT_LOSS(x) \
+{ uint8_t dummy = CAPT_LOSS; \
+  uint8_t old = (x); \
+  if (old == 0) { \
+    _InterlockedCompareExchange8((char*)&(x), dummy, old); \
+  } }
+
+#else
+// GCC inline assembly version
 #define SET_CAPT_VALUE(x,v) \
 { uint8_t dummy = v; \
 __asm__( \
@@ -28,6 +53,7 @@ __asm__( \
 "lock cmpxchgb %1, %0\n\t" \
 "0:" \
 : "+m" (x), "+r" (dummy) : : "eax"); }
+#endif
 
 #define CAPT_MATE 1
 #define CAPT_LOSS 2
@@ -1093,8 +1119,8 @@ void probe_pivot_captures(struct thread_data *thread)
   LOOP_CAPTS_PIVOT {
     FILL_OCC_CAPTS_PIVOT {
       CHECK_PIECES_PIVOT;
-      if (is_attacked(p[king], pcs2, occ, p)) continue;
-      int v = probe_tb(pt2, p, wtm, occ, -2, 2);
+      if (is_attacked(p[white_king], pcs2, occ, p)) continue;
+      int v = probe_tb(pt2, p, 0, occ, -2, 2);
       MAKE_IDX2_PIVOT;
       switch (v) {
       case -2:

@@ -14,7 +14,8 @@ REM   - MSBuild available in PATH or Visual Studio installed
 REM =============================================================================
 
 cd /d "%~dp0"
-set BUILD_TARGET="%~1"
+set "BUILD_TARGET=%~1"
+if not defined BUILD_TARGET set BUILD_TARGET=all
 if "%BUILD_TARGET%"=="" set BUILD_TARGET=all
 
 echo ==========================================
@@ -27,10 +28,10 @@ REM Check for MSBuild - try multiple locations
 set MSBUILD=
 set MSBUILD_VERSION=
 
-REM Try VS 2026 first (newest)
-for %%V in (2026 2022) do (
+REM Try VS 2026 first (newest) - includes Insiders version (18)
+for %%V in (18 2026 2022) do (
     if not defined MSBUILD (
-        for %%E in (Community Professional Enterprise) do (
+        for %%E in (Insiders Community Professional Enterprise) do (
             if not defined MSBUILD (
                 if exist "C:\Program Files\Microsoft Visual Studio\%%V\%%E\MSBuild\Current\Bin\MSBuild.exe" (
                     set MSBUILD="C:\Program Files\Microsoft Visual Studio\%%V\%%E\MSBuild\Current\Bin\MSBuild.exe"
@@ -75,7 +76,7 @@ if not defined MSBUILD (
 
 echo MSBuild: %MSBUILD_VERSION%
 echo Solution: tbgen.sln
-echo Projects: 21 (5 regular + 4 atomic + 4 suicide + 4 giveaway + 4 shatranj)
+echo Projects: 25 (5 regular + 4 atomic + 4 suicide + 4 giveaway + 4 shatranj + 4 loser)
 echo.
 
 REM Show configuration info
@@ -89,7 +90,8 @@ if "%BUILD_TARGET%"=="info" (
     echo   release  - Build Release configuration
     echo   debug    - Build Debug configuration
     echo   clean    - Clean build artifacts
-    echo   verify   - Build and verify executables
+    echo   verify   - Build and verify executables (25 total incl. loser)
+echo   6/7 test - See docs\TESTING_SYZYGY_6_7.md + test_syzygy67.bat for 6-piece and 7-piece testing sequence
     echo   info     - Show this info
     goto :eof
 )
@@ -172,7 +174,7 @@ REM Create bin directory if it doesn't exist
 if not exist "bin\" mkdir "bin"
 
 REM Count expected executables
-set EXPECTED=21
+set EXPECTED=25
 set FOUND=0
 
 for %%f in (bin\*.exe) do set /a FOUND+=1

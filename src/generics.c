@@ -184,7 +184,7 @@ void init_tables(void)
 
 #define MIRROR_A1H8(x) ((((x) & mask_a1h8) << 3) | (((x) >> 3) & mask_a1h8))
 
-static uint64_t __inline__ MakeMove0(uint64_t idx, int wk)
+static inline uint64_t MakeMove0(uint64_t idx, int wk)
 {
   uint64_t idx2 = idx >> shift[1];
   int bk = KK_inv[idx2][1];
@@ -194,7 +194,7 @@ static uint64_t __inline__ MakeMove0(uint64_t idx, int wk)
   return idx | ((uint64_t)KK_map[wk][bk] << shift[1]);
 }
 
-static uint64_t __inline__ MakeMove1(uint64_t idx, int bk)
+static inline uint64_t MakeMove1(uint64_t idx, int bk)
 {
   int wk = KK_inv[idx >> shift[1]][0];
   idx &= ~mask[0];
@@ -202,7 +202,7 @@ static uint64_t __inline__ MakeMove1(uint64_t idx, int bk)
   return idx | ((uint64_t)KK_map[wk][bk] << shift[1]);
 }
 
-static uint64_t __inline__ MakeMove2(uint64_t idx, int k, int sq)
+static inline uint64_t MakeMove2(uint64_t idx, int k, int sq)
 {
   return idx | ((uint64_t)sq << shift[k]);
 }
@@ -307,6 +307,27 @@ static inline void bit_set_test_standard(uint64_t* x, uint64_t y, int* v)
 #define MAKE_IDX2 \
   idx2 = ((idx << 6) & idx_mask1[i]) | (idx & idx_mask2[i])
 
+#ifdef _MSC_VER
+// MSVC doesn't support ##__VA_ARGS__, so we need separate macros for each case
+
+#define MARK(func) \
+static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p)
+
+#define MARK_1_ARG(func, arg1) \
+static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, arg1)
+
+#define MARK_PIVOT0(func) \
+static void func##_pivot0(uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p)
+
+#define MARK_PIVOT0_1_ARG(func, type, name) \
+static void func##_pivot0(uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, type name)
+
+#define MARK_PIVOT1(func) \
+static void func##_pivot1(uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p)
+
+#define MARK_PIVOT1_1_ARG(func, type, name) \
+static void func##_pivot1(uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, type name)
+#else
 #define MARK(func, ...) \
 static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, ##__VA_ARGS__)
 
@@ -315,6 +336,7 @@ static void func##_pivot0(uint8_t *restrict table, uint64_t idx, bitboard occ, i
 
 #define MARK_PIVOT1(func, ...) \
 static void func##_pivot1(uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, ##__VA_ARGS__)
+#endif
 
 #define WhiteKingMoves (KingRange(p[0]) & ~(KingRange(p[1]) | occ))
 #define BlackKingMoves (KingRange(p[1]) & ~(KingRange(p[0]) | occ))

@@ -14,6 +14,8 @@ typedef uint16_t Move;
 
 typedef uint8_t u8;
 typedef uint16_t u16;
+/* Historical alias used in some headers */
+typedef uint8_t ubyte;
 
 enum { PAWN = 1, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 

@@ -6,6 +6,24 @@
 
 int probe_tb(int *pieces, int *pos, int wtm, bitboard occ, int alpha, int beta);
 
+#ifdef _MSC_VER
+/* MSVC version using intrinsics */
+#include <intrin.h>
+#define SET_CAPT_VALUE(x,v) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr, desired = (v); \
+while (expected >= desired && \
+       _InterlockedCompareExchange8((char*)(x), desired, expected) != expected) \
+  expected = *ptr; } while (0)
+
+#define SET_CAPT_LOSS(x) \
+do { uint8_t* ptr = (uint8_t*)(x); \
+uint8_t expected = *ptr, desired = CAPT_LOSS; \
+while (expected != 0 && \
+       _InterlockedCompareExchange8((char*)(x), desired, expected) != expected) \
+  expected = *ptr; } while (0)
+#else
+/* GCC/Clang version using inline assembly */
 #define SET_CAPT_VALUE(x,v) \
 { uint8_t dummy = v; \
 __asm__( \
@@ -28,6 +46,7 @@ __asm__( \
 "lock cmpxchgb %1, %0\n\t" \
 "0:" \
 : "+m" (x), "+r" (dummy) : : "eax"); }
+#endif
 
 #define CAPT_MATE 1
 #define CAPT_LOSS 2
@@ -591,7 +610,11 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT0_1_ARG(mark_capt_value, uint8_t, v)
+#else
 MARK_PIVOT0(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT0;
   SET_CAPT_VALUE(table[idx2], v);
@@ -602,7 +625,11 @@ MARK_PIVOT0(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT1_1_ARG(mark_capt_value, uint8_t, v)
+#else
 MARK_PIVOT1(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT1;
   SET_CAPT_VALUE(table[idx2], v);
@@ -613,7 +640,11 @@ MARK_PIVOT1(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_capt_value, uint8_t v)
+#else
 MARK(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], v);

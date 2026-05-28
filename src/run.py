@@ -12,6 +12,7 @@ retrograde tablebases using helper binaries (rtbgen/rtbgenp, rtbver/rtbverp).
 - Optional disk hint (--disk) that passes -d only when len==max (matching run.pl).
 - Thread count via --threads (passed to tools with -t).
 - Respects RTBWDIR, defaulting to "." (like the Perl version).
+- Supports --min/--max up to 7 (6/7-piece generation is extremely resource-heavy - see docs/TESTING_SYZYGY_6_7.md).
 """
 import argparse
 import os
@@ -85,15 +86,22 @@ def main():
 
     args = build_parser().parse_args()
 
-    # We generate *all* classes up to 5-man by iterating over attacker/defender piece counts.
-    # This generalizes the explicit nested loops in the Perl script while preserving set ordering.
+    # Generate combinations.
+    # For 3-5 pieces the original loops (1-3 + 0-2) are sufficient.
+    # For serious 6-piece and 7-piece work we expand the ranges (still filtered by --min/--max).
+    # WARNING: --max 6 or 7 will produce a very large number of combinations.
+    #          Generation of 6/7-piece tables requires enormous resources (see docs/TESTING_SYZYGY_6_7.md).
+    if args.max_pcs >= 6:
+        print("WARNING: --max >= 6 selected. Generation of 6/7-piece tables is extremely heavy.")
+        print("         Use --disk and expect days/weeks per table on high-end hardware.")
+        print("         See docs/TESTING_SYZYGY_6_7.md for the recommended test sequence.")
+
     # Total pieces = 2 (kings) + a_count + d_count
-    for a_count in range(1, 4):  # attacker has 1..3 pieces
-        for d_count in range(0, 3):  # defender has 0..2 pieces
+    max_extra = args.max_pcs - 2
+    for a_count in range(1, max_extra + 1):
+        for d_count in range(0, max_extra + 1):
             total = 2 + a_count + d_count
-            # We'll rely on process_tb() to filter by --min/--max,
-            # but we can skip obviously-too-large sets early.
-            if total > args.max_pcs:
+            if total < args.min_pcs or total > args.max_pcs:
                 continue
 
             for a_seq in multiset_sequences(a_count):

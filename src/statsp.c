@@ -4,6 +4,8 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
+#define MAX_SAVES 32
+
 static char pc[] = { 0, 'P', 'N', 'B', 'R', 'Q', 'K', 0, 0, 'p', 'n', 'b', 'r', 'q', 'k', 0};
 
 static char fen_buf[128];
@@ -132,7 +134,7 @@ char glb_fen[128];
 char glcw_fen[128];
 char glcb_fen[128];
 
-static int stats_val[];
+static int stats_val[MAX_SAVES];
 
 static void collect_stats_table(uint64_t *total_stats, uint8_t *table, int wtm,
     int phase, int local, uint64_t *work)

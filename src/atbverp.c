@@ -1,5 +1,33 @@
 int probe_tb(int *pieces, int *pos, int wtm, bitboard occ, int alpha, int beta);
 
+static int captured_piece;
+static int king;
+static int opp_king;
+static int wtm;
+static int *pcs;
+static uint8_t *table;
+
+#ifdef _MSC_VER
+#include <intrin.h>
+
+// MSVC-compatible atomic operations using _InterlockedCompareExchange8
+#define SET_CAPT_VALUE(x,v) \
+{ uint8_t dummy = v; \
+  uint8_t old; \
+  do { \
+    old = (x); \
+    if (old >= dummy) break; \
+  } while (_InterlockedCompareExchange8((char*)&(x), old, dummy) != old); }
+
+#define SET_CAPT_LOSS(x) \
+{ uint8_t dummy = CAPT_LOSS; \
+  uint8_t old = (x); \
+  if (old == 0) { \
+    _InterlockedCompareExchange8((char*)&(x), dummy, old); \
+  } }
+
+#else
+// GCC inline assembly version
 #define SET_CAPT_VALUE(x,v) \
 { uint8_t dummy = v; \
 __asm__( \
@@ -22,6 +50,7 @@ __asm__( \
 "lock cmpxchgb %1, %0\n\t" \
 "0:" \
 : "+m" (x), "+r" (dummy) : : "eax"); }
+#endif
 
 #define CAPT_MATE 1
 #define CAPT_LOSS 2
@@ -756,14 +785,14 @@ void calc_mates(struct thread_data *thread)
   }
 }
 
-MARK(mark_illegal)
+MARK_NO_ARG(mark_illegal)
 {
   MARK_BEGIN;
   table[idx2] = WDL_ILLEGAL;
   MARK_END;
 }
 
-MARK(mark_capt_wins)
+MARK_NO_ARG(mark_capt_wins)
 {
   MARK_BEGIN;
   if (table[idx2] < WDL_ILLEGAL)
@@ -771,14 +800,14 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
-MARK(mark_capt_value, uint8_t v)
+MARK_1_ARG(mark_capt_value, uint8_t v)
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], v);
   MARK_END;
 }
 
-MARK(mark_capt_losses)
+MARK_NO_ARG(mark_capt_losses)
 {
   MARK_BEGIN;
   SET_CAPT_LOSS(table[idx2]);

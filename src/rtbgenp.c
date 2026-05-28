@@ -36,6 +36,30 @@
 #define WIN_RED 2
 #define CAPT_CWIN_RED (WIN_RED + 1)
 
+#ifdef _MSC_VER
+// MSVC versions of atomic operations using InterlockedCompareExchange8
+#define SET_CHANGED(x) \
+{ uint8_t expected = UNKNOWN; \
+  uint8_t dummy = CHANGED; \
+  while (InterlockedCompareExchange8((char*)&(x), (char)CHANGED, (char)expected) != (char)expected) { \
+    expected = (x); \
+    if (expected != UNKNOWN) break; \
+  } }
+
+#define SET_CAPT_VALUE(x,v) \
+{ uint8_t expected = UNKNOWN; \
+  while (InterlockedCompareExchange8((char*)&(x), (char)v, (char)expected) != (char)expected) { \
+    expected = (x); \
+    if (expected <= (uint8_t)(v)) break; \
+  } }
+
+#define SET_WIN_VALUE(x,v) \
+{ uint8_t expected = UNKNOWN; \
+  while (InterlockedCompareExchange8((char*)&(x), (char)v, (char)expected) != (char)expected) { \
+    expected = (x); \
+    if (expected <= (uint8_t)(v)) break; \
+  } }
+#else
 #define SET_CHANGED(x) \
 { uint8_t dummy = CHANGED; \
 __asm__( \
@@ -76,7 +100,7 @@ uint8_t wdl_to_tbl_pawn[8] = {
   0xff, 0xff, CHANGED, CAPT_CLOSS, PAWN_DRAW, PAWN_CWIN, PAWN_WIN, 0xff
 };
 
-static void set_tbl_to_wdl(int saves)
+void set_tbl_to_wdl(int saves)
 {
   int i;
 
@@ -166,7 +190,7 @@ static int check_mate(int *pcs, uint64_t idx0, uint8_t *table, bitboard occ,
 }
 
 #if 1
-static void calc_broken(struct thread_data *thread)
+void calc_broken(struct thread_data *thread)
 {
   uint64_t idx, idx2;
   int i;
@@ -190,7 +214,7 @@ static void calc_broken(struct thread_data *thread)
   }
 }
 #else
-static void calc_broken(struct thread_data *thread)
+void calc_broken(struct thread_data *thread)
 {
   uint64_t idx, idx2;
   int i;
@@ -240,7 +264,7 @@ static void calc_broken(struct thread_data *thread)
 }
 #endif
 
-static void calc_mates(struct thread_data *thread)
+void calc_mates(struct thread_data *thread)
 {
   uint64_t idx, idx2;
   int i;
@@ -310,7 +334,11 @@ MARK(mark_changed)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_wins, int v)
+#else
 MARK(mark_wins, int v)
+#endif
 {
   MARK_BEGIN;
   if (table[idx2])
@@ -501,7 +529,7 @@ static void calc_pawn_illegal_b(struct thread_data *thread)
   }
 }
 
-static void calc_captures_w(void)
+void calc_captures_w(void)
 {
   int i, j, k;
   int n = numpcs;
@@ -529,7 +557,7 @@ static void calc_captures_w(void)
   }
 }
 
-static void calc_captures_b(void)
+void calc_captures_b(void)
 {
   int i, j, k;
   int n = numpcs;
@@ -582,16 +610,16 @@ static void iter(struct thread_data *thread)
       v = check_loss(pcs, idx, table_opp, occ, p);
       if (v) {
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }
       break;
     case 2: /* normal WIN, including CAPT_WIN, WIN_IN_ONE */
-      RETRO(mark_changed);
+      RETRO_NO_ARG(mark_changed);
       break;
     case 3: /* MATE */
-      RETRO(mark_win_in_1);
+      RETRO_NO_ARG(mark_win_in_1);
       break;
     case 4: /* CAPT_CLOSS */
       v  = check_loss(pcs, idx, table_opp, occ, p);
@@ -599,7 +627,7 @@ static void iter(struct thread_data *thread)
         if (v > LOSS_IN_ONE - DRAW_RULE)
           v = LOSS_IN_ONE - DRAW_RULE;
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }
@@ -636,7 +664,7 @@ static void run_iter(void)
   iter_wtm ^= 1;
 }
 
-static void iterate()
+void iterate()
 {
   int i;
   iter_wtm = 0;
@@ -838,7 +866,7 @@ static uint8_t wdl_to_cursed[8] = {
 };
 
 // TODO: consider updating 'alpha'
-static void calc_pawn_captures_w(struct thread_data *thread)
+void calc_pawn_captures_w(struct thread_data *thread)
 {
   BEGIN_ITER_ALL;
   uint8_t has_cursed = 0;
@@ -861,7 +889,7 @@ static void calc_pawn_captures_w(struct thread_data *thread)
   if (has_cursed) cursed_pawn_capt_w |= has_cursed;
 }
 
-static void calc_pawn_captures_b(struct thread_data *thread)
+void calc_pawn_captures_b(struct thread_data *thread)
 {
   BEGIN_ITER_ALL;
   uint8_t has_cursed = 0;
@@ -933,7 +961,7 @@ static int has_moves(int *pcs, uint64_t idx0, uint8_t *table, bitboard occ,
   return 0;
 }
 
-static void calc_pawn_moves_w(struct thread_data *thread)
+void calc_pawn_moves_w(struct thread_data *thread)
 {
   uint64_t idx, idx2;
   int i, k;
@@ -1014,7 +1042,7 @@ lab:
     has_cursed_pawn_moves = 1;
 }
 
-static void calc_pawn_moves_b(struct thread_data *thread)
+void calc_pawn_moves_b(struct thread_data *thread)
 {
   uint64_t idx, idx2;
   int i, k;
@@ -1155,7 +1183,7 @@ static void reset_pivot_captures(struct thread_data *thread)
   }
 }
 
-static void reset_piece_captures_w(void)
+void reset_piece_captures_w(void)
 {
   int i, j, k;
   int n = numpcs;
@@ -1192,7 +1220,7 @@ static void reset_piece_captures_w(void)
   }
 }
 
-static void reset_piece_captures_b(void)
+void reset_piece_captures_b(void)
 {
   int i, j, k;
   int n = numpcs;
@@ -1288,7 +1316,7 @@ static int test_pawn_capt(int k, int sq, uint64_t idx, uint8_t *restrict table,
   return 0;
 }
 
-static void reset_pawn_captures_w(struct thread_data *thread)
+void reset_pawn_captures_w(struct thread_data *thread)
 {
   BEGIN_ITER_ALL;
   uint8_t *v = reset_v;
@@ -1306,7 +1334,7 @@ static void reset_pawn_captures_w(struct thread_data *thread)
   }
 }
 
-static void reset_pawn_captures_b(struct thread_data *thread)
+void reset_pawn_captures_b(struct thread_data *thread)
 {
   BEGIN_ITER_ALL;
   uint8_t *v = reset_v;
@@ -1372,7 +1400,7 @@ static void fix_closs_worker_b(struct thread_data *thread)
   }
 }
 
-static void fix_closs_w(void)
+void fix_closs_w(void)
 {
   int i;
 
@@ -1402,7 +1430,7 @@ static void fix_closs_w(void)
   }
 }
 
-static void fix_closs_b(void)
+void fix_closs_b(void)
 {
   int i;
 
@@ -1431,3 +1459,6 @@ static void fix_closs_b(void)
     run_threaded(fix_closs_worker_b, work_g, 1);
   }
 }
+
+#endif
+

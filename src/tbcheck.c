@@ -4,6 +4,7 @@
 
 #ifdef _MSC_VER
 #include "wincompat.h"
+#else
 #include <getopt.h>
 #endif
 

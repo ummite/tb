@@ -4,7 +4,7 @@
   This file is distributed under the terms of the GNU GPL, version 2.
 */
 
-/* Include all required headers first for MSVC compatibility */
+/* Include all required headers first for MSVC/MinGW compatibility */
 #include "compat.h"
 
 #ifdef _MSC_VER
@@ -17,7 +17,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#ifndef _WIN32
+#ifdef _MSC_VER
+/* MSVC only - use wincompat */
+#include "wincompat.h"
+#else
+/* POSIX (Linux, macOS) or MinGW */
 #include <sys/time.h>
 #include <getopt.h>
 #endif
@@ -101,6 +105,26 @@ u16 *transform_tbl_u16;
 #include "generics2.c"
 #else
 #include "generic.c"
+#endif
+
+/* Debug: check if macros are defined */
+#ifdef DEBUG_MSC_VER_DEFINED
+#define DEBUG_MSC_VER_IS_DEFINED 1
+#else
+#define DEBUG_MSC_VER_IS_DEFINED 0
+#endif
+
+/* Debug: check if RETRO macros are defined */
+#ifdef RETRO_NO_ARG
+#define DEBUG_RETRO_NO_ARG_IS_DEFINED 1
+#else
+#define DEBUG_RETRO_NO_ARG_IS_DEFINED 0
+#endif
+
+#ifdef RETRO_1_ARG
+#define DEBUG_RETRO_1_ARG_IS_DEFINED 1
+#else
+#define DEBUG_RETRO_1_ARG_IS_DEFINED 0
 #endif
 
 /* Now include the variant-specific code after generic.c macros are defined */

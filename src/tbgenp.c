@@ -15,7 +15,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef _WIN32
+#ifdef _MSC_VER
+/* MSVC only - use wincompat */
+#include "wincompat.h"
+#else
+/* POSIX (Linux, macOS) or MinGW */
 #include <sys/time.h>
 #include <getopt.h>
 #endif
@@ -26,7 +30,9 @@
 #include "threads.h"
 #include "util.h"
 
+#ifndef HAS_PAWNS
 #define HAS_PAWNS
+#endif
 
 #include "board.h"
 
@@ -43,6 +49,24 @@ static int white_king, black_king;
 #define MAX_NARROW 240
 
 static void reduce_tables(int local);
+
+/* Forward declarations for functions defined in variant-specific files */
+extern void calc_broken(struct thread_data *thread);
+// Functions defined in variant-specific files (rtbgenp.c, atbgenp.c, etc.)
+extern void calc_pawn_captures_w(struct thread_data *thread);
+extern void calc_pawn_captures_b(struct thread_data *thread);
+extern void reset_pawn_captures_w(struct thread_data *thread);
+extern void reset_pawn_captures_b(struct thread_data *thread);
+#ifndef SHATRANJ
+extern void calc_mates(struct thread_data *thread);
+#endif
+// Functions defined in variant-specific files (rtbgenp.c, atbgenp.c, etc.)
+extern void calc_pawn_moves_w(struct thread_data *thread);
+extern void calc_pawn_moves_b(struct thread_data *thread);
+#ifdef SUICIDE
+extern void calc_mates_w(struct thread_data *thread);
+extern void calc_mates_b(struct thread_data *thread);
+#endif
 
 static uint64_t *work_g, *work_piv;
 static uint64_t *work_p, *work_part;
@@ -186,7 +210,8 @@ void calc_pawn_table_unthreaded(void)
       cnt = pawnsize / 6;
     }
     cnt--;
-    FILL_OCC_PAWNS {
+    {
+      FILL_OCC_PAWNS;
       thread_data[0].occ = occ;
       has_cursed_pawn_moves = 0;
       if (has_white_pawns)
@@ -202,7 +227,8 @@ void calc_pawn_table_unthreaded(void)
 #endif
 #endif
       iterate();
-    } else {
+    }
+    {
       int local;
       for (local = 0; local < num_saves; local++)
         reduce_tables(local);
@@ -245,7 +271,8 @@ void calc_pawn_table_threaded(void)
       cnt = pawnsize / 6;
     }
     cnt--;
-    FILL_OCC_PAWNS {
+    {
+      FILL_OCC_PAWNS;
       for (i = 0; i < numthreads; i++)
         thread_data[i].occ = occ;
       for (i = 0; i < numthreads; i++)
@@ -264,7 +291,8 @@ void calc_pawn_table_threaded(void)
 #endif
 #endif
       iterate();
-    } else {
+    }
+    {
       int local;
       for (local = 0; local < num_saves; local++)
         reduce_tables(local);

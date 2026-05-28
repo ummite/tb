@@ -2057,7 +2057,7 @@ static struct PairsData *setup_pairs(uint8_t *data, uint64_t tb_size,
   if (max_len < LUBITS)
     hh = LUBITS - min_len + 1;
 
-  uint64_t tmp_base[hh];
+  uint64_t *tmp_base = (uint64_t *)malloc(hh * sizeof(uint64_t));
   for (i = h - 1; i < hh; i++)
     tmp_base[i] = 0;
   for (i = h - 2; i >= 0; i--)
@@ -2081,18 +2081,20 @@ static struct PairsData *setup_pairs(uint8_t *data, uint64_t tb_size,
   d->sympat = &data[12 + 2 * h];
   d->min_len = min_len;
   *next = &data[12 + 2 * h + 3 * num_syms + (num_syms & 1)];
+  free(tmp_base);
 
   int num_indices = (tb_size + (1ULL << idxbits) - 1) >> idxbits;
   size[0] = 6ULL * num_indices;
   size[1] = 2ULL * num_blocks;
   size[2] = (1ULL << blocksize) * real_num_blocks;
 
-  char tmp[num_syms];
+  char *tmp = (char *)malloc(num_syms * sizeof(char));
   for (i = 0; i < num_syms; i++)
     tmp[i] = 0;
   for (i = 0; i < num_syms; i++)
     if (!tmp[i])
       calc_symlen(d, i, tmp);
+  free(tmp);
 
   for (i = 0; i < num_lu; i++) {
     uint64_t code = tmp_base[LUBITS - min_len] + (((uint64_t)i) << (64 - LUBITS));
@@ -2460,10 +2462,10 @@ extern int numpawns;
 #endif
 
 #ifdef _MSC_VER
-static __declspec(noinline) void probe_failed(int *pieces)
+static __declspec(noinline) void probe_failed(int *pieces);
 #else
-static __attribute__ ((noinline)) void probe_failed(int *pieces)
-#endif;
+static __attribute__ ((noinline)) void probe_failed(int *pieces);
+#endif
 
 int probe_table(int *restrict pieces, int *restrict gpos, int wtm)
 {

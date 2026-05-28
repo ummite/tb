@@ -72,7 +72,11 @@ else()
 endif()
 
 # Compression threads (default: 6)
-option(COMPRESSION_THREADS_COUNT "Number of compression threads" 6)
+set(COMPRESSION_THREADS_COUNT "6" CACHE STRING "Number of compression threads (default: 6)")
+if(NOT COMPRESSION_THREADS_COUNT MATCHES "^[0-9]+$")
+    message(WARNING "COMPRESSION_THREADS_COUNT must be a number, defaulting to 6")
+    set(COMPRESSION_THREADS_COUNT "6")
+endif()
 add_compile_definitions(COMPRESSION_THREADS=${COMPRESSION_THREADS_COUNT})
 
 # Maximum pieces (max 7, default: 7)
@@ -102,6 +106,7 @@ set(REGULAR_FLAGS -DREGULAR)
 set(ATOMIC_FLAGS -DATOMIC)
 set(SUICIDE_FLAGS -DSUICIDE)
 set(GIVEAWAY_FLAGS -DGIVEAWAY -DSUICIDE)
+set(LOSER_FLAGS -DGIVEAWAY -DSUICIDE -DLOSER)
 set(SHATRANJ_FLAGS -DSHATRANJ)
 
 # ============================================
@@ -280,7 +285,6 @@ add_custom_target(suicide
 # GIVEAWAY CHESS - .gtbw/.gtbz
 # (Must lose pieces, subset of SUICIDE)
 # ============================================
-set(GIVEAWAY_FLAGS -DGIVEAWAY -DSUICIDE)
 
 add_executable(gtbgen ${SRC_DIR}/tbgen.c ${COMMON_SOURCES})
 target_compile_definitions(gtbgen PRIVATE ${GIVEAWAY_FLAGS})
@@ -375,10 +379,52 @@ add_custom_target(shatranj
 )
 
 # ============================================
+# LOSER CHESS - .ltbw/.ltbz
+# (Loser variant, reuses giveaway/suicide code + LOSER define)
+# ============================================
+add_executable(ltbgen ${SRC_DIR}/tbgen.c ${COMMON_SOURCES})
+target_compile_definitions(ltbgen PRIVATE ${LOSER_FLAGS})
+set_target_properties(ltbgen PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
+
+add_executable(ltbgenp ${SRC_DIR}/tbgenp.c ${COMMON_SOURCES})
+target_compile_definitions(ltbgenp PRIVATE ${LOSER_FLAGS})
+set_target_properties(ltbgenp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
+
+# ltbver (pawnless verifier)
+set(LTBVER_SRCS
+    ${SRC_DIR}/tbver.c
+    ${SRC_DIR}/decompress.c
+    ${SRC_DIR}/threads.c
+    ${SRC_DIR}/checksum.c
+    ${SRC_DIR}/city-c.c
+    ${SRC_DIR}/util.c
+)
+add_executable(ltbver ${LTBVER_SRCS})
+target_compile_definitions(ltbver PRIVATE ${LOSER_FLAGS})
+set_target_properties(ltbver PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
+
+# ltbverp (pawnful verifier)
+set(LTBVERP_SRCS
+    ${SRC_DIR}/tbverp.c
+    ${SRC_DIR}/decompress.c
+    ${SRC_DIR}/threads.c
+    ${SRC_DIR}/checksum.c
+    ${SRC_DIR}/city-c.c
+    ${SRC_DIR}/util.c
+)
+add_executable(ltbverp ${LTBVERP_SRCS})
+target_compile_definitions(ltbverp PRIVATE ${LOSER_FLAGS})
+set_target_properties(ltbverp PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
+
+add_custom_target(loser
+    DEPENDS ltbgen ltbgenp ltbver ltbverp tbcheck
+)
+
+# ============================================
 # Build all variants target
 # ============================================
 add_custom_target(build_all
-    DEPENDS regular atomic suicide giveaway shatranj
+    DEPENDS regular atomic suicide giveaway shatranj loser
 )
 
 # Installation
@@ -399,6 +445,10 @@ install(TARGETS gtbgen gtbgenp
         CONFIGURATIONS Release)
 
 install(TARGETS jtbgen jtbgenp jtbver jtbverp
+        DESTINATION bin
+        CONFIGURATIONS Release)
+
+install(TARGETS ltbgen ltbgenp ltbver ltbverp
         DESTINATION bin
         CONFIGURATIONS Release)
 

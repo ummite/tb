@@ -7,7 +7,8 @@ CLEAN = clean
 DEPDIR = .depsr
 OBJDIR = objsr
 
-FLAGS += -DREGULAR
+# Set CFLAGS with all required defines before including Makefile.general
+CFLAGS = -O3 -march=native -pipe -Wall -std=c11 -DREGULAR -DMAGIC -DUSE_POPCNT -DTBPIECES=7 -DCOMPRESSION_THREADS=6
 
 # Rename targets to use tbgen instead of rtbgen to avoid compiling variant files
 TBGENNAME = ../bin/tbgen.exe

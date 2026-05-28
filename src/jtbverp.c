@@ -6,6 +6,27 @@
 
 int probe_tb(int *pieces, int *pos, int wtm, bitboard occ, int alpha, int beta);
 
+#ifdef _MSC_VER
+#include <intrin.h>
+
+// MSVC-compatible atomic operations using _InterlockedCompareExchange8
+#define SET_CAPT_VALUE(x,v) \
+{ uint8_t dummy = v; \
+  uint8_t old; \
+  do { \
+    old = (x); \
+    if (old >= dummy) break; \
+  } while (_InterlockedCompareExchange8((char*)&(x), old, dummy) != old); }
+
+#define SET_CAPT_LOSS(x) \
+{ uint8_t dummy = CAPT_LOSS; \
+  uint8_t old = (x); \
+  if (old == 0) { \
+    _InterlockedCompareExchange8((char*)&(x), dummy, old); \
+  } }
+
+#else
+// GCC inline assembly version
 #define SET_CAPT_VALUE(x,v) \
 { uint8_t dummy = v; \
 __asm__( \
@@ -28,6 +49,7 @@ __asm__( \
 "lock cmpxchgb %1, %0\n\t" \
 "0:" \
 : "+m" (x), "+r" (dummy) : : "eax"); }
+#endif
 
 #define CAPT_MATE 1
 #define CAPT_LOSS 2
@@ -957,14 +979,14 @@ static void calc_mates_b(struct thread_data *thread)
   }
 }
 
-MARK(mark_illegal)
+MARK_NO_ARG(mark_illegal)
 {
   MARK_BEGIN;
   table[idx2] = WDL_ILLEGAL;
   MARK_END;
 }
 
-MARK(mark_capt_wins)
+MARK_NO_ARG(mark_capt_wins)
 {
   MARK_BEGIN;
   if (table[idx2] < WDL_ILLEGAL)
@@ -972,28 +994,28 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
-MARK(mark_capt_cursed_wins)
+MARK_NO_ARG(mark_capt_cursed_wins)
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], CAPT_CWIN);
   MARK_END;
 }
 
-MARK(mark_capt_draws)
+MARK_NO_ARG(mark_capt_draws)
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], CAPT_DRAW);
   MARK_END;
 }
 
-MARK(mark_capt_cursed_losses)
+MARK_NO_ARG(mark_capt_cursed_losses)
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], CAPT_CLOSS);
   MARK_END;
 }
 
-MARK(mark_capt_losses)
+MARK_NO_ARG(mark_capt_losses)
 {
   MARK_BEGIN;
   SET_CAPT_LOSS(table[idx2]);
@@ -1103,8 +1125,8 @@ void probe_pivot_captures(struct thread_data *thread)
   LOOP_CAPTS_PIVOT {
     FILL_OCC_CAPTS_PIVOT {
       CHECK_PIECES_PIVOT;
-      if (is_attacked(p[king], pcs2, occ, p)) continue;
-      int v = probe_tb(pt2, p, wtm, occ, -2, 2);
+      if (is_attacked(p[white_king], pcs2, occ, p)) continue;
+      int v = probe_tb(pt2, p, 0, occ, -2, 2);
       MAKE_IDX2_PIVOT;
       switch (v) {
       case -2:

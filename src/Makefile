@@ -6,7 +6,7 @@
 # - Debug and Release build modes
 # - Platform auto-detection
 # - Compression library selection
-# - Variant builds (regular, atomic, suicide, giveaway, shatranj)
+# - Variant builds (regular, atomic, suicide, giveaway, shatranj, loser)
 # =============================================================================
 
 # === BUILD CONFIGURATION ===
@@ -159,8 +159,12 @@ giveaway: gtbgen gtbgenp gtbver gtbverp tbcheck
 shatranj: jtbgen jtbgenp jtbver jtbverp tbcheck
 	@echo "Shatranj tablebase tools built."
 
+# Loser chess (giveaway variant with loser rules, produces .ltbw/.ltbz)
+loser: ltbgen ltbgenp ltbver ltbverp tbcheck
+	@echo "Loser chess tablebase tools built."
+
 # Build all variants
-variants: regular atomic suicide giveaway shatranj
+variants: regular atomic suicide giveaway shatranj loser
 	@echo "All variant tools built."
 
 # === CLEAN TARGETS ===
@@ -172,6 +176,7 @@ clean:
 	@$(MAKE) -f Makefile.suicide clean
 	@$(MAKE) -f Makefile.giveaway clean
 	@$(MAKE) -f Makefile.shatranj clean
+	@$(MAKE) -f Makefile.loser clean
 	@echo "Clean complete."
 
 # Clean specific variant
@@ -186,6 +191,9 @@ gclean:
 
 jclean:
 	@$(MAKE) -f Makefile.shatranj clean
+
+lclean:
+	@$(MAKE) -f Makefile.loser clean
 
 # === ALIASES ===
 
@@ -267,6 +275,20 @@ gtbver:
 gtbverp:
 	@$(MAKE) -f Makefile.giveaway gtbverp
 
-.PHONY: all clean debug release variants regular atomic suicide giveaway shatranj \
-        rtbgen rtbgenp rtbver rtbverp tbcheck aclean sclean gclean jclean \
-        tbgen tbgenp tbver tbverp info stbver stbverp gtbver gtbverp
+# Loser chess (reuses giveaway/suicide code with LOSER define)
+ltbgen:
+	@$(MAKE) -f Makefile.loser ltbgen
+
+ltbgenp:
+	@$(MAKE) -f Makefile.loser ltbgenp
+
+ltbver:
+	@$(MAKE) -f Makefile.loser ltbver
+
+ltbverp:
+	@$(MAKE) -f Makefile.loser ltbverp
+
+.PHONY: all clean debug release variants regular atomic suicide giveaway shatranj loser \
+        rtbgen rtbgenp rtbver rtbverp tbcheck aclean sclean gclean jclean lclean \
+        tbgen tbgenp tbver tbverp info stbver stbverp gtbver gtbverp \
+        ltbgen ltbgenp ltbver ltbverp

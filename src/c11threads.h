@@ -40,11 +40,11 @@ Main project site: https://github.com/jtsiomb/c11threads
 #else
 #define C11THREADS_INLINE __inline
 #endif
-/* for every other case, just gamble on having __inline__, and let the user
+/* for every other case, just gamble on having inline, and let the user
  * define C11THREADS_INLINE if it breaks
  */
 #else
-#define C11THREADS_INLINE __inline__
+#define C11THREADS_INLINE inline
 #endif
 #endif	/* !defined C11THREADS_INLINE */
 

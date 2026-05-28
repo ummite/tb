@@ -10,13 +10,13 @@
 #include "threads.h"
 #include "util.h"
 
-#ifdef _MSC_VER
+/* Use c11threads library for Windows (MSVC and MinGW) */
+#if defined(_WIN32)
 #include "wincompat.h"
 #include "c11threads_win32.c"
 #else
-#ifndef _WIN32
+/* POSIX systems (Linux, macOS) - use standard C11 threads */
 #include <sys/time.h>
-#endif
 #include <threads.h>
 #ifdef __linux__
 #include <sched.h>

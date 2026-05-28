@@ -14,12 +14,18 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#ifndef _WIN32
+#ifdef _MSC_VER
+/* MSVC only - use wincompat */
+#include "wincompat.h"
+#else
+/* POSIX (Linux, macOS) or MinGW */
 #include <sys/time.h>
 #include <getopt.h>
 #endif
 
+#ifndef HAS_PAWNS
 #define HAS_PAWNS
+#endif
 #define VERIFICATION
 
 #include "board.h"
@@ -104,7 +110,7 @@ extern char *optarg;
 
 static char *tablename;
 
-static int log = 0;
+static int logging = 0;
 static int num_errors = 0;
 static FILE *L;
 
@@ -116,7 +122,7 @@ void error(char *str, ...)
   vprintf(str, ap);
   va_end(ap);
   fflush(stdout);
-  if (log) {
+  if (logging) {
     va_start(ap, str);
     vfprintf(L, str, ap);
     va_end(ap);
@@ -124,7 +130,7 @@ void error(char *str, ...)
   }
   num_errors++;
   if (num_errors == 10) {
-    if (log) fclose(L);
+    if (logging) fclose(L);
     exit(1);
   }
 }
@@ -154,7 +160,8 @@ void calc_pawn_table_unthreaded(void)
       cnt = pawnsize / 6;
     }
     cnt--;
-    FILL_OCC_PAWNS {
+    {
+      FILL_OCC_PAWNS;
       thread_data[0].occ = occ;
       if (has_white_pawns)
         run_single(calc_pawn_moves_w, work_p, 0);
@@ -188,7 +195,8 @@ void calc_pawn_table_threaded(void)
       cnt = pawnsize / 6;
     }
     cnt--;
-    FILL_OCC_PAWNS {
+    {
+      FILL_OCC_PAWNS;
       for (i = 0; i < numthreads; i++)
         thread_data[i].occ = occ;
       for (i = 0; i < numthreads; i++)
@@ -258,7 +266,7 @@ int main(int argc, char **argv)
       numthreads = atoi(optarg);
       break;
     case 'l':
-      log = 1;
+      logging = 1;
       break;
     case 'w':
       wdl_only = 1;
@@ -522,7 +530,7 @@ int main(int argc, char **argv)
   table_b = table_w + size;
 
   printf("Verifying %s.\n", tablename);
-  if (log) {
+  if (logging) {
     L = fopen(LOGFILE, "a");
     fprintf(L, "Verifying %s...", tablename);
     fflush(L);
@@ -715,9 +723,9 @@ int main(int argc, char **argv)
 
   if (num_errors == 0) {
     printf("No errors.\n");
-    if (log) fprintf(L, " No errors.\n");
+    if (logging) fprintf(L, " No errors.\n");
   }
-  if (log) fclose(L);
+  if (logging) fclose(L);
 
   return 0;
 }

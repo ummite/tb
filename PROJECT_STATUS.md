@@ -15,7 +15,7 @@ automated build scripts, verification tools, and comprehensive documentation.
 | Tablebases Generated | 78 |
 | WDL Files (.rtbw) | 78 |
 | DTZ Files (.rtbz) | 78 |
-| Executables | 5 |
+| Executables | 25 (6 variants incl. loser) |
 | Build Scripts | 2 (build.sh, build.bat) |
 | Verification Scripts | 1 (verify_all.bat) |
 | Status Scripts | 1 (status.bat) |

@@ -64,6 +64,46 @@ set RTBPATH=C:\Programmation\tb-1\src
 .\status.bat
 ```
 
+### Recommended Layout (Clean Destination Folder)
+
+The modern way to work with this project on Windows is to keep all generated
+tablebases in a dedicated clean folder (example: `Syzygy/`).
+
+```powershell
+# Create / use the clean destination
+.\Syzygy-Generate.ps1 -Complete -Threads 8 -Disk
+
+# Check status against the reference lists
+.\Syzygy-Status.ps1
+```
+
+- All generation now writes **directly into `Syzygy/`**.
+- `RTBPATH` is automatically managed so you can generate incrementally
+  (5-piece generation safely uses the 3-4 piece tables already present).
+- Your chess engine / probing library should point to the `Syzygy/` folder.
+
+### Testing 6-Piece and 7-Piece Syzygy Tablebases
+
+Full generation of 6-piece and especially 7-piece tables requires massive resources (64 GB–1 TB RAM, weeks of CPU time). The practical way to test the 6/7 capability of the tools is:
+
+1. Read the dedicated guide: `docs/TESTING_SYZYGY_6_7.md`
+2. Run the ready-to-use test scripts:
+   - Windows: `test_syzygy67.bat [path\to\your\6-7-files]`
+   - Linux / Git Bash: `./test_syzygy67.sh [path]`
+3. These scripts:
+   - Verify your build supports `TBPIECES=7`
+   - Run `tbcheck` + `rtbver`/`rtbverp` against any 6/7-piece files you supply
+   - Give generation hints using the critical `-d` (disk) flag
+   - Reference the official checksums in `checksums/{wdl,dtz}6.txt` and `7.txt`
+
+A minimal probing smoke test skeleton is also provided in `src/probe_test67.c`.
+
+See the guide for hardware requirements, recommended smoke tests, and engine integration notes.
+
+
+Old scripts (`generate_all.bat`, `status.bat`) still work but write into `src/`
+or the current directory. The new PowerShell scripts are the recommended path
+for VS2026 + clean organization.
 
 ### Tablebase files
 

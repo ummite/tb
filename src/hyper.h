@@ -38,7 +38,7 @@ __m128i hyper_diagmask_xmm[64];
 __m128i hyper_bitmask_xmm[64];
 __m128i hyper_swapmask_xmm;
  
-static __inline__ bitboard BishopRange(int sq, bitboard occ) {
+static inline bitboard BishopRange(int sq, bitboard occ) {
   __m128i o, r, m, b, s;
 
   m = hyper_diagmask_xmm[sq];
@@ -59,7 +59,7 @@ static __inline__ bitboard BishopRange(int sq, bitboard occ) {
   return _mm_cvtsi128_si64(o);
 }
 #else
-static __inline__ bitboard BishopRange(int sq, bitboard occ)
+static inline bitboard BishopRange(int sq, bitboard occ)
 {
   struct Hyper *hyper = &hyper_table[sq];
   bitboard diag135, diag45, reverse;
@@ -85,7 +85,7 @@ static __inline__ bitboard BishopRange(int sq, bitboard occ)
 #endif
 
 #ifndef HYPER_SSE3
-static __inline__ bitboard RookRange(int sq, bitboard occ)
+static inline bitboard RookRange(int sq, bitboard occ)
 {
   struct Hyper *hyper = &hyper_table[sq];
   bitboard file, reverse;
@@ -104,7 +104,7 @@ static __inline__ bitboard RookRange(int sq, bitboard occ)
   return file | rank;
 }
 #else
-static __inline__ bitboard RookRange(int sq, bitboard occ)
+static inline bitboard RookRange(int sq, bitboard occ)
 {
   bitboard file, reverse, rank;
 
@@ -123,8 +123,14 @@ static __inline__ bitboard RookRange(int sq, bitboard occ)
 #endif
 
 #else
+#ifdef _MSC_VER
+// MSVC has no direct equivalent for __attribute__((pure))
+bitboard BishopRange(int sq, bitboard occ);
+bitboard RookRange(int sq, bitboard occ);
+#else
 bitboard BishopRange(int sq, bitboard occ) __attribute__ ((pure));
 bitboard RookRange(int sq, bitboard occ) __attribute__ ((pure));
+#endif
 #endif
 
 #define QueenRange(sq,occ) (BishopRange(sq,occ)|RookRange(sq,occ))

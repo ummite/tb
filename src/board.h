@@ -10,9 +10,19 @@
 #include "defs.h"
 #include "types.h"
 
+/* If both MAGIC and BMI2 are defined by build flags, they declare
+   conflicting symbols (attack_table) and macros. Prefer MAGIC by
+   default and undefine BMI2 to avoid redefinition errors. */
+#if defined(MAGIC) && defined(BMI2)
+#undef BMI2
+#endif
+
+/* Include bmi2.h first - it provides ctz64 and popcount64 macros via x86intrin.h */
+#include "bmi2.h"
+
 extern bitboard bit[64];
 
-static __inline__ int FirstOne(bitboard x)
+static int FirstOne(bitboard x)
 {
   /* Portable implementation using stdintrin.h */
   return ctz64(x);
@@ -24,7 +34,6 @@ static __inline__ int FirstOne(bitboard x)
 
 #include "magic.h"
 #include "hyper.h"
-#include "bmi2.h"
 
 extern bitboard knight_range[64], king_range[64];
 #ifdef SHATRANJ
@@ -72,7 +81,7 @@ extern bitboard atom_mask[64];
 #define BQUEEN 13
 #define BKING 14
 
-static __inline__ bitboard PieceRange(int sq, int type, bitboard occ)
+static inline bitboard PieceRange(int sq, int type, bitboard occ)
 {
   switch (type & 0x07) {
 #ifdef HAS_PAWNS
@@ -92,13 +101,13 @@ static __inline__ bitboard PieceRange(int sq, int type, bitboard occ)
   }
 }
 
-static __inline__ bitboard PieceMoves(int sq, int type, bitboard occ)
+static inline bitboard PieceMoves(int sq, int type, bitboard occ)
 {
   return PieceRange(sq, type, occ) & ~occ;
 }
 
 // only used in rtbgenp / rtbverp
-static __inline__ bitboard PieceRange1(int sq, int type, bitboard occ)
+static inline bitboard PieceRange1(int sq, int type, bitboard occ)
 {
   switch (type & 0x07) {
   case KING:
@@ -116,13 +125,13 @@ static __inline__ bitboard PieceRange1(int sq, int type, bitboard occ)
   }
 }
 
-static __inline__ bitboard PieceMoves1(int sq, int type, bitboard occ)
+static inline bitboard PieceMoves1(int sq, int type, bitboard occ)
 {
   return PieceRange1(sq, type, occ) & ~occ;
 }
 
 // only used in rtbgen / rtbver
-static __inline__ bitboard PieceRange2(int sq, int type, bitboard occ)
+static inline bitboard PieceRange2(int sq, int type, bitboard occ)
 {
   switch (type & 0x07) {
   case KNIGHT:
@@ -138,7 +147,7 @@ static __inline__ bitboard PieceRange2(int sq, int type, bitboard occ)
   }
 }
 
-static __inline__ bitboard PieceMoves2(int sq, int type, bitboard occ)
+static inline bitboard PieceMoves2(int sq, int type, bitboard occ)
 {
   return PieceRange2(sq, type, occ) & ~occ;
 }

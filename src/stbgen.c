@@ -233,7 +233,11 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT_1_ARG(mark_capt_value, uint8_t v)
+#else
 MARK_PIVOT(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT;
   SET_CAPT_VALUE(table[idx2], v);
@@ -244,7 +248,11 @@ MARK_PIVOT(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_capt_value, uint8_t v)
+#else
 MARK(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], v);
@@ -474,7 +482,11 @@ MARK(mark_changed)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT_1_ARG(mark_wins, int v)
+#else
 MARK_PIVOT(mark_wins, int v)
+#endif
 {
   MARK_BEGIN_PIVOT;
   SET_WIN_VALUE(table[idx2], v);
@@ -485,7 +497,11 @@ MARK_PIVOT(mark_wins, int v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_wins, int v)
+#else
 MARK(mark_wins, int v)
+#endif
 {
   MARK_BEGIN;
   SET_WIN_VALUE(table[idx2], v);
@@ -553,28 +569,28 @@ static void iter(struct thread_data *thread)
       v = check_loss(pcs, idx, table_opp, occ, p);
       if (v) {
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }
       break;
     case 2: /* normal WIN, including CAPT_WIN, WIN_IN_ONE */
-      RETRO(mark_changed);
+      RETRO_NO_ARG(mark_changed);
       break;
     case 3: /* CAPT_LOSS */
-      RETRO(mark_wins, THREAT_WIN);
+      RETRO_1_ARG(mark_wins, THREAT_WIN);
       break;
     case 4: /* CAPT_CLOSS */
-      RETRO(mark_threat_cwins);
+      RETRO_NO_ARG(mark_threat_cwins);
       break;
     case 5: /* CHANGED -> BASE_WIN + DRAW_RULE + 1 */
       v = check_loss(pcs, idx, table_opp, occ, p);
       if (v) {
         table[idx] = v;
         if (v == BASE_LOSS - DRAW_RULE)
-          RETRO(mark_cwins_in_1);
+          RETRO_NO_ARG(mark_cwins_in_1);
         else
-          RETRO(mark_wins, loss_win[v]);
+          RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }

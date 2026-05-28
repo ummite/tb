@@ -308,7 +308,11 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT0_1_ARG(mark_capt_value, uint8_t, v)
+#else
 MARK_PIVOT0(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT0;
   SET_CAPT_VALUE(table[idx2], v);
@@ -319,7 +323,11 @@ MARK_PIVOT0(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT1_1_ARG(mark_capt_value, uint8_t, v)
+#else
 MARK_PIVOT1(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN_PIVOT1;
   SET_CAPT_VALUE(table[idx2], v);
@@ -330,7 +338,11 @@ MARK_PIVOT1(mark_capt_value, uint8_t v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_capt_value, uint8_t v)
+#else
 MARK(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], v);
@@ -371,7 +383,11 @@ MARK(mark_changed)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT0_1_ARG(mark_wins, int, v)
+#else
 MARK_PIVOT0(mark_wins, int v)
+#endif
 {
   MARK_BEGIN_PIVOT0;
   if (table[idx2]) {
@@ -384,7 +400,11 @@ MARK_PIVOT0(mark_wins, int v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_PIVOT1_1_ARG(mark_wins, int, v)
+#else
 MARK_PIVOT1(mark_wins, int v)
+#endif
 {
   MARK_BEGIN_PIVOT1;
   if (table[idx2]) {
@@ -397,7 +417,11 @@ MARK_PIVOT1(mark_wins, int v)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_wins, int v)
+#else
 MARK(mark_wins, int v)
+#endif
 {
   MARK_BEGIN;
   if (table[idx2])
@@ -600,16 +624,16 @@ static void iter(struct thread_data *thread)
       v = check_loss(pcs, idx, table_opp, occ, p);
       if (v) {
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }
       break;
     case 2: /* normal WIN, including CAPT_WIN, WIN_IN_ONE */
-      RETRO(mark_changed);
+      RETRO_NO_ARG(mark_changed);
       break;
     case 3: /* MATE */
-      RETRO(mark_win_in_1);
+      RETRO_NO_ARG(mark_win_in_1);
       break;
     case 4: /* CAPT_CLOSS */
       v  = check_loss(pcs, idx, table_opp, occ, p);
@@ -617,7 +641,7 @@ static void iter(struct thread_data *thread)
         if (v > LOSS_IN_ONE - DRAW_RULE + REDUCE_PLY - 1)
           v = LOSS_IN_ONE - DRAW_RULE + REDUCE_PLY - 1;
         table[idx] = v;
-        RETRO(mark_wins, loss_win[v]);
+        RETRO_1_ARG(mark_wins, loss_win[v]);
       } else {
         table[idx] = UNKNOWN;
       }

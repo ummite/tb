@@ -61,8 +61,8 @@ typedef struct Pair uint128;
 static __inline uint64_t Uint128Low64(const uint128 x) { return x.first; }
 static __inline uint64_t Uint128High64(const uint128 x) { return x.second; }
 #else
-static uint64_t __inline__ Uint128Low64(const uint128 x) { return x.first; }
-static uint64_t __inline__ Uint128High64(const uint128 x) { return x.second; }
+static inline uint64_t Uint128Low64(const uint128 x) { return x.first; }
+static inline uint64_t Uint128High64(const uint128 x) { return x.second; }
 #endif
 
 // Hash function for a byte array.
@@ -86,7 +86,7 @@ uint128 CityHash128WithSeed(const char *s, size_t len, uint128 seed);
 
 // Hash 128 input bits down to 64 bits of output.
 // This is intended to be a reasonably good hash function.
-static uint64_t __inline__ Hash128to64(const uint128 x) {
+static inline uint64_t Hash128to64(const uint128 x) {
   // Murmur-inspired hashing.
   const uint64_t kMul = 0x9ddfea08eb382d69ULL;
   uint64_t a = (Uint128Low64(x) ^ Uint128High64(x)) * kMul;
