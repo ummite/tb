@@ -22,12 +22,31 @@ UpgradeLog*.htm
 # Backup folders
 Backup*/
 
-# Partial/incomplete tablebase files
+# Generated Syzygy tablebase files (never commit these - they are huge)
+*.rtbw
+*.rtbz
+
+# Partial/incomplete tablebase files (legacy rule, kept for safety)
 *.rtbw.*
 *.rtbz.*
 
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
 # Device files
 nul
+
+# Log directories (automation logs, generation logs, etc.)
+logs/
+log/
+src/logs/
+src/log/
+
+# Syzygy tablebase output directories (generated .rtbw/.rtbz files - very large)
+Syzygy/
+src/Syzygy/
 
 # Helper scripts and auto-generated files (optional)
 FromPowerShell.ps1
