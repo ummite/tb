@@ -57,6 +57,32 @@ enum { MAXSYMB = 4095 + 8 };
 #endif
 #endif
 
+#ifdef SUICIDE
+/* Suicide / Giveaway / Loser specific WDL value encodings.
+   These are referenced from the SUICIDE branches in the shared pawnful
+   files (reducep.c, reducep_tmpl.c, statsp.c, tbgenp.c) when building
+   any of the *_p suicide-family projects.  They used to live only inside
+   stbgenp.c and were therefore invisible to the shared code on some builds. */
+#define STALE_WIN       5
+#define THREAT_WIN1     7
+#define THREAT_WIN2     8
+#define BASE_WIN        7
+#define THREAT_CWIN1    (BASE_WIN + DRAW_RULE + 2)
+#define THREAT_CWIN2    (BASE_WIN + DRAW_RULE + 3)
+
+#define THREAT_WIN_RED  5
+#define BASE_WIN_RED    6
+#define THREAT_CWIN_RED 7
+#define BASE_CWIN_RED   8
+
+#define PAWN_CLOSS      0xfc
+#define PAWN_DRAW       0xfb
+#define THREAT_DRAW     0xfa
+#define BASE_LOSS       0xf9
+#define BASE_LOSS_RED   0xf9
+#define BASE_CLOSS_RED  0xf8
+#endif
+
 /* likely/unlikely hints - compiler-specific for portability */
 #if defined(__GNUC__) || defined(__clang__)
 #define likely(x) __builtin_expect(!!(x), 1)

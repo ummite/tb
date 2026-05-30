@@ -550,7 +550,11 @@ MARK(mark_capt_wins)
   MARK_END;
 }
 
+#ifdef _MSC_VER
+MARK_1_ARG(mark_capt_value, uint8_t v)
+#else
 MARK(mark_capt_value, uint8_t v)
+#endif
 {
   MARK_BEGIN;
   SET_CAPT_VALUE(table[idx2], v);

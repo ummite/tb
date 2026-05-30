@@ -204,7 +204,7 @@ static inline int popcount_standard(uint64_t x)
 #define FILL_OCC_PAWNS_PIECES \
   do { \
     uint64_t idx2; \
-    bitboard bb, pawns; \
+    bitboard bb; \
     occ = bb = pawns = 0; \
     for (i = n - 2, idx2 = (idx ^ pw_mask) >> 6; i >= numpawns; i--, idx2 >>= 6) { \
       pawns |= bit[idx2 & 0x3f]; \

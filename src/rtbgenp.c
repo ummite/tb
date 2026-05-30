@@ -97,7 +97,7 @@ uint8_t wdl_to_tbl[8] = {
   0xff, 0xff, CHANGED, CAPT_CLOSS, CAPT_DRAW, CAPT_CWIN, CAPT_WIN, 0xff
 };
 uint8_t wdl_to_tbl_pawn[8] = {
-  0xff, 0xff, CHANGED, CAPT_CLOSS, PAWN_DRAW, PAWN_CWIN, PAWN_WIN, 0xff
+  0xff, 0xff, CHANGED, CAPT_CLOSS, 0xfb /* PAWN_DRAW */, 0xfc /* PAWN_CWIN */, 0xfd /* PAWN_WIN */, 0xff
 };
 
 void set_tbl_to_wdl(int saves)

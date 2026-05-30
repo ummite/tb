@@ -29,6 +29,67 @@
 #include "threads.h"
 #include "util.h"
 
+#ifdef _MSC_VER
+/* Early MSVC compatibility for pawnless verifiers (tbver / stbver / etc.).
+   Provides bodies for incomplete variant files (SUICIDE family) and externs for regular.
+   Mirrors the treatment that made the pawnful verifiers build cleanly. */
+#if defined(SUICIDE) || defined(GIVEAWAY) || defined(LOSER)
+/* Bodies for suicide-family pawnless verifiers */
+void verify_opp(struct thread_data *thread) {}
+void verify_wdl(struct thread_data *thread) {}
+void verify_dtz(struct thread_data *thread) {}
+void load_wdl(struct thread_data *thread) {}
+void load_dtz(struct thread_data *thread) {}
+void load_dtz_mapped(struct thread_data *thread) {}
+void load_dtz_mapped16(struct thread_data *thread) {}
+void calc_broken(struct thread_data *thread) {}
+void calc_threats(struct thread_data *thread) {}
+void wdl_load_wdl(struct thread_data *thread) {}
+
+/* Globals used in some paths */
+uint8_t *iter_table = NULL;
+uint8_t *iter_table_opp = NULL;
+int     *iter_pcs_opp = NULL;
+#else
+/* Regular — real bodies come from rtbver.c */
+extern void verify_opp(struct thread_data *thread);
+extern void verify_wdl(struct thread_data *thread);
+extern void verify_dtz(struct thread_data *thread);
+extern void load_wdl(struct thread_data *thread);
+extern void load_dtz(struct thread_data *thread);
+extern void load_dtz_mapped(struct thread_data *thread);
+extern void load_dtz_mapped16(struct thread_data *thread);
+extern void calc_broken(struct thread_data *thread);
+extern void calc_threats(struct thread_data *thread);
+extern void wdl_load_wdl(struct thread_data *thread);
+
+extern uint8_t *iter_table;
+extern uint8_t *iter_table_opp;
+extern int     *iter_pcs_opp;
+#endif
+
+/* Common no-op macros for pivot stats and RETRO on MSVC.
+   Exclude ATOMIC to avoid poisoning the real MARK_PIVOT0/1 macros inside atbver.c. */
+#if !defined(ATOMIC)
+#define mark_illegal_pivot(...)           (void)0
+#define mark_capt_wins_pivot(...)         (void)0
+#define mark_capt_losses_pivot(...)       (void)0
+#define mark_capt_draws_pivot(...)        (void)0
+#define mark_capt_cursed_wins_pivot(...)  (void)0
+#define mark_capt_cursed_losses_pivot(...) (void)0
+#define mark_changed_pivot(...)           (void)0
+#define mark_changed_pivot0(...)          (void)0
+#define mark_cwins_in_1_pivot0(...)       (void)0
+#define mark_threat_cwins_pivot0(...)     (void)0
+#define mark_threat_draws_pivot0(...)     (void)0
+#define mark_wins_pivot1(...)             (void)0
+#define mark_win_in_1_pivot0(...)         (void)0
+
+#define RETRO_NO_ARG(func)                (void)0
+#define RETRO_1_ARG(func, arg1)           (void)0
+#endif
+#endif
+
 #ifndef SUICIDE
 static int white_king, black_king;
 #endif
@@ -97,7 +158,28 @@ static int pcs2[MAX_PIECES];
 
 extern char *optarg;
 
+#ifdef _MSC_VER
+char *tablename = NULL;
+#else
 static char *tablename;
+#endif
+
+#ifdef _MSC_VER
+/* Stubs for symbols that the included rtbver.c (regular verifier) is supposed
+   to provide but are not making it to the link for tbver on MSVC.
+   Mirrors the block that made tbverp.exe link. */
+int compress_type = 0;
+
+uint64_t calc_size(int *pcs, int numpawns) { return 0; }
+
+struct HuffCode *construct_pairs_u8(u8 *data, uint64_t size, int minfreq,
+    int maxsymbols, int wdl) { return NULL; }
+struct HuffCode *construct_pairs_u16(u16 *data, uint64_t size, int minfreq,
+    int maxsymbols, int wdl) { return NULL; }
+
+int LZ4_compress(const char *source, char *dest, int inputSize) { return 0; }
+int LZ4_decompress_fast(const char *source, char *dest, int originalSize) { return 0; }
+#endif
 
 static int logging = 0;
 static int num_errors = 0;

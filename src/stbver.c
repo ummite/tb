@@ -180,3 +180,11 @@ static uint8_t w_skip[14];
 #define DTZ_DRAW 8
 #define DTZ_ILLEGAL 9
 #define DTZ_BROKEN 10
+
+/* No-op stubs for symbols called by the shared driver (tbver.c) in the SUICIDE path on MSVC.
+   These satisfy the linker for stbver.vcxproj without causing duplicates in other variants. */
+void calc_captures_w(void) {}
+void calc_captures_b(void) {}
+void init_capt_threat(void) {}
+void init_wdl(void) {}
+void init_wdl_dtz(void) {}

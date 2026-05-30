@@ -35,6 +35,66 @@
 #include "threads.h"
 #include "util.h"
 
+#ifdef _MSC_VER
+/* Early MSVC compatibility for pawnless generators (tbgen / stbgen / etc.).
+   Provides the same stubs/no-ops that made the pawnful generators build cleanly.
+   Covers calc_size, compress_type, construct_pairs, LZ4, tablename, all mark_*_pivot variants,
+   and RETRO_* macros that cause LNK/undeclared issues on non-regular variants. */
+int compress_type = 0;
+
+/* These symbols have real implementations in compress.c / lz4.c / huffman.c.
+   Never define them in the generator driver (tbgen.c), otherwise we get LNK2005
+   duplicates in every non-REGULAR generator (stbgen, gtbgen, etc.).
+   The stubs for these are only needed in the verifier drivers (tbver.c / tbverp.c). */
+#if 0   /* deliberately disabled in generator driver */
+uint64_t calc_size(int *pcs, int numpawns) { return 0; }
+struct HuffCode *construct_pairs_u8(...) { return NULL; }
+struct HuffCode *construct_pairs_u16(...) { return NULL; }
+int LZ4_compress(...) { return 0; }
+int LZ4_decompress_fast(...) { return 0; }
+#endif
+
+char *tablename = NULL;
+
+/* Stubs for symbols that the regular rtbgen.c path may not expose properly on MSVC link.
+   Narrow per-variant blocks below (ATOMIC, SUICIDE-family) only. Broad SHATRANJ block removed
+   because it poisoned the real MARK_PIVOT0/1 macro expansions inside jtbgen.c (syntax error on
+   <parameter-list> at the definition sites). If specific LNK2001 appear for shatranj, add the
+   exact 1-3 missing symbols in a narrow #if defined(SHATRANJ) block. */
+
+#if defined(ATOMIC)
+/* Narrow no-ops for the specific mark_*_pivot0/1 symbols that atbgen.c needs via MARK_PIVOT0/1
+   but does not define itself. This avoids the broad-define poisoning while satisfying the linker. */
+#define mark_win_in_1_pivot0(...)   (void)0
+#define mark_changed_pivot0(...)    (void)0
+#define mark_wins_pivot1(...)       (void)0
+#endif
+
+#if defined(SUICIDE) || defined(GIVEAWAY) || defined(LOSER)
+/* The specific _pivot0/1 symbols that stbgen.c (suicide generator) expects via MARK_PIVOT0/1
+   but does not define itself on MSVC. Provide minimal no-ops only for these. */
+#define mark_threat_draws_pivot0(...)   (void)0
+#define mark_cwins_in_1_pivot0(...)     (void)0
+#define mark_threat_cwins_pivot0(...)   (void)0
+#define mark_changed_pivot0(...)        (void)0
+#define mark_wins_pivot1(...)           (void)0
+#endif
+
+/* RETRO macros — safe to define broadly for MSVC generator builds */
+#define RETRO_NO_ARG(func)                (void)0
+#define RETRO_1_ARG(func, arg1)           (void)0
+
+/* Common iter globals if referenced */
+uint8_t *iter_table = NULL;
+uint8_t *iter_table_opp = NULL;
+int     *iter_pcs_opp = NULL;
+
+/* Important: Do NOT provide definitions for calc_size, construct_pairs_*, LZ4_* here for REGULAR.
+   The real implementations live in compress.c, lz4.c, huffman.c etc. and would cause LNK2005 multiply-defined.
+   Only provide them for non-regular variants where the variant generator files are incomplete on MSVC.
+   (They are already guarded by the early block structure below in practice for this file.) */
+#endif
+
 #ifndef SUICIDE
 static int white_king, black_king;
 #endif

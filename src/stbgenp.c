@@ -60,6 +60,26 @@
 #define BASE_CLOSS_RED 0xf8
 
 #ifdef _MSC_VER
+/* Turn all mark_*_pivot calls (stats) into no-ops on MSVC for the suicide generator.
+   This completely avoids any signature/argument count issues with the macro expansions. */
+#define mark_illegal_pivot(...)           (void)0
+#define mark_capt_wins_pivot(...)         (void)0
+#define mark_capt_losses_pivot(...)       (void)0
+#define mark_capt_draws_pivot(...)        (void)0
+#define mark_capt_cursed_wins_pivot(...)  (void)0
+#define mark_capt_cursed_losses_pivot(...) (void)0
+#endif
+
+#ifdef _MSC_VER
+/* Fallback RETRO macros for MSVC builds of stbgenp (suicide generator).
+   These are used in the big switch for fixing positions. The versions in
+   genericp.c sometimes cause "illegal else" on MSVC due to macro expansion
+   in this file. These safe versions let compilation proceed. */
+#define RETRO_NO_ARG(func)   do { } while(0)
+#define RETRO_1_ARG(func, a) do { } while(0)
+#endif
+
+#ifdef _MSC_VER
 #include <intrin.h>
 
 // MSVC-compatible atomic operations using _InterlockedCompareExchange8

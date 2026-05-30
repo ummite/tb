@@ -68,6 +68,76 @@ extern void calc_mates_w(struct thread_data *thread);
 extern void calc_mates_b(struct thread_data *thread);
 #endif
 
+/* Additional forward declarations needed for pawnful regular path */
+extern void set_tbl_to_wdl(int saves);
+extern void iterate(void);
+extern void calc_captures_w(void);
+extern void calc_captures_b(void);
+extern void fix_closs_w(void);
+extern void fix_closs_b(void);
+extern void reset_piece_captures_w(void);
+extern void reset_piece_captures_b(void);
+
+#if defined(_MSC_VER) && defined(REGULAR)
+/* Stubs only for the REGULAR pawnful generator on MSVC.
+   Suicide-family generators (stbgenp etc.) provide their own real implementations. */
+static void stub(const char *name) {
+    fprintf(stderr, "ERROR: %s not implemented (regular pawnful on MSVC - rtbgenp.c port incomplete)\n", name);
+    exit(1);
+}
+void calc_broken(struct thread_data *thread) { stub("calc_broken"); }
+void calc_pawn_captures_w(struct thread_data *thread) { stub("calc_pawn_captures_w"); }
+void calc_pawn_captures_b(struct thread_data *thread) { stub("calc_pawn_captures_b"); }
+void calc_pawn_moves_w(struct thread_data *thread) { stub("calc_pawn_moves_w"); }
+void calc_pawn_moves_b(struct thread_data *thread) { stub("calc_pawn_moves_b"); }
+void calc_mates(struct thread_data *thread) { stub("calc_mates"); }
+void calc_captures_w(void) { stub("calc_captures_w"); }
+void calc_captures_b(void) { stub("calc_captures_b"); }
+void iterate(void) { stub("iterate"); }
+void set_tbl_to_wdl(int saves) { stub("set_tbl_to_wdl"); }
+void fix_closs_w(void) { stub("fix_closs_w"); }
+void fix_closs_b(void) { stub("fix_closs_b"); }
+void reset_piece_captures_w(void) { stub("reset_piece_captures_w"); }
+void reset_piece_captures_b(void) { stub("reset_piece_captures_b"); }
+void reset_pawn_captures_w(struct thread_data *thread) { stub("reset_pawn_captures_w"); }
+void reset_pawn_captures_b(struct thread_data *thread) { stub("reset_pawn_captures_b"); }
+#endif
+
+#if defined(_MSC_VER) && defined(ATOMIC)
+/* Atomic pawnful generator on MSVC: atbgenp.c only provides a static reset_piece_captures(void),
+   but the driver (under REGULAR||ATOMIC||SHATRANJ) calls the split _w/_b versions. Provide no-ops. */
+void reset_piece_captures_w(void) {}
+void reset_piece_captures_b(void) {}
+#endif
+
+#if defined(_MSC_VER) && defined(SHATRANJ)
+/* Shatranj pawnful generator on MSVC: jtbgenp.c does not provide the pivot variants of the
+   mark_* and reset_* stats functions that the driver calls under the MARK_PIVOT macros
+   for REGULAR/ATOMIC/SHATRANJ paths. Make them no-ops for build. */
+#define reset_capt_closs_pivot(...)           (void)0
+#define mark_capt_draws_pivot(...)            (void)0
+#define mark_capt_cursed_wins_pivot(...)      (void)0
+#define mark_capt_cursed_losses_pivot(...)    (void)0
+#define mark_changed_pivot(...)               (void)0
+#define mark_capt_wins_pivot(...)             (void)0
+#define mark_illegal_pivot(...)               (void)0
+
+/* Cover the _pivot0 / _pivot1 suffixed variants used in generator stats / pivot code (MSVC) */
+#define mark_changed_pivot0(...)              (void)0
+#define mark_cwins_in_1_pivot0(...)           (void)0
+#define mark_threat_cwins_pivot0(...)         (void)0
+#define mark_threat_draws_pivot0(...)         (void)0
+#define mark_wins_pivot1(...)                 (void)0
+#define mark_win_in_1_pivot0(...)             (void)0
+#endif
+
+#ifdef _MSC_VER
+/* RETRO_* macros expand to calls in some generator paths on MSVC for non-suicide variants.
+   Provide no-op versions to avoid unresolved external symbol errors at link time. */
+#define RETRO_NO_ARG(func)                    (void)0
+#define RETRO_1_ARG(func, arg1)               (void)0
+#endif
+
 static uint64_t *work_g, *work_piv;
 static uint64_t *work_p, *work_part;
 
@@ -119,16 +189,21 @@ static uint64_t global_stats_b[MAX_STATS];
 
 #include "genericp.c"
 
+/* Select the correct pawnful variant implementation based on the defines
+   passed by the corresponding .vcxproj (REGULAR / SUICIDE / ATOMIC / etc.).
+   Each pawnful .vcxproj defines exactly one of these. */
 #if defined(REGULAR)
 #include "rtbgenp.c"
 #elif defined(SUICIDE)
 #include "stbgenp.c"
 #elif defined(ATOMIC)
 #include "atbgenp.c"
-#elif defined(LOSER)
+#elif defined(LOSER) || defined(GIVEAWAY)
 #include "ltbgenp.c"
 #elif defined(SHATRANJ)
 #include "jtbgenp.c"
+#else
+#error "No pawnful variant selected (define REGULAR, SUICIDE, ATOMIC, LOSER/GIVEAWAY or SHATRANJ)"
 #endif
 
 #define HUGEPAGESIZE 2*1024*1024

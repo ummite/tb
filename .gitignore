@@ -2,6 +2,7 @@
 *.o
 *.obj
 *.P
+*.i
 *.swp
 build/
 bin/
@@ -43,6 +44,10 @@ logs/
 log/
 src/logs/
 src/log/
+
+# Log files (build logs, iteration logs, debug logs, feedback logs, etc.)
+*.log
+*.log.*
 
 # Syzygy tablebase output directories (generated .rtbw/.rtbz files - very large)
 Syzygy/

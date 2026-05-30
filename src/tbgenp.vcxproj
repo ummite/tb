@@ -52,7 +52,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CONSOLE;REGULAR;HAS_PAWNS;MAGIC;USE_POPCNT;BMI2;TBPIECES=7;COMPRESSION_THREADS=6;LZ4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CONSOLE;REGULAR;HAS_PAWNS;MAGIC;USE_POPCNT;BMI2;TBPIECES=7;COMPRESSION_THREADS=6;LZ4;REGULAR;HAS_PAWNS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdc11</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -68,7 +68,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CONSOLE;HAS_PAWNS;MAGIC;USE_POPCNT;BMI2;TBPIECES=7;COMPRESSION_THREADS=6;REGULAR;LZ4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CONSOLE;HAS_PAWNS;MAGIC;USE_POPCNT;BMI2;TBPIECES=7;COMPRESSION_THREADS=6;REGULAR;LZ4;REGULAR;HAS_PAWNS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdc11</LanguageStandard_C>
       <Optimization>MaxSpeed</Optimization>

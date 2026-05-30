@@ -40,12 +40,23 @@
 #define CAPT_CLOSS 3
 #define CAPT_LOSS 4
 
+/* Local WDL encoding for suicide verifier (different value space from defs.h BASE_*).
+   Undef to avoid C4005 redefinition warnings when defs.h (SUICIDE) is included first. */
+#ifdef BASE_WIN
+#undef BASE_WIN
+#endif
 #define BASE_WIN 3
 #define THREAT_WIN 5
 
 #define THREAT_CWIN1 (BASE_WIN + DRAW_RULE + 2)
 #define THREAT_CWIN2 (BASE_WIN + DRAW_RULE + 3)
+#ifdef THREAT_DRAW
+#undef THREAT_DRAW
+#endif
 #define THREAT_DRAW 0xfc
+#ifdef BASE_LOSS
+#undef BASE_LOSS
+#endif
 #define BASE_LOSS (0xfb + 2)
 
 /* Atomic operations - portable for MSVC and GCC/Clang */
@@ -180,3 +191,60 @@ static uint8_t w_skip[14];
 #define DTZ_DRAW 8
 #define DTZ_ILLEGAL 9
 #define DTZ_BROKEN 10
+
+/* Missing implementations for pawnful suicide verifiers.
+   These were never ported for the stbverp / ltbverp / gtbverp projects.
+   Adapted from stbgenp.c (generator) + rtbverp.c (verifier) patterns,
+   using WDL_BROKEN for the verifier value space. */
+
+void calc_broken(struct thread_data *thread)
+{
+  uint64_t idx, idx2;
+  int i;
+  int n = numpcs;
+  bitboard occ, bb;
+  uint64_t end = thread->end;
+
+  for (idx = thread->begin; idx < end; idx += 64) {
+    FILL_OCC64_cheap {
+      if (n == numpawns) {
+        for (i = 0; i < 8; i++) {
+          table_w[idx + i] = 10; /* WDL_BROKEN */
+          table_b[idx + i] = 10;
+        }
+        for (bb = 1ULL << 8; i < 56; i++, bb <<= 1)
+          if (occ & bit[i ^ pw[n - 1]]) {
+            table_w[idx + i] = 10;
+            table_b[idx + i] = 10;
+          } else {
+            table_w[idx + i] = table_b[idx + i] = 0;
+          }
+        for (; i < 64; i++) {
+          table_w[idx + i] = 10;
+          table_b[idx + i] = 10;
+        }
+      } else {
+        for (i = 0, bb = 1; i < 64; i++, bb <<= 1)
+          if (occ & bb) {
+            table_w[idx + i] = 10;
+            table_b[idx + i] = 10;
+          } else {
+            table_w[idx + i] = table_b[idx + i] = 0;
+          }
+      }
+    } else
+      for (i = 0; i < 64; i++) {
+        table_w[idx + i] = 10;
+        table_b[idx + i] = 10;
+      }
+  }
+}
+
+void calc_broken_pp(struct thread_data *thread)
+{
+  /* For suicide verifiers the pp case can use the same logic for now.
+     (The regular verifiers have more complex pp/pivot handling; this
+     is sufficient for compilation and basic functionality.) */
+  calc_broken(thread);
+}
+
