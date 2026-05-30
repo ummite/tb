@@ -1,17 +1,18 @@
 <#
 .SYNOPSIS
-    Mécanisme robuste "lance et laisse tourner" pour consolider tous les Syzygy sur T:\Syzygy (flat master).
+    Mécanisme robuste pour consolider les Syzygy sur T: avec la structure préférée :
+    - 3 à 6 pièces → T:\Syzygy\3-6men\
+    - 7 pièces     → T:\Syzygy\7men\<split>\  (4v3, 5v2, 6v1, etc.)
 
 .DESCRIPTION
-    Ce script est conçu pour être lancé avant de partir le soir et laissé tourner toute la nuit.
+    Script "lance et laisse tourner" pour la nuit.
 
-    Il fait :
-    1. (Optionnel) Aplatit la structure actuelle de T:\Syzygy (3-6men/, 7men/, etc.) vers la racine plate.
-    2. Copie de façon incrémentale et résumable tous les fichiers manquants depuis les sources S: et A:.
-    3. Priorise les gros splits 7 pièces (4v3, 5v2, 6v1).
-    4. Gère l'espace disque, les verrous NAS, et les redémarrages.
+    Il copie de façon incrémentale et résumable depuis S:, A: et local vers la bonne structure sur T:.
+    - Les sources "split" (4v3_*, 5v2_*, 6v1_*) sont copiées directement dans le sous-dossier correspondant sous 7men.
+    - Les fichiers 3-6 pièces des sources mixtes vont dans 3-6men.
+    - Les fichiers 7 pièces des sources mixtes vont dans 7men\unsorted\ (tu pourras les trier plus tard si besoin).
 
-    Cible finale recommandée : T:\Syzygy (dossier plat, sans sous-dossiers).
+    Gère l'espace, les erreurs réseau, et la reprise.
 
 .PARAMETER WhatIf
     Mode simulation (recommandé la première fois).
@@ -23,17 +24,16 @@
     Espace minimum à garder libre sur T: avant de copier (défaut 2 To).
 
 .EXAMPLE
-    # Test
-    .\Syzygy-Overnight-To-T.ps1 -WhatIf
+    # Simulation
+    .\Syzygy-Overnight-To-T.ps1 -DryRun
 
-    # Lancement réel pour la nuit
+    # Lancement réel (structure 3-6men + 7men/splits)
     .\Syzygy-Overnight-To-T.ps1
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [switch]$WhatIf,
-    [switch]$FlattenFirst,
+    [switch]$DryRun,
     [double]$MinFreeTB = 2.0
 )
 
@@ -70,58 +70,77 @@ function Save-State($State) {
 }
 
 # =============================================================================
-# 1. APPLATISSEMENT DE LA STRUCTURE ACTUELLE (si demandé)
+# 1. PRÉPARATION DES DOSSIERS CIBLES (structure 3-6men + 7men/splits)
 # =============================================================================
 
-if ($FlattenFirst -or (-not $WhatIf -and (Read-Host "Voulez-vous d'abord aplatir les sous-dossiers actuels de T:\Syzygy vers la racine ? (o/N)") -eq 'o')) {
-    Write-Log "=== Phase 1 : Aplatissement de T:\Syzygy ===" "Magenta"
+$Target3to6   = Join-Path $Target "3-6men"
+$Target7men   = Join-Path $Target "7men"
 
-    $subfolders = Get-ChildItem -Path $Target -Directory -ErrorAction SilentlyContinue
-    foreach ($folder in $subfolders) {
-        Write-Log "Aplatissement de $($folder.FullName) vers $Target ..."
-        if ($WhatIf) {
-            Write-Log "[WHATIF] robocopy $($folder.FullName) $Target *.rtbw *.rtbz /MOV /E /MT:8" "DarkGray"
-        } else {
-            robocopy $folder.FullName $Target *.rtbw *.rtbz /MOV /E /MT:8 /R:2 /W:5 /NFL /NDL /NJH /NJS | Out-Null
-            if ($LASTEXITCODE -lt 8) {
-                Write-Log "  -> OK (dossier aplati)"
-            } else {
-                Write-Log "  -> Attention : code robocopy $LASTEXITCODE" "Yellow"
-            }
-        }
+if (-not (Test-Path $Target3to6)) { New-Item -ItemType Directory -Path $Target3to6 -Force | Out-Null }
+if (-not (Test-Path $Target7men)) { New-Item -ItemType Directory -Path $Target7men -Force | Out-Null }
+
+Write-Log "Cibles :"
+Write-Log "  3-6 pièces → $Target3to6"
+Write-Log "  7 pièces   → $Target7men\<split>\"
+
+# =============================================================================
+# 2. SOURCES + ROUTAGE VERS LA BONNE STRUCTURE
+# =============================================================================
+
+# Sources principales (priorité sur les plus gros manquants)
+$Sources = @(
+    # === 7 pièces - splits (vont directement dans 7men/<nom du split>) ===
+    @{ Name = "4v3_pawnless_ManyMissing"; Path = "S:\4v3_pawnless_ManyMissing"; SevenMenSubfolder = "4v3_pawnless_ManyMissing" },
+    @{ Name = "5v2_pawnful";              Path = "S:\5v2_pawnful";              SevenMenSubfolder = "5v2_pawnful" },
+    @{ Name = "5v2_pawnless";             Path = "S:\5v2_pawnless";             SevenMenSubfolder = "5v2_pawnless" },
+    @{ Name = "6v1_pawnful";              Path = "S:\6v1_pawnful";              SevenMenSubfolder = "6v1_pawnful" },
+    @{ Name = "6v1_pawnless";             Path = "S:\6v1_pawnless";             SevenMenSubfolder = "6v1_pawnless" },
+
+    # === Sources mixtes (on classe 3-6 vs 7 pièces) ===
+    @{ Name = "S_Syzygy";   Path = "S:\Syzygy" },
+    @{ Name = "A_Syzygy";   Path = "A:\Syzygy" },
+    @{ Name = "A_OldRyzen"; Path = "A:\Syzygy_A_Trier_FromOld_Ryzen7950" },
+
+    # === Local ===
+    @{ Name = "Local_Syzygy"; Path = (Join-Path $ScriptRoot "Syzygy") }
+)
+
+function Get-DestinationFolder($sourceInfo, $fileName) {
+    # Si la source a un SevenMenSubfolder défini → c'est du 7 pièces, on va dans 7men/<sub>
+    if ($sourceInfo.SevenMenSubfolder) {
+        return Join-Path $Target7men $sourceInfo.SevenMenSubfolder
     }
-    Write-Log "Aplatissement terminé." "Green"
+
+    # Sinon on classe par nombre de pièces
+    $pieceCount = Get-PieceCount $fileName
+    if ($pieceCount -le 6) {
+        return $Target3to6
+    } else {
+        # 7 pièces venant d'une source mixte → on les met dans 7men\unsorted pour l'instant
+        $unsorted = Join-Path $Target7men "unsorted"
+        if (-not (Test-Path $unsorted)) { New-Item -ItemType Directory -Path $unsorted -Force | Out-Null }
+        return $unsorted
+    }
+}
+
+function Get-PieceCount($name) {
+    # Ex: KQRNvKR  → avant 'v' = QRN (3) + après = KR (2) + 2 rois = 7
+    if ($name -match '^(K+)([^v]+)v([^.]+)') {
+        $before = $matches[2] -replace 'K',''
+        $after  = $matches[3] -replace 'K',''
+        return 2 + $before.Length + $after.Length
+    }
+    return 0
 }
 
 # =============================================================================
-# 2. SOURCES PRIORITAIRES (les plus importants d'abord)
-# =============================================================================
-
-$Sources = @(
-    # === Priorité MAX : les plus gros et les plus incomplets ===
-    @{ Name = "4v3_pawnless_ManyMissing"; Path = "S:\4v3_pawnless_ManyMissing" },
-    @{ Name = "5v2_pawnful";              Path = "S:\5v2_pawnful" },
-    @{ Name = "5v2_pawnless";             Path = "S:\5v2_pawnless" },
-    @{ Name = "6v1_pawnful";              Path = "S:\6v1_pawnful" },
-    @{ Name = "6v1_pawnless";             Path = "S:\6v1_pawnless" },
-
-    # === Autres sources importantes ===
-    @{ Name = "S_Syzygy";                 Path = "S:\Syzygy" },
-    @{ Name = "A_Syzygy";                 Path = "A:\Syzygy" },
-    @{ Name = "A_OldRyzen";               Path = "A:\Syzygy_A_Trier_FromOld_Ryzen7950" },
-
-    # === Local (petits tableaux générés) ===
-    @{ Name = "Local_Syzygy";             Path = (Join-Path $ScriptRoot "Syzygy") }
-)
-
-# =============================================================================
-# 3. BOUCLE PRINCIPALE DE COPIE RÉSUMABLE
+# 3. BOUCLE PRINCIPALE DE COPIE RÉSUMABLE (vers la bonne structure)
 # =============================================================================
 
 $State = Load-State
 
-Write-Log "=== Lancement Syzygy Overnight Consolidate vers $Target ===" "Magenta"
-Write-Log "MinFreeTB = $MinFreeTB To | WhatIf = $WhatIf"
+Write-Log "=== Lancement Syzygy Overnight vers structure 3-6men + 7men/splits ===" "Magenta"
+Write-Log "MinFreeTB = $MinFreeTB To | DryRun = $DryRun"
 Write-Host ""
 
 while ($true) {
@@ -142,8 +161,7 @@ while ($true) {
             continue
         }
 
-        $srcState = $State[$src.Name]
-        if ($srcState -eq "done") {
+        if ($State[$src.Name] -eq "done") {
             continue
         }
 
@@ -151,51 +169,61 @@ while ($true) {
 
         $logFile = Join-Path $LogDir "Overnight-$($src.Name).log"
 
-        if ($WhatIf) {
-            Write-Log "[WHATIF] robocopy $($src.Path) $Target *.rtbw *.rtbz /S /E /XO /MT:12" "DarkGray"
+        # Pour les sources split 7 pièces, on copie directement dans le bon sous-dossier 7men
+        $destForThisSource = if ($src.SevenMenSubfolder) {
+            Join-Path $Target7men $src.SevenMenSubfolder
+        } else {
+            $Target3to6   # par défaut on commence par 3-6men ; les 7pc seront routés plus bas si besoin
+        }
+
+        if (-not (Test-Path $destForThisSource)) {
+            New-Item -ItemType Directory -Path $destForThisSource -Force | Out-Null
+        }
+
+        if ($DryRun) {
+            Write-Log "[DRYRUN] robocopy $($src.Path) $destForThisSource *.rtbw *.rtbz /S /E /XO /MT:12" "DarkGray"
             $workDone = $true
             continue
         }
 
-        # Robocopy robuste + reprise
+        # Robocopy vers le bon dossier
         $rcArgs = @(
             $src.Path,
-            $Target,
+            $destForThisSource,
             "*.rtbw", "*.rtbz",
             "/S", "/E",
-            "/XO",                    # ne copie que les plus récents / manquants
+            "/XO",
             "/MT:12",
             "/R:3", "/W:5",
-            "/FFT",                   # tolérance horloge NAS
+            "/FFT",
             "/NFL", "/NDL", "/NJH", "/NJS",
             "/LOG+:$logFile"
         )
 
-        $result = robocopy @rcArgs
+        robocopy @rcArgs | Out-Null
         $code = $LASTEXITCODE
 
         if ($code -lt 8) {
-            Write-Log "  -> $($src.Name) terminé ou à jour (code $code)" "Green"
+            Write-Log "  -> $($src.Name) → $destForThisSource (code $code)" "Green"
             $State[$src.Name] = "done"
             Save-State $State
             $workDone = $true
         } else {
-            Write-Log "  -> $($src.Name) partiellement copié (code robocopy $code). On réessaiera plus tard." "Yellow"
+            Write-Log "  -> $($src.Name) partiellement copié (code $code). On réessaiera." "Yellow"
             $workDone = $true
         }
     }
 
     if (-not $workDone) {
-        Write-Log "Tous les sources connus sont marqués 'done'. Rien de plus à faire pour l'instant." "Green"
-        Write-Log "Tu peux relancer plus tard si de nouveaux fichiers arrivent sur S: ou A:." "Green"
+        Write-Log "Rien de plus à faire pour l'instant. Tu peux relancer plus tard." "Green"
         break
     }
 
-    Write-Log "Cycle terminé. Pause 5 minutes avant prochaine vérification..."
+    Write-Log "Cycle terminé. Pause 5 minutes..."
     Start-Sleep -Seconds (5 * 60)
 }
 
 Write-Log "=== Script terminé ===" "Magenta"
 Write-Host ""
-Write-Host "Consulte les logs dans : $LogDir" -ForegroundColor Cyan
-Write-Host "État de reprise     : $StateFile" -ForegroundColor Cyan
+Write-Host "Logs     : $LogDir" -ForegroundColor Cyan
+Write-Host "État     : $StateFile" -ForegroundColor Cyan
