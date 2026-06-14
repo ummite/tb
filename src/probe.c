@@ -252,8 +252,11 @@ void init_tablebases(void)
 #ifdef SUICIDE
   int m, n;
 #else
-#if TBPIECES == 7
+#if TBPIECES >= 7
   int m;
+#if TBPIECES >= 8
+  int n;
+#endif
 #endif
 #endif
 
@@ -436,7 +439,7 @@ void init_tablebases(void)
           init_tb(str);
         }
 
-#if TBPIECES == 7
+#if TBPIECES >= 7
 
 #ifndef SHATRANJ
   for (i = 1; i < 6; i ++)
@@ -469,6 +472,56 @@ void init_tablebases(void)
                                           pchr[l], pchr[m]);
             init_tb(str);
           }
+
+#if TBPIECES >= 8
+  /* 8-piece tables (regular/traditional chess focus; 8pc registration for variants is optional) */
+#ifndef SHATRANJ
+  for (i = 1; i < 6; i++)
+    for (j = i; j < 6; j++)
+      for (k = j; k < 6; k++)
+        for (l = k; l < 6; l++)
+          for (m = l; m < 6; m++)
+            for (n = m; n < 6; n++) {
+              sprintf(str, "K%c%c%c%c%c%cvK", pchr[i], pchr[j], pchr[k],
+                                            pchr[l], pchr[m], pchr[n]);
+              init_tb(str);
+            }
+#endif
+
+  for (i = 1; i < 6; i++)
+    for (j = i; j < 6; j++)
+      for (k = j; k < 6; k++)
+        for (l = k; l < 6; l++)
+          for (m = l; m < 6; m++)
+            for (n = 1; n < 6; n++) {
+              sprintf(str, "K%c%c%c%c%cvK%c", pchr[i], pchr[j], pchr[k],
+                                            pchr[l], pchr[m], pchr[n]);
+              init_tb(str);
+            }
+
+  for (i = 1; i < 6; i++)
+    for (j = i; j < 6; j++)
+      for (k = j; k < 6; k++)
+        for (l = k; l < 6; l++)
+          for (m = 1; m < 6; m++)
+            for (n = m; n < 6; n++) {
+              sprintf(str, "K%c%c%c%cvK%c%c", pchr[i], pchr[j], pchr[k],
+                                            pchr[l], pchr[m], pchr[n]);
+              init_tb(str);
+            }
+
+  /* 3+3 split for 8pc (modeled on lower split patterns with non-decreasing continuation) */
+  for (i = 1; i < 6; i++)
+    for (j = i; j < 6; j++)
+      for (k = j; k < 6; k++)
+        for (l = k; l < 6; l++)
+          for (m = l; m < 6; m++)
+            for (n = m; n < 6; n++) {
+              sprintf(str, "K%c%c%cvK%c%c%c", pchr[i], pchr[j], pchr[k],
+                                            pchr[l], pchr[m], pchr[n]);
+              init_tb(str);
+            }
+#endif
 
 #endif
 

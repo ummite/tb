@@ -1263,7 +1263,20 @@ int main(int argc, char **argv)
 
 #endif
 
-  table_w = alloc_huge(2 * size);
+  /* For 8pc (and large tables in general) we prefer disk-backed mapping
+     when -d / save_to_disk is used, or when numpcs is high.
+     This keeps physical RAM to the working set of the current slice(s)
+     instead of the full naive 26T+ entry space. More CPU/disk I/O is
+     accepted as tradeoff. */
+  int use_disk_table = save_to_disk || (numpcs >= 7);
+  static void *table_map_handle = NULL;  /* for the analysis table */
+  if (use_disk_table) {
+    /* basename = tablename so the temp file has a recognizable name */
+    table_w = alloc_mapped(2 * size, 1, tablename ? tablename : "8pc", &table_map_handle);
+  } else {
+    table_map_handle = NULL;
+    table_w = alloc_huge(2 * size);
+  }
   table_b = table_w + size;
 
   init_threads(1);
@@ -1611,6 +1624,14 @@ int main(int argc, char **argv)
   print_stats(stdout, global_stats_w, 1);
   print_stats(stdout, global_stats_b, 0);
   print_global_longest(stdout);
+
+  /* If we used a disk-mapped table for low-RAM, release the mapping here.
+     (On Windows with DELETE_ON_CLOSE the temp file auto-deletes.
+      On Unix we already unlinked the dir entry.) */
+  if (table_map_handle) {
+    free_mapped(table_w, table_map_handle, 1, tablename);
+    table_map_handle = NULL;
+  }
 
   if (save_stats) {
     FILE *F;

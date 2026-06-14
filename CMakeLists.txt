@@ -51,9 +51,6 @@ endif()
 # Enable popcnt support if available (required for tablebase generation)
 add_compile_definitions(USE_POPCNT)
 
-# Maximum pieces (max 7)
-add_compile_definitions(TBPIECES=7)
-
 # Compression method: ZSTD or LZ4 (default)
 option(USE_ZSTD "Use ZSTD compression instead of LZ4" OFF)
 if(USE_ZSTD)
@@ -79,8 +76,8 @@ if(NOT COMPRESSION_THREADS_COUNT MATCHES "^[0-9]+$")
 endif()
 add_compile_definitions(COMPRESSION_THREADS=${COMPRESSION_THREADS_COUNT})
 
-# Maximum pieces (max 7, default: 7)
-option(MAX_TBPIECES "Maximum number of pieces (max 7)" 7)
+# Maximum pieces (default: 8 for traditional/regular chess; variants may remain at 7)
+option(MAX_TBPIECES "Maximum number of pieces (default: 8)" 8)
 add_compile_definitions(TBPIECES=${MAX_TBPIECES})
 
 # Directory structure
@@ -116,6 +113,7 @@ set(SHATRANJ_FLAGS -DSHATRANJ)
 # rtbgen (pawnless generator)
 set(RTBGEN_SRCS
     ${SRC_DIR}/tbgen.c
+    ${SRC_DIR}/wincompat.c
     ${COMMON_SOURCES}
 )
 add_executable(rtbgen ${RTBGEN_SRCS})
@@ -125,6 +123,7 @@ set_target_properties(rtbgen PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
 # rtbgenp (pawnful generator)
 set(RTBGENP_SRCS
     ${SRC_DIR}/tbgenp.c
+    ${SRC_DIR}/wincompat.c
     ${COMMON_SOURCES}
 )
 add_executable(rtbgenp ${RTBGENP_SRCS})

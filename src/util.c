@@ -175,6 +175,111 @@ void *alloc_huge(uint64_t size)
   return ptr;
 }
 
+/* Create a disk-backed mapping for a huge table when we want to use disk
+   instead of physical RAM. The returned pointer can be used exactly like
+   a normal malloc'ed buffer (table[idx] = ...).
+   On success returns the mapped address, *handle_out receives the mapping object.
+   If !use_disk, falls back to alloc_huge (for small cases).
+   basename can be used to derive a temp filename (e.g. tablename).
+*/
+void *alloc_mapped(uint64_t size, int use_disk, const char *basename, void **handle_out)
+{
+  if (!use_disk || size < (1ULL << 30)) {  /* < 1GB: just use normal */
+    *handle_out = NULL;
+    return alloc_huge(size);
+  }
+
+  char tmpname[128];
+  static int tmp_counter = 0;
+  if (basename && *basename)
+    sprintf(tmpname, "%s.tmp%d.table", basename, tmp_counter++);
+  else
+    sprintf(tmpname, "syzygy8tmp.%d.table", tmp_counter++);
+
+#ifndef _WIN32
+  int fd = open(tmpname, O_RDWR | O_CREAT | O_TRUNC, 0666);
+  if (fd < 0) {
+    perror("open temp table file");
+    fprintf(stderr, "Could not create disk backing for table (%s). Try with more free disk space.\n", tmpname);
+    exit(EXIT_FAILURE);
+  }
+  if (ftruncate(fd, size) != 0) {
+    perror("ftruncate for table");
+    close(fd);
+    unlink(tmpname);
+    exit(EXIT_FAILURE);
+  }
+  void *data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  close(fd);
+  if (data == MAP_FAILED) {
+    fprintf(stderr, "mmap of disk-backed table failed (%s).\n", tmpname);
+    unlink(tmpname);
+    exit(EXIT_FAILURE);
+  }
+#ifdef MADV_RANDOM
+  madvise(data, size, MADV_RANDOM);  /* generation access is mostly random */
+#endif
+  *handle_out = (void *)(uintptr_t)size;  /* store size for unmap */
+  unlink(tmpname);  /* remove dir entry; mapping keeps data until munmap */
+  return data;
+#else
+  /* Windows: use FILE_FLAG_DELETE_ON_CLOSE so the file disappears when last handle closes */
+  HANDLE hfile = CreateFile(tmpname, GENERIC_READ | GENERIC_WRITE,
+      0, NULL, CREATE_ALWAYS,
+      FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE | FILE_FLAG_RANDOM_ACCESS,
+      NULL);
+  if (hfile == INVALID_HANDLE_VALUE) {
+    fprintf(stderr, "CreateFile for disk table failed (need ~50TB free on current drive for 8pc).\n");
+    exit(EXIT_FAILURE);
+  }
+  LARGE_INTEGER li;
+  li.QuadPart = size;
+  SetFilePointerEx(hfile, li, NULL, FILE_BEGIN);
+  if (!SetEndOfFile(hfile)) {
+    fprintf(stderr, "SetEndOfFile failed for disk-backed table (you need ~50 TiB free disk space on the current drive for a full 8pc pawnful table like KPPPPPPvK).\n");
+    fprintf(stderr, "Run the generator from a directory on your large NAS/drive, or ensure sufficient free space. More CPU time will be used due to disk I/O.\n");
+    CloseHandle(hfile);
+    exit(EXIT_FAILURE);
+  }
+  HANDLE hmap = CreateFileMapping(hfile, NULL, PAGE_READWRITE,
+      (DWORD)(size >> 32), (DWORD)size, NULL);
+  if (!hmap) {
+    fprintf(stderr, "CreateFileMapping RW for table failed.\n");
+    CloseHandle(hfile);
+    exit(EXIT_FAILURE);
+  }
+  void *data = MapViewOfFile(hmap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+  /* We can close hfile here; the mapping keeps it alive. hmap kept in handle_out */
+  CloseHandle(hfile);
+  if (!data) {
+    fprintf(stderr, "MapViewOfFile failed for disk table.\n");
+    CloseHandle(hmap);
+    exit(EXIT_FAILURE);
+  }
+  *handle_out = hmap;
+  return data;
+#endif
+}
+
+void free_mapped(void *ptr, void *handle, int use_disk, const char *basename)
+{
+  if (!ptr) return;
+  if (!use_disk || !handle) {
+    /* was normal alloc_huge - we don't free here (the generators free or reuse) */
+    return;
+  }
+
+#ifndef _WIN32
+  size_t sz = (size_t)handle;
+  munmap(ptr, sz);
+  /* basename not really needed; file will be unlinked by caller or left as .tmp if wanted */
+#else
+  UnmapViewOfFile(ptr);
+  CloseHandle((HANDLE)handle);
+  /* With DELETE_ON_CLOSE the file is auto-deleted */
+#endif
+}
+
 void write_u32(FILE *F, uint32_t v)
 {
   fputc(v & 0xff, F);

@@ -53,6 +53,9 @@ struct TBEntry_pawn entry_pawn;
 #elif TBPIECES == 7
 #define MAX_PERMS 5040
 #define MAX_CANDS 42
+#elif TBPIECES == 8
+#define MAX_PERMS 40320
+#define MAX_CANDS 56
 #else
 #error unsupported
 #endif

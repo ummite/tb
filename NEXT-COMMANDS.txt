@@ -1,0 +1,39 @@
+SYZYGY T: MASTER CONSOLIDATION — BEST NEXT COMMANDS
+Generated: 2026-06-01
+
+=== 1. Daily quick check (run this often) ===
+.\Syzygy-Quick-Status.ps1
+
+=== 2. Start copying the #1 priority source (A: historical 6/7pc DTZ) ===
+# Always simulate first
+.\Copy-A-Historical-DTZ-To-T.ps1 -WhatIf -MaxFiles 30
+
+# First safe real batch (top 30 biggest monsters, ~2 TB)
+.\Copy-A-Historical-DTZ-To-T.ps1 -MaxFiles 30 -Threads 12
+
+# Bigger session (100 files)
+.\Copy-A-Historical-DTZ-To-T.ps1 -MaxFiles 100 -Threads 16
+
+# Unlimited (will run for a very long time — use with care)
+.\Copy-A-Historical-DTZ-To-T.ps1 -Threads 16
+
+Note: The script skips anything already present with the same file size. Safe to re-run.
+
+=== 3. Full plan view (all sources) ===
+.\Syzygy-Priority-Consolidate.ps1 -WhatIf -ReportOnly
+
+=== 4. After major copies — spot verification examples ===
+tbcheck T:\Syzygy\A_Historical_DTZ\KRBNvKRP.rtbz
+rtbver --log T:\Syzygy\A_Historical_DTZ\KRBNvKRP
+
+=== 5. When A: historical is mostly done, move to these ===
+# Example for S: 5v2 pawnful (high density 5-6pc)
+# (adapt the copy script or use robocopy directly)
+
+=== Key facts (as of 2026-06-01) ===
+- T: has 34.94 TB free, 1518 tables already in master.
+- A:\Syzygy_A_Trier_FromOld_Ryzen7950 = 1751 DTZ files, ~8.42 TB total.
+- 24 files > 50 GB in that source alone (biggest = 102 GB).
+- This is currently the highest-ROI copy target in your entire collection.
+
+Run the status script before and after every big copy session.

@@ -38,6 +38,13 @@ void unmap_file(void *data, map_t map);
 void *alloc_aligned(uint64_t size, uintptr_t alignment);
 void *alloc_huge(uint64_t size);
 
+/* Disk-backed (memory mapped) allocation for huge tables to keep RAM low.
+   When use_disk is true, creates a temp file on disk and maps it.
+   The caller must call free_mapped_table (or equivalent unmap + unlink) at end.
+   handle_out is for the OS mapping handle (map_t on Unix, HANDLE on Win). */
+void *alloc_mapped(uint64_t size, int use_disk, const char *basename, void **handle_out);
+void free_mapped(void *ptr, void *handle, int use_disk, const char *basename);
+
 void write_u32(FILE *F, uint32_t v);
 void write_u16(FILE *F, uint16_t v);
 void write_u8(FILE *F, uint8_t v);

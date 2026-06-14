@@ -26,7 +26,7 @@ Solution: `tbgen.sln` (21 projects, x64, VS 2022+, toolset v145). `build.bat` au
 cmake -B build -DATTACK_METHOD=BMI2 -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --target build_all
 ```
-Options: `ATTACK_METHOD` (BMI2|MAGIC|HYPER), `USE_ZSTD` (ON|OFF, default OFF uses LZ4), `MAX_TBPIECES` (3-7, default 7), `COMPRESSION_THREADS_COUNT` (default 6).
+Options: `ATTACK_METHOD` (BMI2|MAGIC|HYPER), `USE_ZSTD` (ON|OFF, default OFF uses LZ4), `MAX_TBPIECES` (3-8, default 7; 8 requires generator/engine code updates), `COMPRESSION_THREADS_COUNT` (default 6).
 
 ### GCC/MinGW (Linux/WSL)
 ```bash

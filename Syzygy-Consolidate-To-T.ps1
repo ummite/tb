@@ -1,4 +1,4 @@
-<# 
+﻿<# 
 .SYNOPSIS
     Consolidate ALL your Syzygy collections into T:\Syzygy as the single master repository.
 
@@ -50,9 +50,9 @@ param(
 $ErrorActionPreference = "Continue"
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-Write-Host "╔══════════════════════════════════════════════════════════════════╗" -ForegroundColor Magenta
-Write-Host "║     SYZYGY CONSOLIDATION → T:\Syzygy  (Master Repository)        ║" -ForegroundColor Magenta
-Write-Host "╚══════════════════════════════════════════════════════════════════╝" -ForegroundColor Magenta
+Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Magenta
+Write-Host "â•‘     SYZYGY CONSOLIDATION â†’ T:\Syzygy  (Master Repository)        â•‘" -ForegroundColor Magenta
+Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Magenta
 Write-Host ""
 Write-Host "Target       : $WorkingDir" -ForegroundColor Cyan
 Write-Host "LinkType     : $LinkType" -ForegroundColor Cyan
@@ -181,19 +181,19 @@ foreach ($src in $Sources) {
 # Summary
 # =============================================================================
 
-Write-Host "`n═══════════════════════════════════════════════════════════════" -ForegroundColor Magenta
+Write-Host "`n================================================================" -ForegroundColor Magenta
 Write-Host " CONSOLIDATION TO T:\Syzygy FINISHED" -ForegroundColor Magenta
-Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Magenta
+Write-Host "================================================================" -ForegroundColor Magenta
 Write-Host " Files copied   : $copied" -ForegroundColor Green
 Write-Host " Files skipped  : $skipped (already present with same size)" -ForegroundColor DarkGray
-Write-Host " Errors         : $errors" -ForegroundColor $(if ($errors -gt 0) { 'Red' } else { 'Green' })
+Write-Host " Errors         : $errors" -ForegroundColor $(if ($errors -gt 0) { "Red" } else { "Green" })
 Write-Host " Master folder  : $WorkingDir" -ForegroundColor Cyan
 Write-Host ""
 
 if (-not $WhatIf) {
-    "T:\Syzygy" | Out-File -FilePath (Join-Path $WorkingDir 'RTBPATH.txt') -Encoding UTF8 -Force
+    "T:\Syzygy" | Out-File -FilePath (Join-Path $WorkingDir "RTBPATH.txt") -Encoding UTF8 -Force
     Write-Host "RTBPATH.txt written. You can now set:" -ForegroundColor Green
-    Write-Host '    $env:RTBPATH = "T:\Syzygy"' -ForegroundColor White
+    Write-Host "    `$env:RTBPATH = `"T:\Syzygy`"" -ForegroundColor White
 }
 
 Write-Host "`nNext recommended steps:" -ForegroundColor Cyan

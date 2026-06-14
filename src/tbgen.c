@@ -978,11 +978,11 @@ int main(int argc, char **argv)
   if (auto_mode) {
     if (num_pieces_to_generate == 0) {
       fprintf(stderr, "Error: -n flag required with -A for auto-generation.\n");
-      fprintf(stderr, "Usage: tbgen -A -n <num_pieces> (e.g., tbgen -A -n 3)\n");
+      fprintf(stderr, "Usage: tbgen -A -n <num_pieces> (e.g., tbgen -A -n 3, up to 8 for regular)\n");
       exit(1);
     }
-    if (num_pieces_to_generate < 3 || num_pieces_to_generate > 7) {
-      fprintf(stderr, "Error: Number of pieces must be between 3 and 7.\n");
+    if (num_pieces_to_generate < 3 || num_pieces_to_generate > 8) {
+      fprintf(stderr, "Error: Number of pieces must be between 3 and 8 (8 primarily for regular/traditional chess).\n");
       exit(1);
     }
     printf("Auto-generating all %d-piece tablebases...\n", num_pieces_to_generate);
@@ -1217,7 +1217,16 @@ int main(int argc, char **argv)
   if (alloc_size < size)
     alloc_size = size;
 
-  table_w = alloc_huge(2 * alloc_size);
+  /* Low-RAM mode for 8pc+: use disk-backed mapping when -d or large numpcs.
+     Trades RAM for more disk I/O + CPU time (as requested). */
+  int use_disk_table = save_to_disk || (numpcs >= 7);
+  static void *table_map_handle = NULL;
+  if (use_disk_table) {
+    table_w = alloc_mapped(2 * alloc_size, 1, tablename ? tablename : "8pc", &table_map_handle);
+  } else {
+    table_map_handle = NULL;
+    table_w = alloc_huge(2 * alloc_size);
+  }
   table_b = table_w + alloc_size;
 
   init_threads(0);
@@ -1266,6 +1275,11 @@ int main(int argc, char **argv)
     print_stats(stdout, total_stats_w, 0);
   }
   print_longest(stdout, switched);
+
+  if (table_map_handle) {
+    free_mapped(table_w, table_map_handle, 1, tablename);
+    table_map_handle = NULL;
+  }
 
   if (save_stats) {
     FILE *F;
