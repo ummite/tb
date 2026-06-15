@@ -292,10 +292,16 @@ function Get-PresentTables {
             foreach ($f in $files) {
                 $base = $f.BaseName
                 if (-not $present.ContainsKey($base)) {
-                    $present[$base] = [pscustomobject]@{ WDL=$false; DTZ=$false; Path=$f.DirectoryName }
+                    $present[$base] = [pscustomobject]@{ WDL=$false; DTZ=$false; Path=$f.DirectoryName; SizeW=0; SizeZ=0 }
                 }
-                if ($f.Extension -eq ".rtbw") { $present[$base].WDL = $true }
-                if ($f.Extension -eq ".rtbz") { $present[$base].DTZ = $true }
+                if ($f.Extension -eq ".rtbw") { 
+                    $present[$base].WDL = $true 
+                    $present[$base].SizeW = [math]::Round($f.Length / 1MB, 1)
+                }
+                if ($f.Extension -eq ".rtbz") { 
+                    $present[$base].DTZ = $true 
+                    $present[$base].SizeZ = [math]::Round($f.Length / 1MB, 1)
+                }
             }
         } catch { }
     }
@@ -319,6 +325,14 @@ function Build-TableView {
 
         $isExperimental = $t.Source -eq "experimental8"
 
+        $sizeMB = if ($hasW -and $hasZ) { 
+            [math]::Round( ($p.SizeW + $p.SizeZ), 1 ) 
+        } elseif ($hasW) { 
+            $p.SizeW 
+        } elseif ($hasZ) { 
+            $p.SizeZ 
+        } else { 0 }
+
         [pscustomobject]@{
             Name        = $t.Base
             Men         = $t.Men
@@ -326,6 +340,7 @@ function Build-TableView {
             Pawnful     = if ($t.IsPawnful) { "Yes" } else { "No" }
             Category    = $t.Category
             Status      = $status
+            SizeMB      = $sizeMB
             HasWDL      = $hasW
             HasDTZ      = $hasZ
             Experimental= $isExperimental
@@ -393,10 +408,27 @@ function Show-CategoryView {
     }
 
     $missCount = ($groupView | Where-Object Status -eq "Missing").Count
-    $title = "Syzygy $Label - $missCount missing | Filter e.g. 'Missing' or material (KRP) | Select then OK"
+    $title = "Syzygy $Label - $missCount missing | Filter e.g. 'Missing' or material (KRP) | Select then OK. SizeMB shown for completed tables."
 
     Write-Host "Opening $Label view ($($groupView.Count) tables, $missCount missing)." -ForegroundColor Gray
-    Write-Host "Tip: Type 'Missing' in the filter box at top to see only the ones you can generate." -ForegroundColor Gray
+    Write-Host "Tip: Type 'Missing' in the filter box at top to see only the ones you can generate. SizeMB column for completed tables." -ForegroundColor Gray
+
+    # Quick bulk option for quality (one "button" like action)
+    Write-Host ""
+    $quick = Read-Host "Quick action? (G = Generate ALL $missCount missing now via queue+runner, Enter = manual select in GridView)"
+    if ($quick -match '^[gG]$' -and $missCount -gt 0) {
+        $missingNames = $groupView | Where-Object Status -eq "Missing" | Select-Object -ExpandProperty Name
+        if ($missingNames) {
+            Write-Host "Bulk generating all missing in $Label..." -ForegroundColor Yellow
+            if ($MaxMen -ge 8) {
+                Write-Host "WARNING: 8pc experimental - ensure -Allow8pc on runner and enough disk/backing!" -ForegroundColor Red
+            }
+            Add-ToQueue -Names $missingNames
+            Write-Host "Added $missCount to queue. Starting runner..." -ForegroundColor Green
+            Start-QueueRunner
+            return
+        }
+    }
 
     $selected = $groupView | Out-GridView -Title $title -PassThru
 
@@ -413,9 +445,9 @@ function Show-CategoryView {
     $toAdd | ForEach-Object { Write-Host "  $_" }
 
     Write-Host ""
-    Write-Host "Generate actions:" -ForegroundColor Yellow
+    Write-Host "Generate actions (B is the 'Generate' button):" -ForegroundColor Yellow
     Write-Host "  A) Add to queue only (safe, runner will pick them up later)"
-    Write-Host "  B) Add to queue + START BACKGROUND RUNNER NOW  <-- 'Generate' button"
+    Write-Host "  B) Add to queue + START BACKGROUND RUNNER NOW  <-- recommended 'Generate' button"
     Write-Host "  C) Cancel / do nothing"
     if ($MaxMen -le 5) {
         Write-Host "  D) Generate immediately (foreground, only for small 3-5pc tables - not recommended for big ones)"
@@ -518,12 +550,14 @@ function Export-HtmlDashboard {
                 default     { "partial" }
             }
             $exp = if ($_.Experimental) { " <span class='exp'>EXP8</span>" } else { "" }
+            $sz = if ($_.SizeMB) { "$($_.SizeMB) MB" } else { "-" }
             "<tr class='$cls'>
                 <td>$($_.Name)$exp</td>
                 <td>$($_.Men)</td>
                 <td>$($_.Split)</td>
                 <td>$($_.Pawnful)</td>
                 <td class='status'>$($_.Status)</td>
+                <td>$sz</td>
                 <td>$($_.Category)</td>
                 <td>$($_.Location)</td>
              </tr>"
@@ -598,6 +632,49 @@ function showAllMissing() {
   document.getElementById('filter').value = 'missing';
   filterCurrent();
 }
+
+// Quality improvement: basic client-side sort (click header)
+function sortTable(th, col) {
+  const table = th.closest('table');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const isNum = col === 1 || col === 5; // Men or Size
+  const asc = th.classList.toggle('asc');
+  rows.sort((a, b) => {
+    let va = a.children[col].textContent.trim();
+    let vb = b.children[col].textContent.trim();
+    if (isNum) {
+      va = parseFloat(va) || 0; vb = parseFloat(vb) || 0;
+      return asc ? va - vb : vb - va;
+    }
+    return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// Quality: Export ready-to-run generate script for missing in current tab
+function exportGenerateScript(tabId) {
+  const pane = document.getElementById(tabId);
+  const names = [];
+  pane.querySelectorAll('tr.missing td:first-child').forEach(td => {
+    names.push(td.textContent.trim().replace('EXP8','').trim());
+  });
+  if (names.length === 0) { alert('No missing in this tab to generate.'); return; }
+  const joined = names.map(n => "    '" + n + "'").join("\n");
+  const script = `# Auto-generated generate script for ` + names.length + ` missing tables in ` + tabId + `
+# Run this after cd to your Syzygy dir with the manager
+`$names = @(
+` + joined + `
+)
+& .\\Syzygy-TableManager.ps1  # or directly:
+# Add-ToQueue -Names `$names
+# Start-QueueRunner   # if you want immediate background run
+Write-Host "Added/queued the selected missing tables. Use the manager menu or runner."
+`;
+  navigator.clipboard.writeText(script).then(() => {
+    alert('Ready-to-run PS script for these ' + names.length + ' tables copied to clipboard. Paste into a .ps1 and run (or extend the manager to support direct).');
+  });
+}
 </script>
 </head><body>
 <h1>Syzygy Table Status — $( $now.ToString("yyyy-MM-dd HH:mm") )</h1>
@@ -617,13 +694,14 @@ function showAllMissing() {
 
 <input id="filter" class="filter" placeholder="Filter (e.g. missing KRP 7)" onkeyup="filterCurrent()">
 <button onclick="showAllMissing()">Show only Missing</button>
-<button onclick="copyMissing(currentTab === 'all' ? 'all' : currentTab)">Copy missing in current tab</button>
+<button onclick="copyMissing(currentTab === 'all' ? 'all' : currentTab)">Copy missing names</button>
+<button onclick="exportGenerateScript(currentTab === 'all' ? 'all' : currentTab)">Export generate script for missing (copy ready .ps1)</button>
 
-<p class="hint">Use the PowerShell Syzygy-TableManager.ps1 (or Syzygy-UI.bat) for the real interactive list with "Generate" actions and queue. This HTML is a fast browsable view with tabs by piece count.</p>
+<p class="hint">Use the PowerShell Syzygy-TableManager.ps1 (or Syzygy-UI.bat) for the real interactive list with "Generate" actions and queue. Click column headers to sort. This HTML is a fast browsable view with tabs by piece count + actionable export.</p>
 
 <div id="all" class="tabcontent active">
   <table><thead><tr>
-    <th>Name</th><th>Men</th><th>Split</th><th>Pawnful</th><th>Status</th><th>Category</th><th>Location</th>
+    <th onclick="sortTable(this,0)">Name</th><th onclick="sortTable(this,1)">Men</th><th onclick="sortTable(this,2)">Split</th><th onclick="sortTable(this,3)">Pawnful</th><th onclick="sortTable(this,4)">Status</th><th onclick="sortTable(this,5)">Size</th><th onclick="sortTable(this,6)">Category</th><th onclick="sortTable(this,7)">Location</th>
   </tr></thead><tbody>
   $(MakeTableRows $View)
   </tbody></table>
@@ -631,7 +709,7 @@ function showAllMissing() {
 
 <div id="35" class="tabcontent">
   <table><thead><tr>
-    <th>Name</th><th>Men</th><th>Split</th><th>Pawnful</th><th>Status</th><th>Category</th><th>Location</th>
+    <th onclick="sortTable(this,0)">Name</th><th onclick="sortTable(this,1)">Men</th><th onclick="sortTable(this,2)">Split</th><th onclick="sortTable(this,3)">Pawnful</th><th onclick="sortTable(this,4)">Status</th><th onclick="sortTable(this,5)">Size</th><th onclick="sortTable(this,6)">Category</th><th onclick="sortTable(this,7)">Location</th>
   </tr></thead><tbody>
   $tab3_5
   </tbody></table>
@@ -639,7 +717,7 @@ function showAllMissing() {
 
 <div id="6" class="tabcontent">
   <table><thead><tr>
-    <th>Name</th><th>Men</th><th>Split</th><th>Pawnful</th><th>Status</th><th>Category</th><th>Location</th>
+    <th onclick="sortTable(this,0)">Name</th><th onclick="sortTable(this,1)">Men</th><th onclick="sortTable(this,2)">Split</th><th onclick="sortTable(this,3)">Pawnful</th><th onclick="sortTable(this,4)">Status</th><th onclick="sortTable(this,5)">Size</th><th onclick="sortTable(this,6)">Category</th><th onclick="sortTable(this,7)">Location</th>
   </tr></thead><tbody>
   $tab6
   </tbody></table>
@@ -647,7 +725,7 @@ function showAllMissing() {
 
 <div id="7" class="tabcontent">
   <table><thead><tr>
-    <th>Name</th><th>Men</th><th>Split</th><th>Pawnful</th><th>Status</th><th>Category</th><th>Location</th>
+    <th onclick="sortTable(this,0)">Name</th><th onclick="sortTable(this,1)">Men</th><th onclick="sortTable(this,2)">Split</th><th onclick="sortTable(this,3)">Pawnful</th><th onclick="sortTable(this,4)">Status</th><th onclick="sortTable(this,5)">Size</th><th onclick="sortTable(this,6)">Category</th><th onclick="sortTable(this,7)">Location</th>
   </tr></thead><tbody>
   $tab7
   </tbody></table>
@@ -655,7 +733,7 @@ function showAllMissing() {
 
 <div id="8" class="tabcontent">
   <table><thead><tr>
-    <th>Name</th><th>Men</th><th>Split</th><th>Pawnful</th><th>Status</th><th>Category</th><th>Location</th>
+    <th onclick="sortTable(this,0)">Name</th><th onclick="sortTable(this,1)">Men</th><th onclick="sortTable(this,2)">Split</th><th onclick="sortTable(this,3)">Pawnful</th><th onclick="sortTable(this,4)">Status</th><th onclick="sortTable(this,5)">Size</th><th onclick="sortTable(this,6)">Category</th><th onclick="sortTable(this,7)">Location</th>
   </tr></thead><tbody>
   $tab8
   </tbody></table>
@@ -697,21 +775,22 @@ if ($ExportHtmlOnly) {
 $complete = ($view | Where-Object Status -eq "Complete").Count
 $missing  = ($view | Where-Object Status -eq "Missing").Count
 Write-Host "Status: $complete Complete  |  $missing Missing  |  $(($view|Measure-Object).Count) total" -ForegroundColor White
+Write-Host "Tip: SizeMB now shown for completed tables (WDL+DTZ). Use groups for focused work + bulk G." -ForegroundColor Gray
 Show-GroupSummary
 
 # Menu (now with piece-count "tabs" for better navigation + direct Generate actions)
 while ($true) {
     Write-Host ""
     Write-Host "Menu (use piece count groups for easy navigation):" -ForegroundColor Yellow
-    Write-Host "  1. 3-5 pieces   (manage missing, direct Generate button)"
-    Write-Host "  2. 6 pieces     (manage missing, direct Generate button)"
-    Write-Host "  3. 7 pieces     (manage missing, direct Generate button)"
+    Write-Host "  1. 3-5 pieces   (manage missing, direct Generate button or bulk G)"
+    Write-Host "  2. 6 pieces     (manage missing, direct Generate button or bulk G)"
+    Write-Host "  3. 7 pieces     (manage missing, direct Generate button or bulk G)"
     Write-Host "  4. 8pc experimental (traditional only - curated small-memory candidates)"
-    Write-Host "  5. All tables (flat GridView - power user / cross-group filter)"
+    Write-Host "  5. All tables (flat GridView - power user / cross-group filter, SizeMB included)"
     Write-Host ""
     Write-Host "  Q. Show current queue"
     Write-Host "  W. Clear queue"
-    Write-Host "  E. Export / open HTML dashboard (now with tabs!)"
+    Write-Host "  E. Export / open HTML dashboard (tabs + clickable sort + 'export generate script' for missing)"
     Write-Host "  R. Launch background queue runner (new minimized window)"
     Write-Host "  L. Open logs folder"
     Write-Host "  X. Quit"
@@ -724,13 +803,23 @@ while ($true) {
         "3" { Show-CategoryView -MinMen 7 -MaxMen 7 -Label "7pc" }
         "4" { Show-CategoryView -MinMen 8 -MaxMen 8 -Label "8pc-experimental" }
         "5" {
-            Write-Host "Opening full flat list (use the top filter box heavily: 'Missing 7' etc.)." -ForegroundColor Gray
-            $selected = $view | Out-GridView -Title "Syzygy - All tables (filter: Missing 7 P etc.) - select then OK" -PassThru
+            Write-Host "Opening full flat list (use the top filter box heavily: 'Missing 7' etc.). SizeMB column now available." -ForegroundColor Gray
+            $selected = $view | Out-GridView -Title "Syzygy - All tables (filter: Missing 7 P etc.) - select then OK (SizeMB shown)" -PassThru
             if ($selected) {
                 $toAdd = $selected | Where-Object Status -ne "Complete" | Select-Object -ExpandProperty Name | Select-Object -Unique
                 if ($toAdd) {
+                    Write-Host ""
+                    Write-Host "Generate for selection from flat list:" -ForegroundColor Yellow
+                    Write-Host "  A) Add to queue only"
+                    Write-Host "  B) Add + START RUNNER NOW (the Generate action)"
+                    $flatAct = Read-Host "A/B or anything else to just add"
                     Add-ToQueue -Names $toAdd
-                    Write-Host "Added to queue. Use 'R' to start runner if desired." -ForegroundColor Green
+                    if ($flatAct.ToUpper() -eq 'B') {
+                        Write-Host "Starting runner..." -ForegroundColor Green
+                        Start-QueueRunner
+                    } else {
+                        Write-Host "Added to queue. Use menu R to start runner." -ForegroundColor Green
+                    }
                 }
             }
         }
