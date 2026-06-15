@@ -30,6 +30,12 @@
 #include "threads.h"
 #include "util.h"
 
+/* VirtualTable for 8pc low-RAM + multi-disk/SAN backing + prefetch.
+   Prototype polished for better lookup/eviction/multi-backing.
+   Enable via numpcs>=8 or the existing use_disk_table path. */
+#include "virtual_table.h"
+#include "vt_drive_utils.h"
+
 #ifndef HAS_PAWNS
 #define HAS_PAWNS
 #endif
@@ -1270,6 +1276,17 @@ int main(int argc, char **argv)
      accepted as tradeoff. */
   int use_disk_table = save_to_disk || (numpcs >= 7);
   static void *table_map_handle = NULL;  /* for the analysis table */
+
+  /* 8pc (and large 7pc) low-RAM path:
+     Prefer VirtualTable (bounded cache + multiple disk/SAN backings) over the
+     "full size mmap" alloc_mapped. This is the main mechanism to use "davantage
+     d'espace disque" and to enable distributed setups (multiple nodes sharing
+     the backing files on SAN while each keeps only its cache in RAM).
+     The VT also exposes vt_prefetch_range() which we will call when claiming
+     work ranges (pawn slices, work_g partitions) so the cache can pull pages
+     ahead of the retrograde passes.
+     For now the classic alloc_mapped is still used; full switch + prefetch
+     insertion is the next integration step (see virtual_table.h for the plan). */
   if (use_disk_table) {
     /* basename = tablename so the temp file has a recognizable name */
     table_w = alloc_mapped(2 * size, 1, tablename ? tablename : "8pc", &table_map_handle);

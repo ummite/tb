@@ -83,6 +83,16 @@ void vt_reset_stats(VirtualTable *vt);
 /* For integration with existing code that expects a raw pointer (temporary / testing only) */
 uint8_t *vt_get_raw_pointer_for_testing(VirtualTable *vt); /* May return NULL if not fully in RAM */
 
+/* Note on 8pc usage:
+   The generator (tbgenp.c for pawnful 8pc like KPPPPPPvK) will allocate the
+   main analysis table (table_w/table_b) via vt_create when numpcs>=8 or
+   use_disk is requested. Calls to vt_prefetch_range() will be inserted when
+   work ranges are claimed (see run_threaded / pawn slice code).
+   Physical RAM is bounded by VTConfig.cache_size; the rest lives on the
+   configured backings (fast local + large SAN for capacity = "more disk").
+   Multiple machines can share the same backing files for distributed compute
+   (each with its own cache), coordinated by pawn-file (0-3) or work ID sharding. */
+
 #ifdef __cplusplus
 }
 #endif
