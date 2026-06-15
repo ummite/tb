@@ -133,6 +133,25 @@ int main(void)
     printf("You can copy the above into your code or generator when enabling virtual table mode.\n");
     printf("The tool will automatically use the fastest selected drives first.\n");
 
+    /* Also write a simple consumable config for launchers / future generator --vt-config */
+    FILE *cfg = fopen("vt_config.txt", "w");
+    if (cfg) {
+        fprintf(cfg, "cache_gb=%.0f\n", chosen_cache);
+        fprintf(cfg, "reserve_gb=8\n");
+        fprintf(cfg, "page_shift=20\n");
+        fprintf(cfg, "backings=");
+        for (int i = 0; i < sel_count; i++) {
+            int idx = selected[i];
+            const DriveInfo *d = &drives->drives[idx];
+            fprintf(cfg, "%sSyzygySwap.bin", d->root);
+            if (i < sel_count-1) fprintf(cfg, ";");
+        }
+        fprintf(cfg, "\n");
+        fprintf(cfg, "# Use with generator --use-vt --vt-config=vt_config.txt (when wired)\n");
+        fclose(cfg);
+        printf("\nAlso wrote simple vt_config.txt (cache, backings list) for PS1/launcher/generator.\n");
+    }
+
     free(benches);
     vt_free_drive_list(drives);
 

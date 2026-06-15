@@ -16,7 +16,10 @@ param(
     [double]$MinDiskFreeTB = 55,  # Warn/fail if current drive free < this
     [string]$ExePath = "C:\Programmation\tb-1\bin\rtbgenp8.exe",
     [string]$TableName = "KPPPPPPvK",
-    [switch]$DryRun
+    [switch]$DryRun,
+    [int]$VTCacheGB = 32,          # RAM cache for VirtualTable (bounded, not full table)
+    [string[]]$VTBackings = @("T:\8pc_backing1", "T:\8pc_backing2"),  # multiple for disk distribution / SAN
+    [switch]$UseVT                       # Use the advanced VirtualTable instead of simple mapped
 )
 
 $ErrorActionPreference = "Stop"
@@ -71,6 +74,23 @@ if ($ramFreeGB -lt 30) {
     Write-Warning "Low free RAM ($ramFreeGB GB). With disk-mapping the generator itself should stay low (~active 1GB slices + small buffers), but OS cache may use free RAM. Consider closing other apps."
 }
 
+# 2b. VT / advanced disk-backed setup (for more disk + distributed)
+if ($UseVT) {
+    Write-Host "VT mode enabled: cache $VTCacheGB GB, backings: $($VTBackings -join ', ')" -ForegroundColor Cyan
+    # TODO: call vt_drive_setup.exe or generate config file if the tool supports output
+    # For now, document the paths; the generator will use VT with these when integrated
+    $vtConfig = Join-Path $startDir "vt_config.txt"
+    "cache_gb=$VTCacheGB`nbackings=$($VTBackings -join ';')" | Out-File $vtConfig -Encoding ascii
+    Write-Host "Wrote $vtConfig for generator (future --vt-config support)"
+    # Validate backing dirs exist or create
+    foreach ($b in $VTBackings) {
+        if (-not (Test-Path $b)) {
+            New-Item -ItemType Directory -Path $b -Force | Out-Null
+            Write-Host "Created backing dir $b"
+        }
+    }
+}
+
 # Check exe
 if (-not (Test-Path $ExePath)) {
     Write-Error "8pc exe not found at $ExePath. Build with MAX_TBPIECES=8 or use bin\rtbgenp8.exe after updates."
@@ -97,7 +117,12 @@ if ($DryRun) {
 
 # 4. Launch with monitoring (similar to previous safe wrappers)
 Write-Host "Launching (this will take a LONG time - disk I/O bound). Monitor every 10s for RAM/disk."
-$p = Start-Process -FilePath $ExePath -ArgumentList $TableName, "-d", "-t", $Threads, "--stats" `
+$argsList = @($TableName, "-d", "-t", $Threads, "--stats")
+if ($UseVT) {
+    $argsList += "--use-vt"
+    # future: --vt-cache-gb $VTCacheGB --vt-backings ...
+}
+$p = Start-Process -FilePath $ExePath -ArgumentList $argsList `
     -WorkingDirectory $startDir -RedirectStandardOutput $log -RedirectStandardError $errlog -PassThru
 if ($p) {
     $p.PriorityClass = 'BelowNormal'

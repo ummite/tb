@@ -28,7 +28,7 @@ $(GENTBNAME): $(GENTBOBJS)
 
 $(GENTBPNAME): $(GENTBPOBJS)
 	@mkdir -p $(dir $(GENTBPNAME))
-	$(CC) $(CFLAGS_PAWNFUL) -o $(GENTBPNAME) $(OBJDIR)/tbgenp.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+	$(CC) $(CFLAGS_PAWNFUL) -o $(GENTBPNAME) $(OBJDIR)/tbgenp.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(OBJDIR)/virtual_table.o $(OBJDIR)/vt_drive_utils.o $(LDFLAGS)
 
 $(VERTBNAME): $(VERTBOBJS)
 	@mkdir -p $(dir $(VERTBNAME))

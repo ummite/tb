@@ -96,6 +96,8 @@ set(COMMON_SOURCES
     ${SRC_DIR}/city-c.c
     ${SRC_DIR}/util.c
     ${SRC_DIR}/permute.c
+    ${SRC_DIR}/virtual_table.c
+    ${SRC_DIR}/vt_drive_utils.c
 )
 
 # Variant-specific flags

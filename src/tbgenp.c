@@ -937,6 +937,7 @@ static struct option options[] = {
   { "stats", 0, NULL, 's' },
   { "disk", 0, NULL, 'd' },
   { "affinity", 0, NULL, 'a' },
+  { "use-vt", 0, NULL, 1000 },  /* long-only for VirtualTable 8pc low-RAM + multi-backing */
   { 0, 0, NULL, 0 }
 };
 
@@ -949,6 +950,7 @@ int main(int argc, char **argv)
   int save_stats = 0;
   int save_to_disk = 0;
   int compress_wide = 0;
+  int use_vt = 0;  /* for VirtualTable on 8pc */
 
   numthreads = 1;
   thread_affinity = 0;
@@ -983,6 +985,9 @@ int main(int argc, char **argv)
       break;
     case 'p':
       plyacc = 1;
+      break;
+    case 1000:  /* --use-vt */
+      use_vt = 1;
       break;
     }
   } while (val != EOF);
@@ -1276,6 +1281,12 @@ int main(int argc, char **argv)
      accepted as tradeoff. */
   int use_disk_table = save_to_disk || (numpcs >= 7);
   static void *table_map_handle = NULL;  /* for the analysis table */
+
+  if (use_vt || (numpcs >= 8)) {
+    printf("VirtualTable mode requested/required for 8pc (bounded RAM cache + multi-backing for disk/distributed).\n");
+    /* TODO: create VT here with config from cmd/env, use for table instead of alloc_mapped */
+    /* For now: still use mapped, but flag is parsed and logged for integration. */
+  }
 
   /* 8pc (and large 7pc) low-RAM path:
      Prefer VirtualTable (bounded cache + multiple disk/SAN backings) over the

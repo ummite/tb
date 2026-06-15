@@ -18,7 +18,7 @@ include Makefile.general
 # Add targets for tbgen
 $(TBGENNAME): $(GENTBOBJS)
 	@mkdir -p $(dir $(TBGENNAME))
-	$(CC) $(CFLAGS) -o $(TBGENNAME) $(OBJDIR)/tbgen.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(TBGENNAME) $(OBJDIR)/tbgen.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(OBJDIR)/virtual_table.o $(OBJDIR)/vt_drive_utils.o $(LDFLAGS)
 
 # Rename tbgen to rtbgen
 rtbgen: $(TBGENNAME)
@@ -28,7 +28,7 @@ rtbgen: $(TBGENNAME)
 TBGENPNAME = ../bin/tbgenp.exe
 $(TBGENPNAME): $(GENTBPOBJS)
 	@mkdir -p $(dir $(TBGENPNAME))
-	$(CC) $(CFLAGS) -o $(TBGENPNAME) $(OBJDIR)/tbgenp.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(TBGENPNAME) $(OBJDIR)/tbgenp.o $(OBJDIR)/permute.o $(OBJDIR)/compress.o $(OBJDIR)/huffman.o $(OBJDIR)/threads.o $(OBJDIR)/lz4.o $(OBJDIR)/checksum.o $(OBJDIR)/city-c.o $(OBJDIR)/util.o $(OBJDIR)/virtual_table.o $(OBJDIR)/vt_drive_utils.o $(LDFLAGS)
 rtbgenp: $(TBGENPNAME)
 	@cp $(TBGENPNAME) $(GENTBPNAME)
 

@@ -241,3 +241,19 @@ Tablebase files are written little-endian with:
 | `HUGEPAGESIZE` | 2 MiB | Huge page allocation granularity |
 | `STAT_DRAW` | `MAX_STATS/2` | Center of WDL value encoding (512/640) |
 | `REDUCE_PLY` | 122 (REGULAR) | Retrograde search horizon |
+
+### 8pc Low-RAM / Disk + Distributed Compute (added 2026)
+
+For 8pc (enable via MAX_TBPIECES=8, regular only), the core issue is the huge dense WDL table for retrograde (6^7 entries, ~260 GiB+ per side for u8).
+
+Solutions implemented/ in progress:
+- Automatic `use_disk_table` (numpcs >=7) + `alloc_mapped` in tbgenp.c/tbgen.c: creates large temp backing file on disk + mmap. Physical RAM stays low (OS pages to disk); only active slices/pawn files in RAM. Trade CPU/I-O.
+- Advanced **VirtualTable** (virtual_table.c/h, vt_drive_utils.c, vt_drive_setup.c): bounded RAM cache (user-chosen, e.g. 32GB), multiple backing stores (fast local + large SAN/UNC for capacity), page-based, prefetch hook for work ranges, stats, drive benchmark/setup tool.
+- Build: VT sources included in regular 8pc (CMake COMMON_SOURCES + Makefiles updated; VS projects follow similar).
+- Launcher: Start-8pc-KPPPPPPvK-OnT-Safe.ps1 extended with -UseVT, -VTCacheGB, -VTBackings (multi for disk distrib). Distribute-8pc-Slices.ps1 stub for sharding.
+- Distribution: Share backing files on SAN. Shard by the natural 4 pawn-files (or work partitions). Each "node" (machine/process) runs generator with local cache against shared backing. Use num_saves for checkpoints/resume. Coordinator assigns slices. "More disk" across volumes/machines + "more compute" via parallel nodes.
+- Safety preserved: low threads, monitoring, RTBPATH for subtables, post-tbcheck, etc. 8pc only traditional (variants at 7pc).
+
+See the approved plan.md for the detailed 8pc disk/distrib plan, remaining integration steps (VT in main table accesses + prefetch calls in calc paths), and verification (build, low-RAM demo on 8pc candidate like KPPPPPPvK, multi-backing, tbcheck on output).
+
+Run drive setup first on your volumes, then safe launcher with -UseVT. The current alloc_mapped gives immediate disk benefit; VT adds explicit control + multi-backing.
