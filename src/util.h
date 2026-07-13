@@ -57,4 +57,10 @@ void write_data(FILE *F, uint8_t *src, uint64_t offset, uint64_t size,
 void read_data_u8(FILE *F, uint8_t *dst, uint64_t size, uint8_t *v);
 void read_data_u16(FILE *F, uint16_t *dst, uint64_t size, uint16_t *v);
 
+/* Syzygy material ID validation (canonical orientation + piece order).
+   Returns 0 if name is a legal, official-style tablebase ID; non-zero otherwise.
+   On failure, prints a reason to stderr. Accepts optional path prefixes
+   (uses the basename after the last '/' or '\\'). */
+int validate_tablename(const char *name);
+
 #endif

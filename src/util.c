@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #ifndef _WIN32
 #include <unistd.h>
 #include <sys/mman.h>
@@ -590,4 +591,136 @@ void read_data_u16(FILE *F, uint16_t *dst, uint64_t size, uint16_t *v)
   cmprs_size = size;
   cmprs_v = v;
   run_compression(read_data_worker_u16);
+}
+
+/* Rank for official Syzygy piece order within a side: Q, R, B, N, P (non-decreasing). */
+static int syzygy_piece_rank(char c)
+{
+  switch (c) {
+  case 'Q': return 0;
+  case 'R': return 1;
+  case 'B': return 2;
+  case 'N': return 3;
+  case 'P': return 4;
+  default:  return -1;
+  }
+}
+
+/*
+ * validate_tablename
+ *
+ * Enforce the official Syzygy material-ID conventions so color-flip duplicates
+ * (e.g. KvKQ when KQvK is the real table) and mis-ordered piece strings cannot
+ * be generated or treated as valid.
+ *
+ * Rules (match checksums/wdl*.txt + dtz*.txt / Ronald de Man distributions):
+ *  1. Basename form K[QRBNP]*vK[QRBNP]*  (exactly one 'v'; each side starts with K)
+ *  2. Within each side, non-king pieces are non-decreasing in order Q,R,B,N,P
+ *  3. Orientation: #white non-kings >= #black non-kings
+ *  4. If equal non-king counts and sides differ, white's piece-rank sequence is
+ *     lexicographically <= black's (so KQvKR is OK, KRvKQ is rejected)
+ */
+int validate_tablename(const char *name)
+{
+  const char *base;
+  const char *v;
+  const char *p;
+  int w_len, b_len, prev, r, i;
+
+  if (!name || !name[0]) {
+    fprintf(stderr, "Error: empty tablebase name.\n");
+    return 1;
+  }
+
+  /* Basename only (allow path prefixes used by verifiers). */
+  base = name;
+  for (p = name; *p; p++)
+    if (*p == '/' || *p == '\\')
+      base = p + 1;
+
+  if (base[0] != 'K') {
+    fprintf(stderr, "Error: tablebase name must start with K (got \"%s\").\n", base);
+    fprintf(stderr, "  Example: KQvK, KRPvKR  (not QKvK / KvKQ for queen vs bare king).\n");
+    return 1;
+  }
+
+  v = NULL;
+  for (p = base; *p; p++) {
+    if (*p == 'v') {
+      if (v) {
+        fprintf(stderr, "Error: tablebase name \"%s\" has more than one 'v'.\n", base);
+        return 1;
+      }
+      v = p;
+    } else if (*p != 'K' && syzygy_piece_rank(*p) < 0) {
+      fprintf(stderr, "Error: invalid character '%c' in tablebase name \"%s\".\n", *p, base);
+      fprintf(stderr, "  Allowed: K, Q, R, B, N, P, and a single 'v'.\n");
+      return 1;
+    }
+  }
+
+  if (!v) {
+    fprintf(stderr, "Error: tablebase name \"%s\" must contain 'v' (e.g. KQvK).\n", base);
+    return 1;
+  }
+  if (v[1] != 'K') {
+    fprintf(stderr, "Error: black side must start with K in \"%s\".\n", base);
+    return 1;
+  }
+
+  /* White non-kings: base+1 .. v-1 ; black non-kings: v+2 .. end */
+  w_len = (int)(v - (base + 1));
+  b_len = (int)strlen(v + 2);
+  if (w_len < 0 || b_len < 0) {
+    fprintf(stderr, "Error: malformed tablebase name \"%s\".\n", base);
+    return 1;
+  }
+
+  prev = -1;
+  for (i = 0; i < w_len; i++) {
+    r = syzygy_piece_rank(base[1 + i]);
+    if (r < 0 || r < prev) {
+      fprintf(stderr, "Error: white pieces not in order Q,R,B,N,P in \"%s\".\n", base);
+      fprintf(stderr, "  Within each side, pieces must be sorted (e.g. KQR not KRQ).\n");
+      return 1;
+    }
+    prev = r;
+  }
+
+  prev = -1;
+  for (i = 0; i < b_len; i++) {
+    r = syzygy_piece_rank(v[2 + i]);
+    if (r < 0 || r < prev) {
+      fprintf(stderr, "Error: black pieces not in order Q,R,B,N,P in \"%s\".\n", base);
+      fprintf(stderr, "  Within each side, pieces must be sorted (e.g. KQR not KRQ).\n");
+      return 1;
+    }
+    prev = r;
+  }
+
+  /* Canonical orientation (no color-flip duplicates). */
+  if (w_len < b_len) {
+    fprintf(stderr, "Error: non-canonical orientation \"%s\" (white has fewer non-king pieces than black).\n", base);
+    fprintf(stderr, "  Use the color-flipped name (e.g. KQvK not KvKQ; KRBNvK not KvKRBN).\n");
+    fprintf(stderr, "  Official Syzygy ships one orientation per material; engines flip at probe time.\n");
+    return 1;
+  }
+
+  if (w_len == b_len && w_len > 0) {
+    for (i = 0; i < w_len; i++) {
+      int rw = syzygy_piece_rank(base[1 + i]);
+      int rb = syzygy_piece_rank(v[2 + i]);
+      if (rw < rb)
+        break; /* white sequence < black: OK */
+      if (rw > rb) {
+        fprintf(stderr, "Error: non-canonical orientation \"%s\" (color-flip of an official name).\n", base);
+        fprintf(stderr, "  When both sides have the same number of pieces, white's sequence must be\n");
+        fprintf(stderr, "  lexicographically <= black's in order Q<R<B<N<P (e.g. KQvKR not KRvKQ).\n");
+        return 1;
+      }
+      /* rw == rb: continue */
+    }
+  }
+
+  return 0;
 }

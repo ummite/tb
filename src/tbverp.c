@@ -442,6 +442,9 @@ int main(int argc, char **argv)
   }
   tablename = argv[optind];
 
+  if (validate_tablename(tablename) != 0)
+    exit(1);
+
   char *table = strrchr(tablename, '/');
   if (table)
     table++;

@@ -32,6 +32,7 @@ def build_parser():
     return p
 
 PIECES = ["Q","R","B","N","P"]
+_PIECE_RANK = {c: i for i, c in enumerate(PIECES)}
 
 def multiset_sequences(k):
     """Non-decreasing sequences (multiset combinations) of length k from PIECES."""
@@ -40,6 +41,42 @@ def multiset_sequences(k):
         return
     for combo in combinations_with_replacement(PIECES, k):
         yield list(combo)
+
+def is_canonical_tb(tb: str) -> bool:
+    """
+    Official Syzygy material ID: K[QRBNP]*vK[QRBNP]* with sorted sides and
+    canonical orientation (no color-flip duplicates like KvKQ / KRvKQ).
+    Mirrors validate_tablename() in util.c.
+    """
+    if not tb or "v" not in tb:
+        return False
+    left, right = tb.split("v", 1)
+    if not left.startswith("K") or not right.startswith("K"):
+        return False
+    w, b = left[1:], right[1:]
+    if any(c not in _PIECE_RANK for c in w + b):
+        return False
+    def ordered(s: str) -> bool:
+        prev = -1
+        for c in s:
+            r = _PIECE_RANK[c]
+            if r < prev:
+                return False
+            prev = r
+        return True
+    if not ordered(w) or not ordered(b):
+        return False
+    if len(w) < len(b):
+        return False
+    if len(w) == len(b) and w != b:
+        # white sequence must be lexicographically <= black under Q<R<B<N<P ranks
+        for cw, cb in zip(w, b):
+            rw, rb = _PIECE_RANK[cw], _PIECE_RANK[cb]
+            if rw < rb:
+                break
+            if rw > rb:
+                return False
+    return True
 
 def run_cmd(cmd):
     print(f"$ {cmd}")
@@ -107,6 +144,12 @@ def main():
             for a_seq in multiset_sequences(a_count):
                 for d_seq in multiset_sequences(d_count):
                     tb = "K" + "".join(a_seq) + "v" + "K" + "".join(d_seq)
+                    # Skip color-flip / non-canonical IDs (e.g. KvKQ, KRvKQ)
+                    if not is_canonical_tb(tb):
+                        continue
+                    # a_count starts at 1 so bare-king-left is already rare; still enforce.
+                    if a_count < d_count:
+                        continue
                     process_tb(tb, args)
 
 if __name__ == "__main__":

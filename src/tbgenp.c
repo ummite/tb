@@ -998,25 +998,9 @@ int main(int argc, char **argv)
   }
   tablename = argv[optind];
 
-  /* Validate naming convention: must start with K and have proper format */
-  if (tablename[0] != 'K') {
-    fprintf(stderr, "Error: Tablebase name must start with K (King).\n");
-    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
+  /* Reject illegal / non-canonical material IDs (color flips, bad piece order). */
+  if (validate_tablename(tablename) != 0)
     exit(1);
-  }
-
-  /* Find 'v' separator and validate both sides start with K */
-  char *v_pos = strchr(tablename, 'v');
-  if (!v_pos) {
-    fprintf(stderr, "Error: Tablebase name must contain 'v' separator.\n");
-    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
-    exit(1);
-  }
-  if (v_pos[1] != 'K') {
-    fprintf(stderr, "Error: Black side must also start with K (King).\n");
-    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
-    exit(1);
-  }
 
   init_tablebases();
 

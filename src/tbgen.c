@@ -230,62 +230,49 @@ static void run_rtbgen(const char *tablename) {
   system(cmd);
 }
 
-/* Validate tablebase name format (must be K-first, e.g., KQvK not QKvK) */
-static int validate_tbname(const char *name) {
-  if (name[0] != 'K') return 0;
-  char *v = strchr(name, 'v');
-  if (!v) return 0;
-  if (v[1] != 'K') return 0;
-  return 1;
-}
-
-/* Generate all combinations where white has 'w' pieces and black has 'b' pieces */
+/* Generate all combinations where white has 'w' pieces and black has 'b' pieces.
+   Pieces are filled white-first then black, non-decreasing type order per side.
+   Caller must ensure w >= b (canonical Syzygy orientation). */
 static void gen_combos_wb(int w, int b, int *wp, int *bp, int start_type) {
   int i;
 
   if (w == 0 && b == 0) {
-    /* Build and run the tablebase */
-    char tbname[64] = "K";
-    int idx = 1;
+    /* Build K + white + v + K + black */
+    char tbname[64];
+    int idx = 0;
 
-    for (i = 0; i < NUM_PIECE_TYPES; i++) {
-      for (int j = 0; j < wp[i]; j++) {
-        tbname[idx++] = PIECE_CHARS[i];
-      }
-    }
-    tbname[idx++] = 'v';
-
-    for (i = 0; i < NUM_PIECE_TYPES; i++) {
-      for (int j = 0; j < bp[i]; j++) {
-        tbname[idx++] = PIECE_CHARS[i];
-      }
-    }
     tbname[idx++] = 'K';
+    for (i = 0; i < NUM_PIECE_TYPES; i++)
+      for (int j = 0; j < wp[i]; j++)
+        tbname[idx++] = PIECE_CHARS[i];
+    tbname[idx++] = 'v';
+    tbname[idx++] = 'K';
+    for (i = 0; i < NUM_PIECE_TYPES; i++)
+      for (int j = 0; j < bp[i]; j++)
+        tbname[idx++] = PIECE_CHARS[i];
     tbname[idx] = '\0';
 
-    /* Validate generated name is in correct format */
-    if (!validate_tbname(tbname)) {
-      fprintf(stderr, "Error: Generated invalid tablebase name: %s\n", tbname);
-      exit(1);
-    }
+    /* Skip non-canonical orientations (e.g. KRvKQ); do not abort the whole batch. */
+    if (validate_tablename(tbname) != 0)
+      return;
     run_rtbgen(tbname);
     return;
   }
 
-  /* Add pieces to white side (non-decreasing order to avoid duplicates) */
+  /* Fill white completely before black (keeps sides independent + ordered). */
   if (w > 0) {
     for (i = start_type; i < NUM_PIECE_TYPES; i++) {
       wp[i]++;
       gen_combos_wb(w - 1, b, wp, bp, i);
       wp[i]--;
     }
+    return;
   }
 
-  /* Add pieces to black side (non-decreasing order to avoid duplicates) */
   if (b > 0) {
     for (i = start_type; i < NUM_PIECE_TYPES; i++) {
       bp[i]++;
-      gen_combos_wb(w, b - 1, wp, bp, i);
+      gen_combos_wb(0, b - 1, wp, bp, i);
       bp[i]--;
     }
   }
@@ -303,19 +290,18 @@ static void generate_pawnless_all(int n) {
   /* We need n-2 additional pieces total (since kings are fixed) */
   int remaining = n - 2;
 
-  /* For each possible distribution of pieces between sides */
-  /* Both sides must have at least 1 piece for valid endgame */
+  /* white non-kings >= black non-kings (canonical orientation only) */
   for (i = 1; i <= remaining; i++) {
     int white_count = i;
     int black_count = remaining - i;
+    if (white_count < black_count)
+      continue;
 
-    /* Reset arrays */
     for (j = 0; j < NUM_PIECE_TYPES; j++) {
       white_pieces[j] = 0;
       black_pieces[j] = 0;
     }
 
-    /* Generate all combinations with non-decreasing piece order */
     gen_combos_wb(white_count, black_count, white_pieces, black_pieces, 0);
   }
 
@@ -996,25 +982,9 @@ int main(int argc, char **argv)
   }
   tablename = argv[optind];
 
-  /* Validate naming convention: must start with K and have proper format */
-  if (tablename[0] != 'K') {
-    fprintf(stderr, "Error: Tablebase name must start with K (King).\n");
-    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
+  /* Reject illegal / non-canonical material IDs (color flips, bad piece order). */
+  if (validate_tablename(tablename) != 0)
     exit(1);
-  }
-
-  /* Find 'v' separator and validate both sides start with K */
-  char *v_pos = strchr(tablename, 'v');
-  if (!v_pos) {
-    fprintf(stderr, "Error: Tablebase name must contain 'v' separator.\n");
-    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
-    exit(1);
-  }
-  if (v_pos[1] != 'K') {
-    fprintf(stderr, "Error: Black side must also start with K (King).\n");
-    fprintf(stderr, "Usage: K<pieces>vK<pieces> (e.g., KQvK, KRvK, KQRvK)\n");
-    exit(1);
-  }
 
   init_tablebases();
 

@@ -1,0 +1,27 @@
+SYZYGY HASH REPAIR — RESUME AFTER POWER LOSS
+Updated: 2026-07-10
+
+Full doc: RESUME_AFTER_OUTAGE.md
+State on NAS: T:\Syzygy\STATE.md
+
+STATUS: 19/38 fixed, 19 remaining (large 7pc from sesse)
+Updated: 2026-07-11 ~05:48 — repair RUNNING with -DownloadOnly
+Current: resume KRBNNNvK.rtbz.repair-part (~2.6 GiB / 3.65 GiB)
+
+=== 1. Resume repair (safe to re-run anytime) ===
+cd C:\Programmation\tb-1
+# Prefer -DownloadOnly if remaining items are Sesse-only (avoids multi-TB local scan)
+.\Repair-Syzygy-BadHashes.ps1 -DownloadOnly
+# Or full (local S:/A: first, then Sesse):
+.\Repair-Syzygy-BadHashes.ps1
+
+=== 2. Background long run ===
+Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File C:\Programmation\tb-1\Repair-Syzygy-BadHashes.ps1' -WorkingDirectory C:\Programmation\tb-1
+
+=== 3. Check progress ===
+Get-Content logs\syzygy-repair-*.log -Tail 20
+Get-ChildItem T:\Syzygy -Recurse -Filter *.repair-part
+
+=== 4. When done ===
+.\Verify-Syzygy-OfficialHashes.ps1 -Root T:\Syzygy
+# Expect: MISMATCH 0 among official entries
