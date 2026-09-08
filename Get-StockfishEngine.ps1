@@ -51,7 +51,7 @@ if (-not $resolved) {
 
 if ($Need8Piece -and ($resolved -notmatch 'stockfish-tb8')) {
     if (-not $Quiet) {
-        Write-Warning "Moteur 8pc (bin\stockfish-tb8.exe) absent. Fallback : $resolved — Stockfish officiel refuse les tables a 8 pieces (TBPIECES=7). Relancez .\Build-Stockfish.ps1 -Enable8Piece"
+        Write-Warning "Moteur 8pc (bin\stockfish-tb8.exe) absent. Fallback : $resolved. Stockfish officiel refuse les tables a 8 pieces (TBPIECES=7). Relancez .\Build-Stockfish.ps1 -Enable8Piece"
     }
 }
 

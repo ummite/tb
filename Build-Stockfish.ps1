@@ -22,6 +22,7 @@ param(
     [switch]$InstallToolchain,
     [switch]$Enable8Piece,
     [switch]$SkipPull,
+    [switch]$Pgo,
     [switch]$NoPgo,
     [ValidateSet("auto", "x86-64-avxvnni", "x86-64-bmi2", "x86-64-avx2", "native")]
     [string]$Arch = "auto",
@@ -39,7 +40,8 @@ $Out7 = Join-Path $BinDir "stockfish.exe"
 $Out8 = Join-Path $BinDir "stockfish-tb8.exe"
 
 function Write-Step([string]$Msg) {
-    Write-Host "`n=== $Msg ===" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "=== $Msg ===" -ForegroundColor Cyan
 }
 
 function Get-ScoopMingwBin {
@@ -76,7 +78,7 @@ if (-not (Test-Path -LiteralPath $Bash)) {
 Write-Step "1/6  Clone / update StockfishSrc"
 if (-not (Test-Path -LiteralPath (Join-Path $SrcDir ".git"))) {
     if (Test-Path -LiteralPath $SrcDir) {
-        throw "StockfishSrc existe sans .git. Supprimez-le ou clonez manuellement : git clone $Git StockfishSrc"
+        throw "StockfishSrc existe sans .git. Clonez : git clone $Git StockfishSrc"
     }
     git clone --depth 1 $Git $SrcDir
 }
@@ -98,19 +100,12 @@ Write-Step "2/6  Toolchain MinGW-w64 (GCC 12+)"
 $mingwBin = Get-ScoopMingwBin
 if (-not $mingwBin) {
     if (-not $InstallToolchain) {
-        throw @"
-Aucun GCC moderne (12+) trouve. C:\MinGW 6.3 est trop vieux pour Stockfish actuel.
-Installez le toolchain puis relancez :
-  scoop install mingw
-  .\Build-Stockfish.ps1
-ou en une commande :
-  .\Build-Stockfish.ps1 -InstallToolchain
-"@
+        throw "Aucun GCC moderne (12+) trouve. Lancez : scoop install mingw   puis   .\Build-Stockfish.ps1   ou   .\Build-Stockfish.ps1 -InstallToolchain"
     }
     if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
         throw "scoop n'est pas dans le PATH. Installez scoop, puis : scoop install mingw"
     }
-    Write-Host "Installation scoop mingw (GCC 15)..." -ForegroundColor Yellow
+    Write-Host "Installation scoop mingw..." -ForegroundColor Yellow
     scoop install mingw
     $mingwBin = Get-ScoopMingwBin
     if (-not $mingwBin) { throw "scoop mingw installe mais g++.exe introuvable." }
@@ -120,7 +115,6 @@ Write-Host "g++ : $gpp"
 & $gpp --version | Select-Object -First 1
 
 Write-Step "3/6  ARCH"
-# i9-13900KF = AVX2 + BMI2 + AVX-VNNI, pas d'AVX-512. avxvnni is the official best match.
 if ($Arch -eq "auto") {
     $cpu = (Get-CimInstance Win32_Processor).Name
     Write-Host "CPU : $cpu"
@@ -131,12 +125,17 @@ if ($Arch -eq "auto") {
         $Arch = "x86-64-avx2"
     }
 }
-Write-Host "ARCH=$Arch  (PGO=$(-not $NoPgo))"
+$usePgo = $Pgo -and -not $NoPgo
+$pgoLabel = if ($usePgo) { "on" } else { "off" }
+Write-Host "ARCH=$Arch  PGO=$pgoLabel"
+if (-not $usePgo) {
+    Write-Host "PGO desactive par defaut (bench instrumente crash sous MinGW, exit 139). Pour tenter : -Pgo"
+}
 
 if ($Jobs -le 0) {
     $Jobs = [Math]::Max(1, [int]$env:NUMBER_OF_PROCESSORS)
 }
-$target = if ($NoPgo) { "build" } else { "profile-build" }
+$target = if ($usePgo) { "profile-build" } else { "build" }
 Write-Host "make -j $Jobs $target ARCH=$Arch COMP=gcc"
 
 function Invoke-StockfishMake {
@@ -150,7 +149,7 @@ function Invoke-StockfishMake {
     if ($Tb8) {
         $orig = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($tbprobe))
         if ($orig -notmatch 'constexpr int TBPIECES = 7;') {
-            throw "Marqueur TBPIECES=7 introuvable dans $tbprobe — le source Stockfish a change, patch 8pc a revoir."
+            throw "Marqueur TBPIECES=7 introuvable dans tbprobe.cpp (source Stockfish change, patch 8pc a revoir)."
         }
         $new = $orig.Replace('constexpr int TBPIECES = 7;', 'constexpr int TBPIECES = 8;')
         [System.IO.File]::WriteAllBytes($tbprobe, [System.Text.Encoding]::UTF8.GetBytes($new))
@@ -160,8 +159,6 @@ function Invoke-StockfishMake {
 
     $msysSrc = ConvertTo-MsysPath $SrcMakeDir
     $msysMingw = ConvertTo-MsysPath $mingwBin
-    # Prepend scoop mingw so Git Bash does not pick C:\MinGW\bin (GCC 6.3).
-    # Single-quoted body so PowerShell does not expand $(which ...).
     $script = @'
 set -euo pipefail
 export PATH="__MINGW__:/usr/bin:/bin:$PATH"
@@ -174,11 +171,24 @@ make -j __JOBS__ __TARGET__ ARCH=__ARCH__ COMP=gcc
 ls -l stockfish.exe
 '@
     $script = $script.Replace('__MINGW__', $msysMingw).Replace('__SRC__', $msysSrc).Replace('__JOBS__', "$Jobs").Replace('__TARGET__', $target).Replace('__ARCH__', $Arch)
+    $script = $script -replace "`r`n", "`n"
+    $shFile = Join-Path $env:TEMP "build-stockfish.sh"
+    $utf8 = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($shFile, $script, $utf8)
+    $shMsys = ConvertTo-MsysPath $shFile
 
     try {
-        & $Bash -lc $script
+        & $Bash $shMsys
         if ($LASTEXITCODE -ne 0) {
-            throw "make $target a echoue (exit $LASTEXITCODE)"
+            if ($target -eq "profile-build") {
+                Write-Warning "profile-build a echoue (souvent un crash du bench instrumente sous MinGW). Fallback : make build (-O3 -flto)."
+                $scriptFb = $script.Replace("profile-build", "build")
+                [System.IO.File]::WriteAllText($shFile, $scriptFb, $utf8)
+                & $Bash $shMsys
+            }
+            if ($LASTEXITCODE -ne 0) {
+                throw "make a echoue (exit $LASTEXITCODE)"
+            }
         }
         $built = Join-Path $SrcMakeDir "stockfish.exe"
         if (-not (Test-Path -LiteralPath $built)) {
@@ -224,20 +234,17 @@ foreach ($exe in @($Out7, $Out8)) {
     $out = $proc.StandardOutput.ReadToEnd()
     $proc.WaitForExit()
     $id = $out -split "`r?`n" | Where-Object { $_ -match '^id (name|author) ' }
-    Write-Host "`n$exe" -ForegroundColor Green
+    Write-Host ""
+    Write-Host $exe -ForegroundColor Green
     $id | ForEach-Object { Write-Host "  $_" }
     $fi = Get-Item $exe
     Write-Host "  size=$($fi.Length)  mtime=$($fi.LastWriteTime)"
 }
 
-Write-Host @"
-
-Termine.
-  7pc tests : .\Test-Stockfish-Syzygy.ps1
-              .\Test-Syzygy-Probe-Immediate.ps1
-  8pc tests : .\Test-Syzygy-Probe-Immediate.ps1 -Need8Piece
-  Rebuild   : .\Build-Stockfish.ps1 -Enable8Piece
-
-Les tests Syzygy 7/8 du generateur (tbcheck / rtbver) restent la verification
-de format. Stockfish sert au probing moteur (SyzygyPath).
-"@ -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Termine." -ForegroundColor Cyan
+Write-Host "  7pc tests : .\Test-Stockfish-Syzygy.ps1"
+Write-Host "              .\Test-Syzygy-Probe-Immediate.ps1"
+Write-Host "  8pc tests : .\Test-Syzygy-Probe-Immediate.ps1 -Need8Piece"
+Write-Host "  Rebuild   : .\Build-Stockfish.ps1 -Enable8Piece"
+Write-Host "tbcheck/rtbver restent la verification de format ; Stockfish sert au probing moteur."
