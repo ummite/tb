@@ -166,6 +166,11 @@ echo.
 echo   See docs\TESTING_SYZYGY_6_7.md for the full recommended sequence,
 echo   hardware requirements, and probing test ideas.
 echo.
+echo   Engine probe (Stockfish local PGO, pas un substitut de tbcheck/rtbver) :
+echo     powershell -NoProfile -File Test-Syzygy-Probe-Immediate.ps1
+echo     powershell -NoProfile -File Test-Syzygy-Probe-Immediate.ps1 -Need8Piece
+echo     powershell -NoProfile -File Build-Stockfish.ps1 -Enable8Piece
+echo.
 echo ============================================
 echo   Syzygy 6/7 Test Sequence Complete
 echo ============================================

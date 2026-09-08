@@ -8,12 +8,12 @@
     .\Find-KRK-Mate-Line.ps1
 #>
 
-$stockfishPath = "C:\Stockfish\stockfish.exe"
+$stockfishPath = & "$PSScriptRoot\Get-StockfishEngine.ps1" -Quiet
 $syzygyPath = "T:\Syzygy"
 $startFen = "k7/8/8/8/8/8/8/1K5R w - - 0 1"
 
-if (-not (Test-Path $stockfishPath)) {
-    Write-Error "Stockfish non trouvé à $stockfishPath"
+if (-not $stockfishPath -or -not (Test-Path $stockfishPath)) {
+    Write-Error "Stockfish non trouvé. Lancez .\Build-Stockfish.ps1"
     exit 1
 }
 

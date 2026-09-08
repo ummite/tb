@@ -3,22 +3,23 @@
     Petit test pour vérifier que Stockfish utilise bien tes tablebases Syzygy sur T:\Syzygy.
 #>
 
-$stockfish = "C:\Stockfish\stockfish.exe"
+param(
+    [switch]$Need8Piece,
+    [string]$SyzygyPath = "T:\Syzygy"
+)
 
-if (-not (Test-Path $stockfish)) {
-    Write-Host "Stockfish introuvable à $stockfish" -ForegroundColor Red
-    exit 1
-}
+$stockfish = & "$PSScriptRoot\Get-StockfishEngine.ps1" -Need8Piece:$Need8Piece -Quiet
+if (-not $stockfish) { exit 1 }
 
 Write-Host "=== Test Stockfish + Tes Syzygy ===" -ForegroundColor Cyan
 Write-Host "Moteur : $stockfish"
-Write-Host "Syzygy : T:\Syzygy"
+Write-Host "Syzygy : $SyzygyPath"
 Write-Host ""
 
 # Créer les commandes UCI
 $commands = @(
     "uci",
-    "setoption name SyzygyPath value T:\Syzygy",
+    "setoption name SyzygyPath value $SyzygyPath",
     "isready",
     "position fen 8/8/8/8/8/8/4P3/4K2k w - - 0 1",
     "go depth 12",
