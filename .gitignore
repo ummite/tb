@@ -53,6 +53,9 @@ src/log/
 Syzygy/
 src/Syzygy/
 
+# Local clone of the Stockfish engine (separate git repo, used for probing tests)
+StockfishSrc/
+
 # Helper scripts and auto-generated files (optional)
 FromPowerShell.ps1
 claude-loop.ps1
