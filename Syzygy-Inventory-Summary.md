@@ -1,37 +1,39 @@
+> ⚠ Mise à jour 2026-09-08 : dépôt master unique = T:\Syzygy (\\ds1817\40TB Raid 0 B\Syzygy), 3022 fichiers (1511 WDL + 1511 DTZ), 0 manquant / 0 extra vs checksums/. Source de vérité : C:\Programmation\tb-1\Syzygy-Paths.json. Vérification : C:\Programmation\tb-1\verification\Verify-Syzygy.ps1.
+
 # Inventaire actuel de tes Syzygy (mis à jour avec S:)
 
 ## Dossiers découverts
 
 ### A: (\\ds1817\IA)
-- `A:\Syzygy`
-- `A:\Syzygy_A_Trier_FromOld_Ryzen7950` → ~1751 fichiers (très riche en 6pc et 7pc)
+- `A:\Syzygy` (supprimé — consolidé dans T:\Syzygy en 2026-05)
+- `A:\Syzygy_A_Trier_FromOld_Ryzen7950` (supprimé — consolidé dans T:\Syzygy en 2026-05) → ~1751 fichiers (très riche en 6pc et 7pc)
 
 ### S: (\\ds1821\2x10TB RAID0) ← "plein de syzygy"
-- `S:\Syzygy` + `S:\Syzygy\3-6men` → **1020 fichiers**
+- `S:\Syzygy` + `S:\Syzygy\3-6men` (supprimé — consolidé dans T:\Syzygy en 2026-05) → **1020 fichiers**
   - 3pc : 10
   - 4pc : 60
   - 5pc : 220
   - 6pc : 730
 
-- `S:\5v2_pawnful` → 420 fichiers
-- `S:\5v2_pawnless` → 280 fichiers
-- `S:\6v1_pawnful` → 140 fichiers
-- `S:\6v1_pawnless` → 112 fichiers
-- `S:\4v3_pawnless_ManyMissing` → 400 fichiers
+- `S:\5v2_pawnful` (supprimé — consolidé dans T:\Syzygy en 2026-05) → 420 fichiers
+- `S:\5v2_pawnless` (supprimé — consolidé dans T:\Syzygy en 2026-05) → 280 fichiers
+- `S:\6v1_pawnful` (supprimé — consolidé dans T:\Syzygy en 2026-05) → 140 fichiers
+- `S:\6v1_pawnless` (supprimé — consolidé dans T:\Syzygy en 2026-05) → 112 fichiers
+- `S:\4v3_pawnless_ManyMissing` (supprimé — consolidé dans T:\Syzygy en 2026-05) → 400 fichiers
 
 **Total estimé sur S: seul : plus de 2000+ fichiers Syzygy**
 
 ### T: (nouveau — ajouté par l'utilisateur)
-- `T:\Syzygy\3-6men` → **1020 fichiers**, ~**150 GB**
+- `T:\Syzygy\3-6men` (nom obsolète — dossiers réels : `T:\Syzygy\3-4-5` (290 fichiers), `T:\Syzygy\6-WDL` (365), `T:\Syzygy\6-DTZ` (365), `T:\Syzygy\7-WDL` (1001), `T:\Syzygy\7-DTZ` (1001)) → **1020 fichiers**, ~**150 GB**
   - 3pc : 10
   - 4pc : 60
   - 5pc : 220
   - 6pc : 730
 
-  → **Identique** (même nombre et même répartition) à `S:\Syzygy\3-6men`.
+  → **Identique** (même nombre et même répartition) à `S:\Syzygy\3-6men` (supprimé — consolidé dans T:\Syzygy en 2026-05).
   → Probablement une copie / backup / miroir du même set 3-6 pièces.
 
-- Pas de 7pc ni d'autres splits (5v2_, 4v3_, 6v1_) découverts dans les scans rapides sur T: pour l'instant.
+- Pas de 7pc ni d'autres splits (5v2_, 4v3_, 6v1_) découverts dans les scans rapides sur T: pour l'instant. (Obsolète depuis 2026-09-08 : `T:\Syzygy\7-WDL` + `T:\Syzygy\7-DTZ` = 2002 fichiers 7pc.)
 
 **Note** : Les scans complets récursifs sur tout T: sont très lents. Si tu as d'autres dossiers Syzygy sur T: (surtout des 7 pièces !), dis-le-moi pour que je les ajoute explicitement au script.
 
@@ -49,10 +51,12 @@ Ce sont **exactement** la structure des miroirs chessdb.cn (Bojun Guo, générat
 
 C'est fait pour **télécharger** 17 To en chunks gérables. Ce n'est **pas** une structure optimale pour le probing (le code ne scanne pas récursivement).
 
+Note (2026-09-08) : ces noms (3-6men, 7men) sont la structure du miroir chessdb.cn, pas les noms réels des dossiers sur T:\Syzygy, qui sont : `3-4-5` (3-5 pièces), `6-WDL`, `6-DTZ`, `7-WDL`, `7-DTZ`.
+
 ## Stratégie recommandée maintenant
 
 1. Choisis un **dossier de travail final** sur un disque rapide local (ex: `D:\Syzygy` ou `E:\Syzygy`).
-2. Lance `Syzygy-Setup.ps1` (j'ai déjà ajouté tous tes dossiers S: et A: dedans).
+2. Lance `Syzygy-Setup.ps1` (j'ai déjà ajouté tous tes dossiers S: et A: dedans — S: et A: supprimés, consolidés dans T:\Syzygy en 2026-05).
 3. Le script va agréger tout via des liens (idéalement HardLink) **dans un dossier plat** (ou 3-6men/ + 7men/ selon ton choix).
 4. Une fois fait, tu auras **un seul** `RTBPATH` propre et complet, avec presque tout ce que tu possèdes (surtout très bon en 5pc et 6pc).
 
