@@ -81,7 +81,9 @@ Key generator options: `-t N` (threads), `--stats` (save stats to `$RTBSTATSDIR`
 
 Environment variables: `RTBPATH` (subtablebase directory, required), `RTBSTATSDIR` (stats output, default `.`), `RTBWDIR`/`RTBZDIR` (separate WDL/DTZ dirs for verifier with `-d`).
 
-Reference checksums are in `checksums/` (wdl345.txt, wdl6.txt, dtz345.txt, dtz6.txt, dtz7.txt).
+**Syzygy paths — single source of truth: `Syzygy-Paths.json`** (repo root, live-verified 2026-09-08). The master depot is `T:\Syzygy` (UNC `\\ds1817\40TB Raid 0 B\Syzygy`, ~17 TiB, 1511 WDL + 1511 DTZ = complete 3–7 piece set): store/read/write all Syzygy there. `RTBPATH` / engine `SyzygyPath` must list the subfolders explicitly (probe code does NOT recurse): `T:\Syzygy;T:\Syzygy\3-4-5;T:\Syzygy\6-WDL;T:\Syzygy\6-DTZ;T:\Syzygy\7-WDL;T:\Syzygy\7-DTZ`. The legacy `S:\` and `A:\` sources cited in older docs are gone (consolidated into `T:`). A local test mirror lives at `C:\Programmation\tb-1\Syzygy` (~160 files, 3–5 pieces).
+
+Reference checksums are in `checksums/` (wdl345.txt, dtz345.txt, wdl6.txt, dtz6.txt, wdl7.txt, dtz7.txt — 145 + 365 + 1001 table names per WDL/DTZ).
 
 ## Architecture
 

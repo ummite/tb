@@ -1,0 +1,88 @@
+{
+  "description": "Configuration des chemins Syzygy du projet. Source unique : stocker, lire et ecrire les tablebases Syzygy via ces chemins. Plus besoin de chercher : tout est ici.",
+  "version": 1,
+  "last_verified": "2026-09-08",
+  "master": {
+    "path": "T:\\Syzygy",
+    "unc": "\\\\ds1817\\40TB Raid 0 B\\Syzygy",
+    "nas": "ds1817 - volume 40TB RAID0",
+    "role": "MASTER unique : STOCKAGE + LECTURE + ECRITURE de tous les Syzygy (3 a 7 pieces, WDL .rtbw + DTZ .rtbz)",
+    "exists_verified": true
+  },
+  "env": {
+    "RTBPATH": "T:\\Syzygy;T:\\Syzygy\\3-4-5;T:\\Syzygy\\6-WDL;T:\\Syzygy\\6-DTZ;T:\\Syzygy\\7-WDL;T:\\Syzygy\\7-DTZ",
+    "RTBSTATSDIR": "C:\\Programmation\\tb-1\\stats",
+    "stockfish_SyzygyPath": "T:\\Syzygy;T:\\Syzygy\\3-4-5;T:\\Syzygy\\6-WDL;T:\\Syzygy\\6-DTZ;T:\\Syzygy\\7-WDL;T:\\Syzygy\\7-DTZ",
+    "note": "Le code (src\\probe.c, src\\util.h) ne fait PAS de recursion : RTBPATH / SyzygyPath doivent lister chaque sous-dossier, separes par ';' (Windows) ou ':' (Linux). RTBPATH est requis pour la generation (sous-tables)."
+  },
+  "local_workspace": {
+    "path": "C:\\Programmation\\tb-1\\Syzygy",
+    "role": "Miroir local (160 fichiers, 3-5 pieces) pour tests rapides sans reseau",
+    "exists_verified": true,
+    "files": {
+      "total": 160,
+      "wdl_rtbw": 80,
+      "dtz_rtbz": 80,
+      "by_piece_count_total_files": { "3": 18, "4": 62, "5": 80 }
+    }
+  },
+  "drive_map": {
+    "A:":  { "unc": "\\\\ds1817\\IA",                 "syzygy": "non" },
+    "F:":  { "unc": "\\\\ds1821\\18TBExt2",            "syzygy": "non (plots)" },
+    "I:":  { "unc": "\\\\ds1817\\Important",           "syzygy": "non" },
+    "S:":  { "unc": "\\\\ds1821\\2x10TB RAID0",        "syzygy": "non (anciens splits disparus) " },
+    "T:":  { "unc": "\\\\ds1817\\40TB Raid 0 B",       "syzygy": "OUI - MASTER" },
+    "Y:":  { "unc": "\\\\ds1821\\24TB Raid 0 vol 6",   "syzygy": "a verifier" }
+  },
+  "legacy_sources": {
+    "note": "Sources historiques des docs (2026-05/06) : la consolidation vers T: est terminee, ces chemins n'existent plus (verifie le 2026-09-08).",
+    "gone": [
+      "S:\\Syzygy",
+      "S:\\Syzygy\\3-6men",
+      "S:\\5v2_pawnful",
+      "S:\\5v2_pawnless",
+      "S:\\6v1_pawnful",
+      "S:\\6v1_pawnless",
+      "S:\\4v3_pawnless_ManyMissing",
+      "A:\\Syzygy",
+      "A:\\Syzygy_A_Trier_FromOld_Ryzen7950"
+    ]
+  },
+  "inventory": {
+    "status": "verifie (scan direct du 2026-09-08 + comparaison des noms avec checksums/ : 0 manquant, 0 extra)",
+    "master_T_Syzygy": {
+      "total_tb_files": 3022,
+      "wdl_rtbw": 1511,
+      "dtz_rtbz": 1511,
+      "approx_size_tib": 16.9,
+      "by_piece_count_total_files": { "3": 10, "4": 60, "5": 220, "6": 730, "7": 2002 },
+      "by_piece_count_tables": { "3": 5, "4": 30, "5": 110, "6": 365, "7": 1001 },
+      "folders": {
+        "3-4-5": "290 fichiers (145 .rtbw + 145 .rtbz, pieces 3 a 5)",
+        "6-WDL": "365 .rtbw",
+        "6-DTZ": "365 .rtbz",
+        "7-WDL": "1001 .rtbw",
+        "7-DTZ": "1001 .rtbz",
+        "7men": "vide",
+        "3-6men": "1 fichier (residu de l'ancienne organisation 3-6men/7men de juillet 2026)",
+        "8men": "1 fichier"
+      },
+      "checksum_crosscheck_2026_09_08": {
+        "wdl345.txt": { "expected": 145, "present": 145, "missing": 0 },
+        "dtz345.txt": { "expected": 145, "present": 145, "missing": 0 },
+        "wdl6.txt": { "expected": 365, "present": 365, "missing": 0 },
+        "dtz6.txt": { "expected": 365, "present": 365, "missing": 0 },
+        "wdl7.txt": { "expected": 1001, "present": 1001, "missing": 0 },
+        "dtz7.txt": { "expected": 1001, "present": 1001, "missing": 0 },
+        "extra_on_T_not_in_checksums": 0
+      },
+      "caveat": "Presence verifiee par NOM (100 %). La derniere verification de hashs (tbcheck) date de juillet/aout 2026 (voir C:\\Programmation\\tb-1\\logs\\)."
+    }
+  },
+  "how_to_use": [
+    "Generation/verification : set RTBPATH=T:\\Syzygy;T:\\Syzygy\\3-4-5;T:\\Syzygy\\6-WDL;T:\\Syzygy\\6-DTZ;T:\\Syzygy\\7-WDL;T:\\Syzygy\\7-DTZ puis rtbgen/rtbgenp/rtbver/rtbverp/tbcheck",
+    "Engine (Stockfish) : SyzygyPath = T:\\Syzygy;T:\\Syzygy\\3-4-5;T:\\Syzygy\\6-WDL;T:\\Syzygy\\6-DTZ;T:\\Syzygy\\7-WDL;T:\\Syzygy\\7-DTZ (aucune recursion dans le code)",
+    "Nouveau fichier a stocker : toujours ecrire dans T:\\Syzygy (master unique)",
+    "Scripts existants : Syzygy-Quick-Status.ps1 (etat), test_syzygy67.bat (verification 6/7)"
+  ]
+}
