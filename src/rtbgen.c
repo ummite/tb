@@ -28,12 +28,11 @@
 #ifdef _MSC_VER
 #define RETRO_NO_ARG(func) \
   do { int j; \
-    j = 0; \
-    if (pcs_opp[0] == 0) { \
-      func##_pivot0(table_opp, idx & ~mask[0], occ, p); \
-      j = 1; \
-    } \
-    for (; pcs_opp[j] >= 0; j++) { \
+    if (pcs_opp[0] == 0) \
+      func##_pivot0(table_opp, idx, occ, p); \
+    else \
+      func##_pivot1(table_opp, idx, occ, p); \
+    for (j = 1; pcs_opp[j] >= 0; j++) { \
       int k = pcs_opp[j]; \
       func(k, table_opp, idx & ~mask[k], occ, p); \
     } \
@@ -41,12 +40,11 @@
 
 #define RETRO_1_ARG(func, arg1) \
   do { int j; \
-    j = 0; \
-    if (pcs_opp[0] == 0) { \
-      func##_pivot1(table_opp, idx & ~mask[0], occ, p, arg1); \
-      j = 1; \
-    } \
-    for (; pcs_opp[j] >= 0; j++) { \
+    if (pcs_opp[0] == 0) \
+      func##_pivot0(table_opp, idx, occ, p, arg1); \
+    else \
+      func##_pivot1(table_opp, idx, occ, p, arg1); \
+    for (j = 1; pcs_opp[j] >= 0; j++) { \
       int k = pcs_opp[j]; \
       func(k, table_opp, idx & ~mask[k], occ, p, arg1); \
     } \
@@ -80,31 +78,31 @@
 #define CAPT_CWIN (WIN_IN_ONE + DRAW_RULE)
 #define CAPT_CWIN_RED (WIN_IN_ONE + 1)
 
-/* SET_CHANGED - atomic compare-and-swap using portable atomics */
+/* SET_CHANGED - atomically set (x) = CHANGED if (x) == UNKNOWN */
 #define SET_CHANGED(x) \
 do { \
-  uint8_t expected = CHANGED; \
-  uint8_t desired = UNKNOWN; \
-  atomic_compare_exchange_strong(x, &expected, desired); \
+  uint8_t expected = UNKNOWN; \
+  uint8_t desired = CHANGED; \
+  atomic_compare_exchange_strong((uint8_t*)&(x), &expected, desired); \
 } while (0)
 
-/* SET_CAPT_VALUE - atomic update if new value is worse (larger = better for capturer) */
+/* SET_CAPT_VALUE - atomically set (x) = (v) if (x) > (v) (keep smallest/best) */
 #define SET_CAPT_VALUE(x, v) \
 do { \
-  uint8_t* ptr = (uint8_t*)(x); \
+  uint8_t* ptr = (uint8_t*)&(x); \
   uint8_t expected = *ptr, desired = (v); \
-  while (expected < desired && \
-         !atomic_compare_exchange_strong(x, &expected, desired)) \
+  while (expected > desired && \
+         !atomic_compare_exchange_strong(ptr, &expected, desired)) \
     ; \
 } while (0)
 
-/* SET_WIN_VALUE - atomic update if new value is better (smaller = worse) */
+/* SET_WIN_VALUE - atomically set (x) = (v) if (x) > (v) (keep smallest/best) */
 #define SET_WIN_VALUE(x, v) \
 do { \
-  uint8_t* ptr = (uint8_t*)(x); \
+  uint8_t* ptr = (uint8_t*)&(x); \
   uint8_t expected = *ptr, desired = (v); \
   while (expected > desired && \
-         !atomic_compare_exchange_strong(x, &expected, desired)) \
+         !atomic_compare_exchange_strong(ptr, &expected, desired)) \
     ; \
 } while (0)
 

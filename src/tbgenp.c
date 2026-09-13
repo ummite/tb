@@ -84,30 +84,6 @@ extern void fix_closs_b(void);
 extern void reset_piece_captures_w(void);
 extern void reset_piece_captures_b(void);
 
-#if defined(_MSC_VER) && defined(REGULAR)
-/* Stubs only for the REGULAR pawnful generator on MSVC.
-   Suicide-family generators (stbgenp etc.) provide their own real implementations. */
-static void stub(const char *name) {
-    fprintf(stderr, "ERROR: %s not implemented (regular pawnful on MSVC - rtbgenp.c port incomplete)\n", name);
-    exit(1);
-}
-void calc_broken(struct thread_data *thread) { stub("calc_broken"); }
-void calc_pawn_captures_w(struct thread_data *thread) { stub("calc_pawn_captures_w"); }
-void calc_pawn_captures_b(struct thread_data *thread) { stub("calc_pawn_captures_b"); }
-void calc_pawn_moves_w(struct thread_data *thread) { stub("calc_pawn_moves_w"); }
-void calc_pawn_moves_b(struct thread_data *thread) { stub("calc_pawn_moves_b"); }
-void calc_mates(struct thread_data *thread) { stub("calc_mates"); }
-void calc_captures_w(void) { stub("calc_captures_w"); }
-void calc_captures_b(void) { stub("calc_captures_b"); }
-void iterate(void) { stub("iterate"); }
-void set_tbl_to_wdl(int saves) { stub("set_tbl_to_wdl"); }
-void fix_closs_w(void) { stub("fix_closs_w"); }
-void fix_closs_b(void) { stub("fix_closs_b"); }
-void reset_piece_captures_w(void) { stub("reset_piece_captures_w"); }
-void reset_piece_captures_b(void) { stub("reset_piece_captures_b"); }
-void reset_pawn_captures_w(struct thread_data *thread) { stub("reset_pawn_captures_w"); }
-void reset_pawn_captures_b(struct thread_data *thread) { stub("reset_pawn_captures_b"); }
-#endif
 
 #if defined(_MSC_VER) && defined(ATOMIC)
 /* Atomic pawnful generator on MSVC: atbgenp.c only provides a static reset_piece_captures(void),
@@ -137,12 +113,6 @@ void reset_piece_captures_b(void) {}
 #define mark_win_in_1_pivot0(...)             (void)0
 #endif
 
-#ifdef _MSC_VER
-/* RETRO_* macros expand to calls in some generator paths on MSVC for non-suicide variants.
-   Provide no-op versions to avoid unresolved external symbol errors at link time. */
-#define RETRO_NO_ARG(func)                    (void)0
-#define RETRO_1_ARG(func, arg1)               (void)0
-#endif
 
 static uint64_t *work_g, *work_piv;
 static uint64_t *work_p, *work_part;
@@ -291,8 +261,7 @@ void calc_pawn_table_unthreaded(void)
       cnt = pawnsize / 6;
     }
     cnt--;
-    {
-      FILL_OCC_PAWNS;
+    FILL_OCC_PAWNS {
       thread_data[0].occ = occ;
       has_cursed_pawn_moves = 0;
       if (has_white_pawns)
@@ -308,8 +277,7 @@ void calc_pawn_table_unthreaded(void)
 #endif
 #endif
       iterate();
-    }
-    {
+    } else {
       int local;
       for (local = 0; local < num_saves; local++)
         reduce_tables(local);
@@ -352,8 +320,7 @@ void calc_pawn_table_threaded(void)
       cnt = pawnsize / 6;
     }
     cnt--;
-    {
-      FILL_OCC_PAWNS;
+    FILL_OCC_PAWNS {
       for (i = 0; i < numthreads; i++)
         thread_data[i].occ = occ;
       for (i = 0; i < numthreads; i++)
@@ -372,8 +339,7 @@ void calc_pawn_table_threaded(void)
 #endif
 #endif
       iterate();
-    }
-    {
+    } else {
       int local;
       for (local = 0; local < num_saves; local++)
         reduce_tables(local);

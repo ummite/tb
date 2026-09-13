@@ -59,3 +59,13 @@ StockfishSrc/
 # Helper scripts and auto-generated files (optional)
 FromPowerShell.ps1
 claude-loop.ps1
+
+# Temporary test / generation harness directories (session test output, not source)
+test_gen_*/
+
+# Diff / patch / error dump artifacts (debugging & comparison output)
+*.diff
+*.rej
+*.orig
+*.patch
+*.err

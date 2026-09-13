@@ -80,10 +80,6 @@ char *tablename = NULL;
 #define mark_wins_pivot1(...)           (void)0
 #endif
 
-/* RETRO macros — safe to define broadly for MSVC generator builds */
-#define RETRO_NO_ARG(func)                (void)0
-#define RETRO_1_ARG(func, arg1)           (void)0
-
 /* Common iter globals if referenced */
 uint8_t *iter_table = NULL;
 uint8_t *iter_table_opp = NULL;
@@ -1314,7 +1310,6 @@ int main(int argc, char **argv)
   }
 
   if (generate_wdl) {
-
     uint8_t v[256];
 #ifndef SUICIDE
     reset_captures_w();
@@ -1348,7 +1343,6 @@ int main(int argc, char **argv)
   }
 
   if (generate_dtz) {
-
     struct tb_handle *G = create_tb(tablename, 0, 10);
     uint64_t estimate_w, estimate_b;
 

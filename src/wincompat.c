@@ -10,10 +10,10 @@ char *optarg = NULL;
 int optind = 1;
 int opterr = 1;
 int optopt = 0;
+static int optpos = 1;
 
 int _getopt(int argc, char *argv[], const char *optstring)
 {
-  static int optpos = 1;
   char *cp;
 
   if (optpos == 1) {
@@ -116,12 +116,15 @@ int getopt_long(int argc, char *argv[], const char *optstring,
               fprintf(stderr, "getopt_long: option --%s requires an argument\n",
                       longopts[i].name);
             }
+            optind++;
             return ':';
           }
           optarg = arg;
         } else {
           optarg = NULL;
         }
+
+        optind++;
 
         if (longopts[i].flag != NULL) {
           *longopts[i].flag = longopts[i].val;
@@ -145,6 +148,7 @@ int getopt_long(int argc, char *argv[], const char *optstring,
   }
 
   /* Fall back to getopt for short options */
+  optpos = 0;
   opt = getopt(argc, argv, optstring);
 
   /* Check if it matches a long option with single character val */
