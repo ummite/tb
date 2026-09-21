@@ -70,14 +70,7 @@
 #define mark_capt_cursed_losses_pivot(...) (void)0
 #endif
 
-#ifdef _MSC_VER
-/* Fallback RETRO macros for MSVC builds of stbgenp (suicide generator).
-   These are used in the big switch for fixing positions. The versions in
-   genericp.c sometimes cause "illegal else" on MSVC due to macro expansion
-   in this file. These safe versions let compilation proceed. */
-#define RETRO_NO_ARG(func)   do { } while(0)
-#define RETRO_1_ARG(func, a) do { } while(0)
-#endif
+
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -539,7 +532,6 @@ static void probe_pivot_captures(struct thread_data *thread)
 {
   BEGIN_CAPTS_PIVOT;
   int has_cursed = 0;
-  int wtm = 0;
 
   LOOP_CAPTS_PIVOT {
     FILL_OCC_CAPTS_PIVOT {

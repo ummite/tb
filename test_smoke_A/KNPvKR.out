@@ -1,0 +1,1495 @@
+Found 95 tablebases.
+number of threads = 24
+Generating the a-file.
+Initialising broken positions.
+time taken =   0:00.013
+Calculating white piece captures.
+time taken =   0:00.001
+time taken =   0:00.014
+time taken =   0:00.016
+Calculating white pawn captures.
+time taken =   0:00.030
+Calculating black piece captures.
+time taken =   0:00.003
+time taken =   0:00.031
+time taken =   0:00.015
+Calculating pawn table.
+a7 a6 a5 a4 a3 a2 
+########## KNPvKR - file a ##########
+
+White to move:
+
+16818633 positions win in 1 ply.
+87 positions win in 2 ply.
+1105240 positions win in 3 ply.
+65589 positions win in 5 ply.
+36067 positions win in 7 ply.
+21463 positions win in 9 ply.
+13738 positions win in 11 ply.
+7560 positions win in 13 ply.
+3636 positions win in 15 ply.
+1322 positions win in 17 ply.
+496 positions win in 19 ply.
+194 positions win in 21 ply.
+85 positions win in 23 ply.
+36 positions win in 25 ply.
+12 positions win in 27 ply.
+5 positions win in 29 ply.
+
+18074163 positions are wins.
+48186520 positions are draws.
+3009797 positions are losses.
+
+45675 positions lose in 0 ply.
+193 positions lose in 1 ply.
+1627954 positions lose in 2 ply.
+1558 positions lose in 3 ply.
+390182 positions lose in 4 ply.
+1824 positions lose in 5 ply.
+275831 positions lose in 6 ply.
+1168 positions lose in 7 ply.
+164854 positions lose in 8 ply.
+1276 positions lose in 9 ply.
+119719 positions lose in 10 ply.
+1021 positions lose in 11 ply.
+87966 positions lose in 12 ply.
+422 positions lose in 13 ply.
+65181 positions lose in 14 ply.
+280 positions lose in 15 ply.
+50539 positions lose in 16 ply.
+194 positions lose in 17 ply.
+40286 positions lose in 18 ply.
+122 positions lose in 19 ply.
+32503 positions lose in 20 ply.
+51 positions lose in 21 ply.
+25250 positions lose in 22 ply.
+41 positions lose in 23 ply.
+19085 positions lose in 24 ply.
+56 positions lose in 25 ply.
+14987 positions lose in 26 ply.
+46 positions lose in 27 ply.
+10910 positions lose in 28 ply.
+1 positions lose in 29 ply.
+7854 positions lose in 30 ply.
+5442 positions lose in 32 ply.
+3890 positions lose in 34 ply.
+3016 positions lose in 36 ply.
+2441 positions lose in 38 ply.
+1764 positions lose in 40 ply.
+1510 positions lose in 42 ply.
+1199 positions lose in 44 ply.
+999 positions lose in 46 ply.
+616 positions lose in 48 ply.
+423 positions lose in 50 ply.
+265 positions lose in 52 ply.
+167 positions lose in 54 ply.
+126 positions lose in 56 ply.
+123 positions lose in 58 ply.
+114 positions lose in 60 ply.
+170 positions lose in 62 ply.
+86 positions lose in 64 ply.
+94 positions lose in 66 ply.
+127 positions lose in 68 ply.
+114 positions lose in 70 ply.
+47 positions lose in 72 ply.
+13 positions lose in 74 ply.
+19 positions lose in 76 ply.
+3 positions lose in 78 ply.
+
+Black to move:
+
+13423408 positions win in 1 ply.
+1928 positions win in 2 ply.
+2903044 positions win in 3 ply.
+2967 positions win in 4 ply.
+998107 positions win in 5 ply.
+1837 positions win in 6 ply.
+492734 positions win in 7 ply.
+930 positions win in 8 ply.
+269098 positions win in 9 ply.
+981 positions win in 10 ply.
+170552 positions win in 11 ply.
+539 positions win in 12 ply.
+112231 positions win in 13 ply.
+334 positions win in 14 ply.
+83034 positions win in 15 ply.
+306 positions win in 16 ply.
+63798 positions win in 17 ply.
+188 positions win in 18 ply.
+49968 positions win in 19 ply.
+134 positions win in 20 ply.
+39272 positions win in 21 ply.
+51 positions win in 22 ply.
+30315 positions win in 23 ply.
+60 positions win in 24 ply.
+23236 positions win in 25 ply.
+43 positions win in 26 ply.
+17185 positions win in 27 ply.
+6 positions win in 28 ply.
+12354 positions win in 29 ply.
+9021 positions win in 31 ply.
+6058 positions win in 33 ply.
+4545 positions win in 35 ply.
+3606 positions win in 37 ply.
+2785 positions win in 39 ply.
+2056 positions win in 41 ply.
+1913 positions win in 43 ply.
+1421 positions win in 45 ply.
+1018 positions win in 47 ply.
+639 positions win in 49 ply.
+475 positions win in 51 ply.
+314 positions win in 53 ply.
+208 positions win in 55 ply.
+242 positions win in 57 ply.
+206 positions win in 59 ply.
+196 positions win in 61 ply.
+191 positions win in 63 ply.
+173 positions win in 65 ply.
+179 positions win in 67 ply.
+136 positions win in 69 ply.
+109 positions win in 71 ply.
+52 positions win in 73 ply.
+14 positions win in 75 ply.
+10 positions win in 77 ply.
+9 positions win in 79 ply.
+
+18734216 positions are wins.
+40916826 positions are draws.
+1294484 positions are losses.
+
+172 positions lose in 0 ply.
+41 positions lose in 1 ply.
+958420 positions lose in 2 ply.
+130339 positions lose in 4 ply.
+82986 positions lose in 6 ply.
+52278 positions lose in 8 ply.
+32495 positions lose in 10 ply.
+19929 positions lose in 12 ply.
+10318 positions lose in 14 ply.
+4650 positions lose in 16 ply.
+1690 positions lose in 18 ply.
+672 positions lose in 20 ply.
+314 positions lose in 22 ply.
+122 positions lose in 24 ply.
+40 positions lose in 26 ply.
+13 positions lose in 28 ply.
+5 positions lose in 30 ply.
+
+Longest win for white: 30 ply; 8/P2N4/8/8/8/6k1/5r2/K7 b - -
+Longest win for black: 79 ply; 8/5r2/N7/8/P7/4k3/K7/8 b - -
+
+
+tb_size = 85775760
+find optimal permutation for wtm/wdl, file a
+[ 0] order: 4; perm:  2  6 12 14  1; 352690
+[ 1] order: 4; perm:  2 12  6 14  1; 345433
+[ 2] order: 4; perm:  2 14  6 12  1; 344128
+[ 3] order: 4; perm:  6  2 12 14  1; 347418
+[ 4] order: 4; perm: 12  2  6 14  1; 435478
+[ 5] order: 4; perm: 14  2  6 12  1; 324386
+[ 6] order: 4; perm:  6 12  2 14  1; 337803
+[ 7] order: 4; perm:  6 14  2 12  1; 331573
+[ 8] order: 4; perm: 12  6  2 14  1; 436010
+[ 9] order: 4; perm: 14  6  2 12  1; 326678
+[10] order: 4; perm: 12 14  2  6  1; 426652
+[11] order: 4; perm: 14 12  2  6  1; 322126
+[12] order: 1; perm:  2  1  6 12 14; 351469
+[13] order: 1; perm:  6  1  2 12 14; 346391
+[14] order: 1; perm: 12  1  2  6 14; 437038
+[15] order: 1; perm: 14  1  2  6 12; 332265
+[16] order: 0; perm:  1  2  6 12 14; 405981
+[17] order: 0; perm:  1  6  2 12 14; 383231
+[18] order: 0; perm:  1 12  2  6 14; 437089
+[19] order: 0; perm:  1 14  2  6 12; 403834
+[ 0] order: 4; perm: 14  2 12  6  1; 335354
+[ 1] order: 4; perm: 14  6 12  2  1; 330272
+[ 2] order: 4; perm: 14 12  6  2  1; 319860
+[ 3] order: 2; perm: 14  2  1  6 12; 324489
+[ 4] order: 2; perm: 14  6  1  2 12; 324031
+[ 5] order: 2; perm: 14 12  1  2  6; 337482
+[ 6] order: 1; perm: 14  1  6  2 12; 334181
+[ 7] order: 1; perm: 14  1 12  2  6; 343276
+[ 0] order: 3; perm: 14 12  2  1  6; 330453
+[ 1] order: 3; perm: 14 12  6  1  2; 324621
+[ 2] order: 2; perm: 14 12  1  6  2; 328807
+best order: 4
+best permutation: 1 14 12 6 2
+time taken =   0:00.175
+compressing data for wtm/wdl, file a
+calc_size: 2818720
+bits = 6; blocks = 44483 (0); size = 2951586
+real_num_blocks = 44419; num_blocks = 44419
+idxbits = 15
+num_indices = 2618
+find optimal permutation for btm/wdl, file a
+[ 0] order: 4; perm:  2  6 12 14  1; 428055
+[ 1] order: 4; perm:  2 12  6 14  1; 413236
+[ 2] order: 4; perm:  2 14  6 12  1; 410921
+[ 3] order: 4; perm:  6  2 12 14  1; 377846
+[ 4] order: 4; perm: 12  2  6 14  1; 242146
+[ 5] order: 4; perm: 14  2  6 12  1; 316375
+[ 6] order: 4; perm:  6 12  2 14  1; 365133
+[ 7] order: 4; perm:  6 14  2 12  1; 360949
+[ 8] order: 4; perm: 12  6  2 14  1; 250243
+[ 9] order: 4; perm: 14  6  2 12  1; 318780
+[10] order: 4; perm: 12 14  2  6  1; 242789
+[11] order: 4; perm: 14 12  2  6  1; 315486
+[12] order: 1; perm:  2  1  6 12 14; 412136
+[13] order: 1; perm:  6  1  2 12 14; 366253
+[14] order: 1; perm: 12  1  2  6 14; 239876
+[15] order: 1; perm: 14  1  2  6 12; 328896
+[16] order: 0; perm:  1  2  6 12 14; 377267
+[17] order: 0; perm:  1  6  2 12 14; 348937
+[18] order: 0; perm:  1 12  2  6 14; 313711
+[19] order: 0; perm:  1 14  2  6 12; 349788
+[ 0] order: 4; perm: 12  2 14  6  1; 253147
+[ 1] order: 4; perm: 12  6 14  2  1; 253418
+[ 2] order: 4; perm: 12 14  6  2  1; 233368
+[ 3] order: 2; perm: 12  2  1  6 14; 240373
+[ 4] order: 2; perm: 12  6  1  2 14; 238621
+[ 5] order: 2; perm: 12 14  1  2  6; 244304
+[ 6] order: 1; perm: 12  1  6  2 14; 242206
+[ 7] order: 1; perm: 12  1 14  2  6; 243053
+[ 0] order: 3; perm: 12 14  2  1  6; 249619
+[ 1] order: 3; perm: 12 14  6  1  2; 249637
+[ 2] order: 2; perm: 12 14  1  6  2; 245630
+best order: 4
+best permutation: 1 12 14 6 2
+time taken =   0:00.194
+compressing data for btm/wdl, file a
+calc_size: 2070416
+bits = 6; blocks = 32667 (0); size = 2163876
+real_num_blocks = 32618; num_blocks = 32618
+idxbits = 16
+num_indices = 1309
+find optimal permutation for wtm/dtz, file a
+[ 0] order: 4; perm:  2  6 12 14  1; 181679
+[ 1] order: 4; perm:  2 12  6 14  1; 176998
+[ 2] order: 4; perm:  2 14  6 12  1; 167117
+[ 3] order: 4; perm:  6  2 12 14  1; 166648
+[ 4] order: 4; perm: 12  2  6 14  1; 147200
+[ 5] order: 4; perm: 14  2  6 12  1; 151811
+[ 6] order: 4; perm:  6 12  2 14  1; 162210
+[ 7] order: 4; perm:  6 14  2 12  1; 159841
+[ 8] order: 4; perm: 12  6  2 14  1; 151302
+[ 9] order: 4; perm: 14  6  2 12  1; 158462
+[10] order: 4; perm: 12 14  2  6  1; 136808
+[11] order: 4; perm: 14 12  2  6  1; 149133
+[12] order: 1; perm:  2  1  6 12 14; 170943
+[13] order: 1; perm:  6  1  2 12 14; 156436
+[14] order: 1; perm: 12  1  2  6 14; 133482
+[15] order: 1; perm: 14  1  2  6 12; 158143
+[16] order: 0; perm:  1  2  6 12 14; 154074
+[17] order: 0; perm:  1  6  2 12 14; 146875
+[18] order: 0; perm:  1 12  2  6 14; 131840
+[19] order: 0; perm:  1 14  2  6 12; 146517
+[ 0] order: 0; perm:  1  2 12  6 14; 144874
+[ 1] order: 0; perm:  1  2 14  6 12; 157561
+[ 2] order: 0; perm:  1  6 12  2 14; 136963
+[ 3] order: 0; perm:  1  6 14  2 12; 146904
+[ 4] order: 0; perm:  1 12  6  2 14; 132906
+[ 5] order: 0; perm:  1 14  6  2 12; 144441
+[ 6] order: 0; perm:  1 12 14  2  6; 153866
+[ 7] order: 0; perm:  1 14 12  2  6; 156747
+[ 0] order: 0; perm:  1 12  2 14  6; 160014
+[ 1] order: 0; perm:  1 12  6 14  2; 152368
+[ 2] order: 0; perm:  1 12 14  6  2; 154229
+best order: 0
+best permutation: 1 12 2 6 14
+find optimal permutation for btm/dtz, file a
+[ 0] order: 4; perm:  2  6 12 14  1; 313114
+[ 1] order: 4; perm:  2 12  6 14  1; 303030
+[ 2] order: 4; perm:  2 14  6 12  1; 286083
+[ 3] order: 4; perm:  6  2 12 14  1; 297442
+[ 4] order: 4; perm: 12  2  6 14  1; 209511
+[ 5] order: 4; perm: 14  2  6 12  1; 247742
+[ 6] order: 4; perm:  6 12  2 14  1; 284568
+[ 7] order: 4; perm:  6 14  2 12  1; 285834
+[ 8] order: 4; perm: 12  6  2 14  1; 209170
+[ 9] order: 4; perm: 14  6  2 12  1; 255587
+[10] order: 4; perm: 12 14  2  6  1; 196234
+[11] order: 4; perm: 14 12  2  6  1; 244241
+[12] order: 1; perm:  2  1  6 12 14; 292281
+[13] order: 1; perm:  6  1  2 12 14; 282621
+[14] order: 1; perm: 12  1  2  6 14; 191181
+[15] order: 1; perm: 14  1  2  6 12; 259424
+[16] order: 0; perm:  1  2  6 12 14; 265834
+[17] order: 0; perm:  1  6  2 12 14; 256133
+[18] order: 0; perm:  1 12  2  6 14; 224555
+[19] order: 0; perm:  1 14  2  6 12; 256531
+[ 0] order: 4; perm: 12  2 14  6  1; 221664
+[ 1] order: 4; perm: 12  6 14  2  1; 205560
+[ 2] order: 4; perm: 12 14  6  2  1; 186993
+[ 3] order: 2; perm: 12  2  1  6 14; 196360
+[ 4] order: 2; perm: 12  6  1  2 14; 191714
+[ 5] order: 2; perm: 12 14  1  2  6; 209403
+[ 6] order: 1; perm: 12  1  6  2 14; 191727
+[ 7] order: 1; perm: 12  1 14  2  6; 209886
+[ 0] order: 3; perm: 12 14  2  1  6; 213744
+[ 1] order: 3; perm: 12 14  6  1  2; 206423
+[ 2] order: 2; perm: 12 14  1  6  2; 209942
+best order: 4
+best permutation: 1 12 14 6 2
+permute table for wtm/dtz, file a
+time taken =   0:01.041
+compressing data for wtm/dtz, file a
+calc_size: 1317406
+bits = 10; blocks = 1810 (0); size = 1857552
+bits = 9; blocks = 2790 (0); size = 1435044
+bits = 8; blocks = 5193 (0); size = 1340778
+bits = 7; blocks = 10344 (2); size = 1346692
+real_num_blocks = 5190; num_blocks = 5190
+idxbits = 19
+num_indices = 164
+Generating the b-file.
+Initialising broken positions.
+time taken =   0:00.118
+Calculating white piece captures.
+time taken =   0:00.003
+time taken =   0:00.023
+time taken =   0:00.035
+Calculating white pawn captures.
+time taken =   0:00.074
+Calculating black piece captures.
+time taken =   0:00.003
+time taken =   0:00.063
+time taken =   0:00.030
+Calculating pawn table.
+b7 b6 b5 b4 b3 b2 
+########## KNPvKR - file b ##########
+
+White to move:
+
+17278214 positions win in 1 ply.
+245 positions win in 2 ply.
+1097696 positions win in 3 ply.
+385 positions win in 4 ply.
+92857 positions win in 5 ply.
+41848 positions win in 7 ply.
+23605 positions win in 9 ply.
+13729 positions win in 11 ply.
+7505 positions win in 13 ply.
+3335 positions win in 15 ply.
+1465 positions win in 17 ply.
+731 positions win in 19 ply.
+237 positions win in 21 ply.
+95 positions win in 23 ply.
+61 positions win in 25 ply.
+29 positions win in 27 ply.
+10 positions win in 29 ply.
+5 positions win in 31 ply.
+1 positions win in 33 ply.
+
+18562053 positions are wins.
+47011665 positions are draws.
+2710002 positions are losses.
+
+51322 positions lose in 0 ply.
+194 positions lose in 1 ply.
+1534991 positions lose in 2 ply.
+1650 positions lose in 3 ply.
+378412 positions lose in 4 ply.
+1915 positions lose in 5 ply.
+251135 positions lose in 6 ply.
+925 positions lose in 7 ply.
+142023 positions lose in 8 ply.
+979 positions lose in 9 ply.
+96898 positions lose in 10 ply.
+825 positions lose in 11 ply.
+70127 positions lose in 12 ply.
+226 positions lose in 13 ply.
+49222 positions lose in 14 ply.
+71 positions lose in 15 ply.
+34970 positions lose in 16 ply.
+24 positions lose in 17 ply.
+25323 positions lose in 18 ply.
+32 positions lose in 19 ply.
+18973 positions lose in 20 ply.
+29 positions lose in 21 ply.
+13512 positions lose in 22 ply.
+37 positions lose in 23 ply.
+9504 positions lose in 24 ply.
+57 positions lose in 25 ply.
+6551 positions lose in 26 ply.
+44 positions lose in 27 ply.
+5000 positions lose in 28 ply.
+50 positions lose in 29 ply.
+3683 positions lose in 30 ply.
+39 positions lose in 31 ply.
+2720 positions lose in 32 ply.
+11 positions lose in 33 ply.
+2139 positions lose in 34 ply.
+14 positions lose in 35 ply.
+1699 positions lose in 36 ply.
+2 positions lose in 37 ply.
+1370 positions lose in 38 ply.
+982 positions lose in 40 ply.
+710 positions lose in 42 ply.
+539 positions lose in 44 ply.
+419 positions lose in 46 ply.
+263 positions lose in 48 ply.
+103 positions lose in 50 ply.
+90 positions lose in 52 ply.
+75 positions lose in 54 ply.
+78 positions lose in 56 ply.
+30 positions lose in 58 ply.
+14 positions lose in 60 ply.
+1 positions lose in 62 ply.
+
+Black to move:
+
+12992193 positions win in 1 ply.
+1978 positions win in 2 ply.
+2705330 positions win in 3 ply.
+3287 positions win in 4 ply.
+914601 positions win in 5 ply.
+2052 positions win in 6 ply.
+426255 positions win in 7 ply.
+742 positions win in 8 ply.
+224408 positions win in 9 ply.
+864 positions win in 10 ply.
+139738 positions win in 11 ply.
+380 positions win in 12 ply.
+90455 positions win in 13 ply.
+148 positions win in 14 ply.
+61194 positions win in 15 ply.
+57 positions win in 16 ply.
+44270 positions win in 17 ply.
+62 positions win in 18 ply.
+31859 positions win in 19 ply.
+46 positions win in 20 ply.
+23367 positions win in 21 ply.
+46 positions win in 22 ply.
+16694 positions win in 23 ply.
+67 positions win in 24 ply.
+11406 positions win in 25 ply.
+73 positions win in 26 ply.
+8397 positions win in 27 ply.
+50 positions win in 28 ply.
+6118 positions win in 29 ply.
+63 positions win in 30 ply.
+4690 positions win in 31 ply.
+30 positions win in 32 ply.
+3343 positions win in 33 ply.
+23 positions win in 34 ply.
+2594 positions win in 35 ply.
+4 positions win in 36 ply.
+2183 positions win in 37 ply.
+1638 positions win in 39 ply.
+1221 positions win in 41 ply.
+801 positions win in 43 ply.
+639 positions win in 45 ply.
+483 positions win in 47 ply.
+282 positions win in 49 ply.
+143 positions win in 51 ply.
+158 positions win in 53 ply.
+112 positions win in 55 ply.
+83 positions win in 57 ply.
+46 positions win in 59 ply.
+9 positions win in 61 ply.
+
+17724682 positions are wins.
+42076951 positions are draws.
+1447491 positions are losses.
+
+691 positions lose in 0 ply.
+151 positions lose in 1 ply.
+1010714 positions lose in 2 ply.
+155 positions lose in 3 ply.
+195326 positions lose in 4 ply.
+168 positions lose in 5 ply.
+108472 positions lose in 6 ply.
+58612 positions lose in 8 ply.
+34604 positions lose in 10 ply.
+19870 positions lose in 12 ply.
+10694 positions lose in 14 ply.
+4463 positions lose in 16 ply.
+2022 positions lose in 18 ply.
+886 positions lose in 20 ply.
+361 positions lose in 22 ply.
+145 positions lose in 24 ply.
+74 positions lose in 26 ply.
+50 positions lose in 28 ply.
+21 positions lose in 30 ply.
+12 positions lose in 32 ply.
+
+Longest win for white: 33 ply; 8/1P6/8/8/2N5/6r1/8/3K3k w - -
+Longest win for black: 62 ply; 7K/8/8/1P6/5k2/8/8/1N1r4 w - -
+
+
+tb_size = 85775760
+find optimal permutation for wtm/wdl, file b
+[ 0] order: 4; perm:  2  6 12 14  1; 333692
+[ 1] order: 4; perm:  2 12  6 14  1; 338582
+[ 2] order: 4; perm:  2 14  6 12  1; 335782
+[ 3] order: 4; perm:  6  2 12 14  1; 332173
+[ 4] order: 4; perm: 12  2  6 14  1; 428978
+[ 5] order: 4; perm: 14  2  6 12  1; 325578
+[ 6] order: 4; perm:  6 12  2 14  1; 312438
+[ 7] order: 4; perm:  6 14  2 12  1; 321805
+[ 8] order: 4; perm: 12  6  2 14  1; 404609
+[ 9] order: 4; perm: 14  6  2 12  1; 315200
+[10] order: 4; perm: 12 14  2  6  1; 425243
+[11] order: 4; perm: 14 12  2  6  1; 325618
+[12] order: 1; perm:  2  1  6 12 14; 340798
+[13] order: 1; perm:  6  1  2 12 14; 335824
+[14] order: 1; perm: 12  1  2  6 14; 424623
+[15] order: 1; perm: 14  1  2  6 12; 329405
+[16] order: 0; perm:  1  2  6 12 14; 396697
+[17] order: 0; perm:  1  6  2 12 14; 382235
+[18] order: 0; perm:  1 12  2  6 14; 436938
+[19] order: 0; perm:  1 14  2  6 12; 394571
+[ 0] order: 4; perm:  6  2 14 12  1; 331056
+[ 1] order: 4; perm:  6 12 14  2  1; 323867
+[ 2] order: 4; perm:  6 14 12  2  1; 328413
+[ 3] order: 2; perm:  6  2  1 12 14; 324391
+[ 4] order: 2; perm:  6 12  1  2 14; 323146
+[ 5] order: 2; perm:  6 14  1  2 12; 329619
+[ 6] order: 1; perm:  6  1 12  2 14; 335187
+[ 7] order: 1; perm:  6  1 14  2 12; 337338
+[ 0] order: 3; perm:  6 12  2  1 14; 319088
+[ 1] order: 3; perm:  6 12 14  1  2; 331021
+[ 2] order: 2; perm:  6 12  1 14  2; 325969
+best order: 4
+best permutation: 1 6 12 2 14
+time taken =   0:00.189
+compressing data for wtm/wdl, file b
+calc_size: 2834642
+bits = 6; blocks = 44732 (0); size = 2968020
+real_num_blocks = 44666; num_blocks = 44666
+idxbits = 15
+num_indices = 2618
+find optimal permutation for btm/wdl, file b
+[ 0] order: 4; perm:  2  6 12 14  1; 411399
+[ 1] order: 4; perm:  2 12  6 14  1; 402254
+[ 2] order: 4; perm:  2 14  6 12  1; 394634
+[ 3] order: 4; perm:  6  2 12 14  1; 359797
+[ 4] order: 4; perm: 12  2  6 14  1; 248684
+[ 5] order: 4; perm: 14  2  6 12  1; 317050
+[ 6] order: 4; perm:  6 12  2 14  1; 346435
+[ 7] order: 4; perm:  6 14  2 12  1; 336720
+[ 8] order: 4; perm: 12  6  2 14  1; 248590
+[ 9] order: 4; perm: 14  6  2 12  1; 311517
+[10] order: 4; perm: 12 14  2  6  1; 243412
+[11] order: 4; perm: 14 12  2  6  1; 308479
+[12] order: 1; perm:  2  1  6 12 14; 405215
+[13] order: 1; perm:  6  1  2 12 14; 351911
+[14] order: 1; perm: 12  1  2  6 14; 247906
+[15] order: 1; perm: 14  1  2  6 12; 315980
+[16] order: 0; perm:  1  2  6 12 14; 389528
+[17] order: 0; perm:  1  6  2 12 14; 364361
+[18] order: 0; perm:  1 12  2  6 14; 332959
+[19] order: 0; perm:  1 14  2  6 12; 343321
+[ 0] order: 4; perm: 12  2 14  6  1; 257490
+[ 1] order: 4; perm: 12  6 14  2  1; 252187
+[ 2] order: 4; perm: 12 14  6  2  1; 241535
+[ 3] order: 2; perm: 12  2  1  6 14; 246937
+[ 4] order: 2; perm: 12  6  1  2 14; 241768
+[ 5] order: 2; perm: 12 14  1  2  6; 245864
+[ 6] order: 1; perm: 12  1  6  2 14; 244205
+[ 7] order: 1; perm: 12  1 14  2  6; 247396
+[ 0] order: 3; perm: 12 14  2  1  6; 239767
+[ 1] order: 3; perm: 12 14  6  1  2; 240473
+[ 2] order: 2; perm: 12 14  1  6  2; 244059
+best order: 3
+best permutation: 1 12 14 2 6
+time taken =   0:00.990
+compressing data for btm/wdl, file b
+calc_size: 2085685
+bits = 6; blocks = 32907 (0); size = 2179716
+real_num_blocks = 32859; num_blocks = 32859
+idxbits = 16
+num_indices = 1309
+find optimal permutation for wtm/dtz, file b
+[ 0] order: 4; perm:  2  6 12 14  1; 154056
+[ 1] order: 4; perm:  2 12  6 14  1; 149050
+[ 2] order: 4; perm:  2 14  6 12  1; 143271
+[ 3] order: 4; perm:  6  2 12 14  1; 141926
+[ 4] order: 4; perm: 12  2  6 14  1; 127273
+[ 5] order: 4; perm: 14  2  6 12  1; 130127
+[ 6] order: 4; perm:  6 12  2 14  1; 125067
+[ 7] order: 4; perm:  6 14  2 12  1; 131125
+[ 8] order: 4; perm: 12  6  2 14  1; 118584
+[ 9] order: 4; perm: 14  6  2 12  1; 127849
+[10] order: 4; perm: 12 14  2  6  1; 123561
+[11] order: 4; perm: 14 12  2  6  1; 128396
+[12] order: 1; perm:  2  1  6 12 14; 151138
+[13] order: 1; perm:  6  1  2 12 14; 138507
+[14] order: 1; perm: 12  1  2  6 14; 124379
+[15] order: 1; perm: 14  1  2  6 12; 138778
+[16] order: 0; perm:  1  2  6 12 14; 141464
+[17] order: 0; perm:  1  6  2 12 14; 132780
+[18] order: 0; perm:  1 12  2  6 14; 124132
+[19] order: 0; perm:  1 14  2  6 12; 132431
+[ 0] order: 4; perm: 12  2 14  6  1; 133562
+[ 1] order: 4; perm: 12  6 14  2  1; 133695
+[ 2] order: 4; perm: 12 14  6  2  1; 124049
+[ 3] order: 2; perm: 12  2  1  6 14; 121491
+[ 4] order: 2; perm: 12  6  1  2 14; 129793
+[ 5] order: 2; perm: 12 14  1  2  6; 139688
+[ 6] order: 1; perm: 12  1  6  2 14; 129715
+[ 7] order: 1; perm: 12  1 14  2  6; 137611
+[ 0] order: 3; perm: 12  6  2  1 14; 124042
+[ 1] order: 3; perm: 12  6 14  1  2; 141966
+[ 2] order: 2; perm: 12  6  1 14  2; 134402
+best order: 4
+best permutation: 1 12 6 2 14
+find optimal permutation for btm/dtz, file b
+[ 0] order: 4; perm:  2  6 12 14  1; 274110
+[ 1] order: 4; perm:  2 12  6 14  1; 259219
+[ 2] order: 4; perm:  2 14  6 12  1; 249873
+[ 3] order: 4; perm:  6  2 12 14  1; 266014
+[ 4] order: 4; perm: 12  2  6 14  1; 183132
+[ 5] order: 4; perm: 14  2  6 12  1; 217669
+[ 6] order: 4; perm:  6 12  2 14  1; 252217
+[ 7] order: 4; perm:  6 14  2 12  1; 244822
+[ 8] order: 4; perm: 12  6  2 14  1; 185089
+[ 9] order: 4; perm: 14  6  2 12  1; 220821
+[10] order: 4; perm: 12 14  2  6  1; 177502
+[11] order: 4; perm: 14 12  2  6  1; 217164
+[12] order: 1; perm:  2  1  6 12 14; 268725
+[13] order: 1; perm:  6  1  2 12 14; 257717
+[14] order: 1; perm: 12  1  2  6 14; 181867
+[15] order: 1; perm: 14  1  2  6 12; 233905
+[16] order: 0; perm:  1  2  6 12 14; 249638
+[17] order: 0; perm:  1  6  2 12 14; 243092
+[18] order: 0; perm:  1 12  2  6 14; 214772
+[19] order: 0; perm:  1 14  2  6 12; 233363
+[ 0] order: 4; perm: 12  2 14  6  1; 193212
+[ 1] order: 4; perm: 12  6 14  2  1; 194922
+[ 2] order: 4; perm: 12 14  6  2  1; 178082
+[ 3] order: 2; perm: 12  2  1  6 14; 181339
+[ 4] order: 2; perm: 12  6  1  2 14; 186334
+[ 5] order: 2; perm: 12 14  1  2  6; 192747
+[ 6] order: 1; perm: 12  1  6  2 14; 185272
+[ 7] order: 1; perm: 12  1 14  2  6; 191955
+[ 0] order: 3; perm: 12 14  2  1  6; 182208
+[ 1] order: 3; perm: 12 14  6  1  2; 184526
+[ 2] order: 2; perm: 12 14  1  6  2; 190378
+best order: 4
+best permutation: 1 12 14 2 6
+permute table for wtm/dtz, file b
+time taken =   0:01.001
+compressing data for wtm/dtz, file b
+calc_size: 1196446
+bits = 10; blocks = 1646 (0); size = 1689288
+bits = 9; blocks = 2580 (0); size = 1326612
+bits = 8; blocks = 4769 (0); size = 1231386
+bits = 7; blocks = 9405 (2); size = 1224622
+real_num_blocks = 9398; num_blocks = 9400
+idxbits = 18
+num_indices = 328
+Generating the c-file.
+Initialising broken positions.
+time taken =   0:00.110
+Calculating white piece captures.
+time taken =   0:00.006
+time taken =   0:00.025
+time taken =   0:00.023
+Calculating white pawn captures.
+time taken =   0:00.052
+Calculating black piece captures.
+time taken =   0:00.013
+time taken =   0:00.241
+time taken =   0:00.116
+Calculating pawn table.
+c7 c6 c5 c4 c3 c2 
+########## KNPvKR - file c ##########
+
+White to move:
+
+17353777 positions win in 1 ply.
+190 positions win in 2 ply.
+1007187 positions win in 3 ply.
+228 positions win in 4 ply.
+103421 positions win in 5 ply.
+45138 positions win in 7 ply.
+24087 positions win in 9 ply.
+12846 positions win in 11 ply.
+6156 positions win in 13 ply.
+2975 positions win in 15 ply.
+1280 positions win in 17 ply.
+463 positions win in 19 ply.
+116 positions win in 21 ply.
+35 positions win in 23 ply.
+19 positions win in 25 ply.
+4 positions win in 27 ply.
+
+18557922 positions are wins.
+47264415 positions are draws.
+2626443 positions are losses.
+
+50870 positions lose in 0 ply.
+730 positions lose in 1 ply.
+1524391 positions lose in 2 ply.
+1833 positions lose in 3 ply.
+369228 positions lose in 4 ply.
+1986 positions lose in 5 ply.
+250830 positions lose in 6 ply.
+1069 positions lose in 7 ply.
+137633 positions lose in 8 ply.
+958 positions lose in 9 ply.
+88880 positions lose in 10 ply.
+650 positions lose in 11 ply.
+59591 positions lose in 12 ply.
+238 positions lose in 13 ply.
+40390 positions lose in 14 ply.
+108 positions lose in 15 ply.
+26148 positions lose in 16 ply.
+107 positions lose in 17 ply.
+17732 positions lose in 18 ply.
+89 positions lose in 19 ply.
+13023 positions lose in 20 ply.
+23 positions lose in 21 ply.
+9464 positions lose in 22 ply.
+14 positions lose in 23 ply.
+7239 positions lose in 24 ply.
+3 positions lose in 25 ply.
+5163 positions lose in 26 ply.
+8 positions lose in 27 ply.
+3655 positions lose in 28 ply.
+5 positions lose in 29 ply.
+2619 positions lose in 30 ply.
+3 positions lose in 31 ply.
+2417 positions lose in 32 ply.
+2 positions lose in 33 ply.
+2353 positions lose in 34 ply.
+3 positions lose in 35 ply.
+1756 positions lose in 36 ply.
+1125 positions lose in 38 ply.
+942 positions lose in 40 ply.
+882 positions lose in 42 ply.
+742 positions lose in 44 ply.
+558 positions lose in 46 ply.
+343 positions lose in 48 ply.
+271 positions lose in 50 ply.
+180 positions lose in 52 ply.
+119 positions lose in 54 ply.
+40 positions lose in 56 ply.
+12 positions lose in 58 ply.
+11 positions lose in 60 ply.
+6 positions lose in 62 ply.
+1 positions lose in 64 ply.
+
+Black to move:
+
+13183307 positions win in 1 ply.
+4446 positions win in 2 ply.
+2557235 positions win in 3 ply.
+3520 positions win in 4 ply.
+872190 positions win in 5 ply.
+1966 positions win in 6 ply.
+423284 positions win in 7 ply.
+860 positions win in 8 ply.
+211563 positions win in 9 ply.
+799 positions win in 10 ply.
+125422 positions win in 11 ply.
+355 positions win in 12 ply.
+76824 positions win in 13 ply.
+179 positions win in 14 ply.
+48665 positions win in 15 ply.
+159 positions win in 16 ply.
+31709 positions win in 17 ply.
+101 positions win in 18 ply.
+22433 positions win in 19 ply.
+50 positions win in 20 ply.
+16240 positions win in 21 ply.
+30 positions win in 22 ply.
+12272 positions win in 23 ply.
+10 positions win in 24 ply.
+8745 positions win in 25 ply.
+8 positions win in 26 ply.
+6414 positions win in 27 ply.
+18 positions win in 28 ply.
+4576 positions win in 29 ply.
+7 positions win in 30 ply.
+3488 positions win in 31 ply.
+2 positions win in 32 ply.
+3235 positions win in 33 ply.
+7 positions win in 34 ply.
+2782 positions win in 35 ply.
+4 positions win in 36 ply.
+1906 positions win in 37 ply.
+1380 positions win in 39 ply.
+1169 positions win in 41 ply.
+967 positions win in 43 ply.
+789 positions win in 45 ply.
+730 positions win in 47 ply.
+553 positions win in 49 ply.
+450 positions win in 51 ply.
+274 positions win in 53 ply.
+139 positions win in 55 ply.
+50 positions win in 57 ply.
+21 positions win in 59 ply.
+6 positions win in 61 ply.
+11 positions win in 63 ply.
+
+17631350 positions are wins.
+42360024 positions are draws.
+1399710 positions are losses.
+
+272 positions lose in 0 ply.
+69 positions lose in 1 ply.
+975475 positions lose in 2 ply.
+97 positions lose in 3 ply.
+195278 positions lose in 4 ply.
+69 positions lose in 5 ply.
+112331 positions lose in 6 ply.
+55990 positions lose in 8 ply.
+31241 positions lose in 10 ply.
+16780 positions lose in 12 ply.
+7104 positions lose in 14 ply.
+3233 positions lose in 16 ply.
+1186 positions lose in 18 ply.
+386 positions lose in 20 ply.
+109 positions lose in 22 ply.
+58 positions lose in 24 ply.
+24 positions lose in 26 ply.
+8 positions lose in 28 ply.
+
+Longest win for white: 28 ply; 8/2P3N1/8/8/8/8/8/2K1k1r1 b - -
+Longest win for black: 64 ply; 8/7N/1r6/8/8/8/2P3k1/1K6 w - -
+
+
+tb_size = 85775760
+find optimal permutation for wtm/wdl, file c
+[ 0] order: 4; perm:  2  6 12 14  1; 332275
+[ 1] order: 4; perm:  2 12  6 14  1; 336178
+[ 2] order: 4; perm:  2 14  6 12  1; 338596
+[ 3] order: 4; perm:  6  2 12 14  1; 327665
+[ 4] order: 4; perm: 12  2  6 14  1; 425586
+[ 5] order: 4; perm: 14  2  6 12  1; 320884
+[ 6] order: 4; perm:  6 12  2 14  1; 331700
+[ 7] order: 4; perm:  6 14  2 12  1; 326255
+[ 8] order: 4; perm: 12  6  2 14  1; 433201
+[ 9] order: 4; perm: 14  6  2 12  1; 328634
+[10] order: 4; perm: 12 14  2  6  1; 412452
+[11] order: 4; perm: 14 12  2  6  1; 315248
+[12] order: 1; perm:  2  1  6 12 14; 334442
+[13] order: 1; perm:  6  1  2 12 14; 327739
+[14] order: 1; perm: 12  1  2  6 14; 428330
+[15] order: 1; perm: 14  1  2  6 12; 322847
+[16] order: 0; perm:  1  2  6 12 14; 390228
+[17] order: 0; perm:  1  6  2 12 14; 379400
+[18] order: 0; perm:  1 12  2  6 14; 442818
+[19] order: 0; perm:  1 14  2  6 12; 402505
+[ 0] order: 4; perm: 14  2 12  6  1; 310403
+[ 1] order: 4; perm: 14  6 12  2  1; 322982
+[ 2] order: 4; perm: 14 12  6  2  1; 317405
+[ 3] order: 2; perm: 14  2  1  6 12; 315456
+[ 4] order: 2; perm: 14  6  1  2 12; 318879
+[ 5] order: 2; perm: 14 12  1  2  6; 322000
+[ 6] order: 1; perm: 14  1  6  2 12; 322265
+[ 7] order: 1; perm: 14  1 12  2  6; 332018
+[ 0] order: 3; perm: 14  2  6  1 12; 324153
+[ 1] order: 3; perm: 14  2 12  1  6; 317669
+[ 2] order: 2; perm: 14  2  1 12  6; 305607
+best order: 2
+best permutation: 1 14 2 12 6
+time taken =   0:00.185
+compressing data for wtm/wdl, file c
+calc_size: 2680344
+bits = 6; blocks = 42297 (0); size = 2807310
+real_num_blocks = 42234; num_blocks = 42234
+idxbits = 15
+num_indices = 2618
+find optimal permutation for btm/wdl, file c
+[ 0] order: 4; perm:  2  6 12 14  1; 395115
+[ 1] order: 4; perm:  2 12  6 14  1; 386076
+[ 2] order: 4; perm:  2 14  6 12  1; 379183
+[ 3] order: 4; perm:  6  2 12 14  1; 338903
+[ 4] order: 4; perm: 12  2  6 14  1; 240914
+[ 5] order: 4; perm: 14  2  6 12  1; 303777
+[ 6] order: 4; perm:  6 12  2 14  1; 332972
+[ 7] order: 4; perm:  6 14  2 12  1; 325015
+[ 8] order: 4; perm: 12  6  2 14  1; 238929
+[ 9] order: 4; perm: 14  6  2 12  1; 302778
+[10] order: 4; perm: 12 14  2  6  1; 242048
+[11] order: 4; perm: 14 12  2  6  1; 303818
+[12] order: 1; perm:  2  1  6 12 14; 388438
+[13] order: 1; perm:  6  1  2 12 14; 337096
+[14] order: 1; perm: 12  1  2  6 14; 242060
+[15] order: 1; perm: 14  1  2  6 12; 313468
+[16] order: 0; perm:  1  2  6 12 14; 372707
+[17] order: 0; perm:  1  6  2 12 14; 357083
+[18] order: 0; perm:  1 12  2  6 14; 327886
+[19] order: 0; perm:  1 14  2  6 12; 341468
+[ 0] order: 4; perm: 12  2 14  6  1; 246037
+[ 1] order: 4; perm: 12  6 14  2  1; 245715
+[ 2] order: 4; perm: 12 14  6  2  1; 244811
+[ 3] order: 2; perm: 12  2  1  6 14; 240349
+[ 4] order: 2; perm: 12  6  1  2 14; 238543
+[ 5] order: 2; perm: 12 14  1  2  6; 242258
+[ 6] order: 1; perm: 12  1  6  2 14; 241965
+[ 7] order: 1; perm: 12  1 14  2  6; 246008
+[ 0] order: 3; perm: 12  6  2  1 14; 249909
+[ 1] order: 3; perm: 12  6 14  1  2; 246987
+[ 2] order: 2; perm: 12  6  1 14  2; 245060
+best order: 2
+best permutation: 1 12 6 2 14
+time taken =   0:01.009
+compressing data for btm/wdl, file c
+calc_size: 2072599
+bits = 6; blocks = 32700 (0); size = 2166054
+real_num_blocks = 32651; num_blocks = 32651
+idxbits = 16
+num_indices = 1309
+find optimal permutation for wtm/dtz, file c
+[ 0] order: 4; perm:  2  6 12 14  1; 145511
+[ 1] order: 4; perm:  2 12  6 14  1; 150590
+[ 2] order: 4; perm:  2 14  6 12  1; 153419
+[ 3] order: 4; perm:  6  2 12 14  1; 133683
+[ 4] order: 4; perm: 12  2  6 14  1; 130998
+[ 5] order: 4; perm: 14  2  6 12  1; 141496
+[ 6] order: 4; perm:  6 12  2 14  1; 133231
+[ 7] order: 4; perm:  6 14  2 12  1; 135345
+[ 8] order: 4; perm: 12  6  2 14  1; 130890
+[ 9] order: 4; perm: 14  6  2 12  1; 134761
+[10] order: 4; perm: 12 14  2  6  1; 118499
+[11] order: 4; perm: 14 12  2  6  1; 124350
+[12] order: 1; perm:  2  1  6 12 14; 147843
+[13] order: 1; perm:  6  1  2 12 14; 137257
+[14] order: 1; perm: 12  1  2  6 14; 126203
+[15] order: 1; perm: 14  1  2  6 12; 132079
+[16] order: 0; perm:  1  2  6 12 14; 140453
+[17] order: 0; perm:  1  6  2 12 14; 134114
+[18] order: 0; perm:  1 12  2  6 14; 126758
+[19] order: 0; perm:  1 14  2  6 12; 127237
+[ 0] order: 4; perm: 12  2 14  6  1; 129161
+[ 1] order: 4; perm: 12  6 14  2  1; 128033
+[ 2] order: 4; perm: 12 14  6  2  1; 124050
+[ 3] order: 2; perm: 12  2  1  6 14; 126176
+[ 4] order: 2; perm: 12  6  1  2 14; 128894
+[ 5] order: 2; perm: 12 14  1  2  6; 137387
+[ 6] order: 1; perm: 12  1  6  2 14; 132287
+[ 7] order: 1; perm: 12  1 14  2  6; 137160
+[ 0] order: 3; perm: 12 14  2  1  6; 134377
+[ 1] order: 3; perm: 12 14  6  1  2; 132507
+[ 2] order: 2; perm: 12 14  1  6  2; 133785
+best order: 4
+best permutation: 1 12 14 2 6
+find optimal permutation for btm/dtz, file c
+[ 0] order: 4; perm:  2  6 12 14  1; 259536
+[ 1] order: 4; perm:  2 12  6 14  1; 258603
+[ 2] order: 4; perm:  2 14  6 12  1; 250069
+[ 3] order: 4; perm:  6  2 12 14  1; 246429
+[ 4] order: 4; perm: 12  2  6 14  1; 183316
+[ 5] order: 4; perm: 14  2  6 12  1; 217786
+[ 6] order: 4; perm:  6 12  2 14  1; 240394
+[ 7] order: 4; perm:  6 14  2 12  1; 237170
+[ 8] order: 4; perm: 12  6  2 14  1; 180281
+[ 9] order: 4; perm: 14  6  2 12  1; 215816
+[10] order: 4; perm: 12 14  2  6  1; 170934
+[11] order: 4; perm: 14 12  2  6  1; 211365
+[12] order: 1; perm:  2  1  6 12 14; 254740
+[13] order: 1; perm:  6  1  2 12 14; 246050
+[14] order: 1; perm: 12  1  2  6 14; 175436
+[15] order: 1; perm: 14  1  2  6 12; 226000
+[16] order: 0; perm:  1  2  6 12 14; 237926
+[17] order: 0; perm:  1  6  2 12 14; 232326
+[18] order: 0; perm:  1 12  2  6 14; 208431
+[19] order: 0; perm:  1 14  2  6 12; 225543
+[ 0] order: 4; perm: 12  2 14  6  1; 186311
+[ 1] order: 4; perm: 12  6 14  2  1; 184229
+[ 2] order: 4; perm: 12 14  6  2  1; 177478
+[ 3] order: 2; perm: 12  2  1  6 14; 176002
+[ 4] order: 2; perm: 12  6  1  2 14; 184348
+[ 5] order: 2; perm: 12 14  1  2  6; 186552
+[ 6] order: 1; perm: 12  1  6  2 14; 183525
+[ 7] order: 1; perm: 12  1 14  2  6; 190845
+[ 0] order: 3; perm: 12 14  2  1  6; 185985
+[ 1] order: 3; perm: 12 14  6  1  2; 185206
+[ 2] order: 2; perm: 12 14  1  6  2; 184017
+best order: 4
+best permutation: 1 12 14 2 6
+permute table for wtm/dtz, file c
+time taken =   0:01.004
+compressing data for wtm/dtz, file c
+calc_size: 1143565
+bits = 10; blocks = 1679 (0); size = 1723146
+bits = 9; blocks = 2555 (0); size = 1313762
+bits = 8; blocks = 4606 (0); size = 1189332
+bits = 7; blocks = 9001 (2); size = 1172102
+real_num_blocks = 8992; num_blocks = 8994
+idxbits = 18
+num_indices = 328
+Generating the d-file.
+Initialising broken positions.
+time taken =   0:00.108
+Calculating white piece captures.
+time taken =   0:00.004
+time taken =   0:00.039
+time taken =   0:00.064
+Calculating white pawn captures.
+time taken =   0:00.311
+Calculating black piece captures.
+time taken =   0:00.009
+time taken =   0:00.059
+time taken =   0:00.039
+Calculating pawn table.
+d7 d6 d5 d4 d3 d2 
+########## KNPvKR - file d ##########
+
+White to move:
+
+17505991 positions win in 1 ply.
+208 positions win in 2 ply.
+952078 positions win in 3 ply.
+236 positions win in 4 ply.
+102199 positions win in 5 ply.
+1 positions win in 6 ply.
+47114 positions win in 7 ply.
+22637 positions win in 9 ply.
+11317 positions win in 11 ply.
+5995 positions win in 13 ply.
+3669 positions win in 15 ply.
+1644 positions win in 17 ply.
+643 positions win in 19 ply.
+182 positions win in 21 ply.
+67 positions win in 23 ply.
+43 positions win in 25 ply.
+36 positions win in 27 ply.
+19 positions win in 29 ply.
+7 positions win in 31 ply.
+
+18654086 positions are wins.
+47274355 positions are draws.
+2552079 positions are losses.
+
+51307 positions lose in 0 ply.
+888 positions lose in 1 ply.
+1529541 positions lose in 2 ply.
+1968 positions lose in 3 ply.
+380882 positions lose in 4 ply.
+2127 positions lose in 5 ply.
+251312 positions lose in 6 ply.
+1172 positions lose in 7 ply.
+131357 positions lose in 8 ply.
+972 positions lose in 9 ply.
+78683 positions lose in 10 ply.
+662 positions lose in 11 ply.
+46729 positions lose in 12 ply.
+177 positions lose in 13 ply.
+27972 positions lose in 14 ply.
+60 positions lose in 15 ply.
+17042 positions lose in 16 ply.
+36 positions lose in 17 ply.
+10424 positions lose in 18 ply.
+4 positions lose in 19 ply.
+6194 positions lose in 20 ply.
+3942 positions lose in 22 ply.
+2855 positions lose in 24 ply.
+2199 positions lose in 26 ply.
+1471 positions lose in 28 ply.
+971 positions lose in 30 ply.
+538 positions lose in 32 ply.
+288 positions lose in 34 ply.
+187 positions lose in 36 ply.
+59 positions lose in 38 ply.
+33 positions lose in 40 ply.
+20 positions lose in 42 ply.
+7 positions lose in 44 ply.
+
+Black to move:
+
+13394458 positions win in 1 ply.
+6129 positions win in 2 ply.
+2515809 positions win in 3 ply.
+3899 positions win in 4 ply.
+857169 positions win in 5 ply.
+2166 positions win in 6 ply.
+394712 positions win in 7 ply.
+848 positions win in 8 ply.
+189737 positions win in 9 ply.
+667 positions win in 10 ply.
+105218 positions win in 11 ply.
+311 positions win in 12 ply.
+59147 positions win in 13 ply.
+118 positions win in 14 ply.
+32255 positions win in 15 ply.
+41 positions win in 16 ply.
+19233 positions win in 17 ply.
+10 positions win in 18 ply.
+12081 positions win in 19 ply.
+7431 positions win in 21 ply.
+5164 positions win in 23 ply.
+3737 positions win in 25 ply.
+2816 positions win in 27 ply.
+1737 positions win in 29 ply.
+1161 positions win in 31 ply.
+668 positions win in 33 ply.
+320 positions win in 35 ply.
+206 positions win in 37 ply.
+70 positions win in 39 ply.
+43 positions win in 41 ply.
+9 positions win in 43 ply.
+
+17617370 positions are wins.
+42484436 positions are draws.
+1360234 positions are losses.
+
+227 positions lose in 0 ply.
+77 positions lose in 1 ply.
+943215 positions lose in 2 ply.
+118 positions lose in 3 ply.
+193615 positions lose in 4 ply.
+75 positions lose in 5 ply.
+110099 positions lose in 6 ply.
+56488 positions lose in 8 ply.
+29486 positions lose in 10 ply.
+13830 positions lose in 12 ply.
+7104 positions lose in 14 ply.
+3546 positions lose in 16 ply.
+1545 positions lose in 18 ply.
+409 positions lose in 20 ply.
+204 positions lose in 22 ply.
+46 positions lose in 24 ply.
+76 positions lose in 26 ply.
+68 positions lose in 28 ply.
+6 positions lose in 30 ply.
+
+Longest win for white: 31 ply; 3N4/3P4/K7/8/5r2/8/8/6k1 w - -
+Longest win for black: 44 ply; 6Nr/8/8/8/3P4/6k1/8/6K1 w - -
+
+
+tb_size = 85775760
+find optimal permutation for wtm/wdl, file d
+[ 0] order: 4; perm:  2  6 12 14  1; 304900
+[ 1] order: 4; perm:  2 12  6 14  1; 315043
+[ 2] order: 4; perm:  2 14  6 12  1; 321140
+[ 3] order: 4; perm:  6  2 12 14  1; 309019
+[ 4] order: 4; perm: 12  2  6 14  1; 403657
+[ 5] order: 4; perm: 14  2  6 12  1; 307752
+[ 6] order: 4; perm:  6 12  2 14  1; 320911
+[ 7] order: 4; perm:  6 14  2 12  1; 325717
+[ 8] order: 4; perm: 12  6  2 14  1; 406219
+[ 9] order: 4; perm: 14  6  2 12  1; 313535
+[10] order: 4; perm: 12 14  2  6  1; 406761
+[11] order: 4; perm: 14 12  2  6  1; 303953
+[12] order: 1; perm:  2  1  6 12 14; 325803
+[13] order: 1; perm:  6  1  2 12 14; 330266
+[14] order: 1; perm: 12  1  2  6 14; 420140
+[15] order: 1; perm: 14  1  2  6 12; 319135
+[16] order: 0; perm:  1  2  6 12 14; 402094
+[17] order: 0; perm:  1  6  2 12 14; 385358
+[18] order: 0; perm:  1 12  2  6 14; 440910
+[19] order: 0; perm:  1 14  2  6 12; 401462
+[ 0] order: 4; perm: 14  2 12  6  1; 294864
+[ 1] order: 4; perm: 14  6 12  2  1; 294937
+[ 2] order: 4; perm: 14 12  6  2  1; 299459
+[ 3] order: 2; perm: 14  2  1  6 12; 309585
+[ 4] order: 2; perm: 14  6  1  2 12; 309221
+[ 5] order: 2; perm: 14 12  1  2  6; 303543
+[ 6] order: 1; perm: 14  1  6  2 12; 322546
+[ 7] order: 1; perm: 14  1 12  2  6; 316811
+[ 0] order: 3; perm: 14  2  6  1 12; 303093
+[ 1] order: 3; perm: 14  2 12  1  6; 296810
+[ 2] order: 2; perm: 14  2  1 12  6; 304896
+best order: 4
+best permutation: 1 14 2 12 6
+time taken =   0:01.997
+compressing data for wtm/wdl, file d
+calc_size: 2584421
+bits = 6; blocks = 40782 (0); size = 2699466
+real_num_blocks = 40723; num_blocks = 40723
+idxbits = 16
+num_indices = 1309
+find optimal permutation for btm/wdl, file d
+[ 0] order: 4; perm:  2  6 12 14  1; 384791
+[ 1] order: 4; perm:  2 12  6 14  1; 380422
+[ 2] order: 4; perm:  2 14  6 12  1; 385698
+[ 3] order: 4; perm:  6  2 12 14  1; 332140
+[ 4] order: 4; perm: 12  2  6 14  1; 237848
+[ 5] order: 4; perm: 14  2  6 12  1; 305293
+[ 6] order: 4; perm:  6 12  2 14  1; 323800
+[ 7] order: 4; perm:  6 14  2 12  1; 323703
+[ 8] order: 4; perm: 12  6  2 14  1; 234243
+[ 9] order: 4; perm: 14  6  2 12  1; 301930
+[10] order: 4; perm: 12 14  2  6  1; 230093
+[11] order: 4; perm: 14 12  2  6  1; 295697
+[12] order: 1; perm:  2  1  6 12 14; 385184
+[13] order: 1; perm:  6  1  2 12 14; 332039
+[14] order: 1; perm: 12  1  2  6 14; 238971
+[15] order: 1; perm: 14  1  2  6 12; 304565
+[16] order: 0; perm:  1  2  6 12 14; 370625
+[17] order: 0; perm:  1  6  2 12 14; 356983
+[18] order: 0; perm:  1 12  2  6 14; 326194
+[19] order: 0; perm:  1 14  2  6 12; 339195
+[ 0] order: 4; perm: 12  2 14  6  1; 235223
+[ 1] order: 4; perm: 12  6 14  2  1; 236121
+[ 2] order: 4; perm: 12 14  6  2  1; 227159
+[ 3] order: 2; perm: 12  2  1  6 14; 240611
+[ 4] order: 2; perm: 12  6  1  2 14; 244790
+[ 5] order: 2; perm: 12 14  1  2  6; 237305
+[ 6] order: 1; perm: 12  1  6  2 14; 248698
+[ 7] order: 1; perm: 12  1 14  2  6; 240536
+[ 0] order: 3; perm: 12 14  2  1  6; 233347
+[ 1] order: 3; perm: 12 14  6  1  2; 239385
+[ 2] order: 2; perm: 12 14  1  6  2; 236228
+best order: 4
+best permutation: 1 12 14 6 2
+time taken =   0:00.180
+compressing data for btm/wdl, file d
+calc_size: 2013695
+bits = 6; blocks = 31771 (0); size = 2104740
+real_num_blocks = 31724; num_blocks = 31724
+idxbits = 16
+num_indices = 1309
+find optimal permutation for wtm/dtz, file d
+[ 0] order: 4; perm:  2  6 12 14  1; 133503
+[ 1] order: 4; perm:  2 12  6 14  1; 133285
+[ 2] order: 4; perm:  2 14  6 12  1; 132139
+[ 3] order: 4; perm:  6  2 12 14  1; 121902
+[ 4] order: 4; perm: 12  2  6 14  1; 118343
+[ 5] order: 4; perm: 14  2  6 12  1; 120633
+[ 6] order: 4; perm:  6 12  2 14  1; 122243
+[ 7] order: 4; perm:  6 14  2 12  1; 125611
+[ 8] order: 4; perm: 12  6  2 14  1; 120355
+[ 9] order: 4; perm: 14  6  2 12  1; 124006
+[10] order: 4; perm: 12 14  2  6  1; 113723
+[11] order: 4; perm: 14 12  2  6  1; 115350
+[12] order: 1; perm:  2  1  6 12 14; 138032
+[13] order: 1; perm:  6  1  2 12 14; 124311
+[14] order: 1; perm: 12  1  2  6 14; 121188
+[15] order: 1; perm: 14  1  2  6 12; 123758
+[16] order: 0; perm:  1  2  6 12 14; 131947
+[17] order: 0; perm:  1  6  2 12 14; 123859
+[18] order: 0; perm:  1 12  2  6 14; 123266
+[19] order: 0; perm:  1 14  2  6 12; 122094
+[ 0] order: 4; perm: 12  2 14  6  1; 119190
+[ 1] order: 4; perm: 12  6 14  2  1; 117759
+[ 2] order: 4; perm: 12 14  6  2  1; 110388
+[ 3] order: 2; perm: 12  2  1  6 14; 124539
+[ 4] order: 2; perm: 12  6  1  2 14; 124318
+[ 5] order: 2; perm: 12 14  1  2  6; 117295
+[ 6] order: 1; perm: 12  1  6  2 14; 123875
+[ 7] order: 1; perm: 12  1 14  2  6; 116956
+[ 0] order: 3; perm: 12 14  2  1  6; 113788
+[ 1] order: 3; perm: 12 14  6  1  2; 112454
+[ 2] order: 2; perm: 12 14  1  6  2; 114358
+best order: 4
+best permutation: 1 12 14 6 2
+find optimal permutation for btm/dtz, file d
+[ 0] order: 4; perm:  2  6 12 14  1; 235964
+[ 1] order: 4; perm:  2 12  6 14  1; 233673
+[ 2] order: 4; perm:  2 14  6 12  1; 236533
+[ 3] order: 4; perm:  6  2 12 14  1; 224691
+[ 4] order: 4; perm: 12  2  6 14  1; 165745
+[ 5] order: 4; perm: 14  2  6 12  1; 207652
+[ 6] order: 4; perm:  6 12  2 14  1; 218733
+[ 7] order: 4; perm:  6 14  2 12  1; 224949
+[ 8] order: 4; perm: 12  6  2 14  1; 162094
+[ 9] order: 4; perm: 14  6  2 12  1; 204370
+[10] order: 4; perm: 12 14  2  6  1; 159071
+[11] order: 4; perm: 14 12  2  6  1; 193057
+[12] order: 1; perm:  2  1  6 12 14; 239733
+[13] order: 1; perm:  6  1  2 12 14; 229676
+[14] order: 1; perm: 12  1  2  6 14; 166274
+[15] order: 1; perm: 14  1  2  6 12; 207627
+[16] order: 0; perm:  1  2  6 12 14; 228845
+[17] order: 0; perm:  1  6  2 12 14; 220373
+[18] order: 0; perm:  1 12  2  6 14; 200020
+[19] order: 0; perm:  1 14  2  6 12; 207460
+[ 0] order: 4; perm: 12  2 14  6  1; 161934
+[ 1] order: 4; perm: 12  6 14  2  1; 163065
+[ 2] order: 4; perm: 12 14  6  2  1; 157032
+[ 3] order: 2; perm: 12  2  1  6 14; 168933
+[ 4] order: 2; perm: 12  6  1  2 14; 171052
+[ 5] order: 2; perm: 12 14  1  2  6; 161561
+[ 6] order: 1; perm: 12  1  6  2 14; 171297
+[ 7] order: 1; perm: 12  1 14  2  6; 160813
+[ 0] order: 3; perm: 12 14  2  1  6; 156169
+[ 1] order: 3; perm: 12 14  6  1  2; 158278
+[ 2] order: 2; perm: 12 14  1  6  2; 158993
+best order: 3
+best permutation: 1 12 14 2 6
+permute table for wtm/dtz, file d
+time taken =   0:00.170
+compressing data for wtm/dtz, file d
+calc_size: 1055738
+bits = 10; blocks = 1584 (0); size = 1625676
+bits = 9; blocks = 2361 (0); size = 1214046
+bits = 8; blocks = 4254 (0); size = 1098516
+bits = 7; blocks = 8304 (2); size = 1081492
+real_num_blocks = 8295; num_blocks = 8297
+idxbits = 18
+num_indices = 328
+########## KNPvKR ##########
+
+White to move:
+
+68956615 positions win in 1 ply.
+730 positions win in 2 ply.
+4162201 positions win in 3 ply.
+849 positions win in 4 ply.
+364066 positions win in 5 ply.
+1 positions win in 6 ply.
+170167 positions win in 7 ply.
+91792 positions win in 9 ply.
+51630 positions win in 11 ply.
+27216 positions win in 13 ply.
+13615 positions win in 15 ply.
+5711 positions win in 17 ply.
+2333 positions win in 19 ply.
+729 positions win in 21 ply.
+282 positions win in 23 ply.
+159 positions win in 25 ply.
+81 positions win in 27 ply.
+34 positions win in 29 ply.
+12 positions win in 31 ply.
+1 positions win in 33 ply.
+
+73848224 positions are wins.
+189736955 positions are draws.
+10898321 positions are losses.
+
+199174 positions lose in 0 ply.
+2005 positions lose in 1 ply.
+6216877 positions lose in 2 ply.
+7009 positions lose in 3 ply.
+1518704 positions lose in 4 ply.
+7852 positions lose in 5 ply.
+1029108 positions lose in 6 ply.
+4334 positions lose in 7 ply.
+575867 positions lose in 8 ply.
+4185 positions lose in 9 ply.
+384180 positions lose in 10 ply.
+3158 positions lose in 11 ply.
+264413 positions lose in 12 ply.
+1063 positions lose in 13 ply.
+182765 positions lose in 14 ply.
+519 positions lose in 15 ply.
+128699 positions lose in 16 ply.
+361 positions lose in 17 ply.
+93765 positions lose in 18 ply.
+247 positions lose in 19 ply.
+70693 positions lose in 20 ply.
+103 positions lose in 21 ply.
+52168 positions lose in 22 ply.
+92 positions lose in 23 ply.
+38683 positions lose in 24 ply.
+116 positions lose in 25 ply.
+28900 positions lose in 26 ply.
+98 positions lose in 27 ply.
+21036 positions lose in 28 ply.
+56 positions lose in 29 ply.
+15127 positions lose in 30 ply.
+42 positions lose in 31 ply.
+11117 positions lose in 32 ply.
+13 positions lose in 33 ply.
+8670 positions lose in 34 ply.
+17 positions lose in 35 ply.
+6658 positions lose in 36 ply.
+2 positions lose in 37 ply.
+4995 positions lose in 38 ply.
+3721 positions lose in 40 ply.
+3122 positions lose in 42 ply.
+2487 positions lose in 44 ply.
+1976 positions lose in 46 ply.
+1222 positions lose in 48 ply.
+797 positions lose in 50 ply.
+535 positions lose in 52 ply.
+361 positions lose in 54 ply.
+244 positions lose in 56 ply.
+165 positions lose in 58 ply.
+139 positions lose in 60 ply.
+177 positions lose in 62 ply.
+87 positions lose in 64 ply.
+94 positions lose in 66 ply.
+127 positions lose in 68 ply.
+114 positions lose in 70 ply.
+47 positions lose in 72 ply.
+13 positions lose in 74 ply.
+19 positions lose in 76 ply.
+3 positions lose in 78 ply.
+
+Black to move:
+
+52993366 positions win in 1 ply.
+14481 positions win in 2 ply.
+10681418 positions win in 3 ply.
+13673 positions win in 4 ply.
+3642067 positions win in 5 ply.
+8021 positions win in 6 ply.
+1736985 positions win in 7 ply.
+3380 positions win in 8 ply.
+894806 positions win in 9 ply.
+3311 positions win in 10 ply.
+540930 positions win in 11 ply.
+1585 positions win in 12 ply.
+338657 positions win in 13 ply.
+779 positions win in 14 ply.
+225148 positions win in 15 ply.
+563 positions win in 16 ply.
+159010 positions win in 17 ply.
+361 positions win in 18 ply.
+116341 positions win in 19 ply.
+230 positions win in 20 ply.
+86310 positions win in 21 ply.
+127 positions win in 22 ply.
+64445 positions win in 23 ply.
+137 positions win in 24 ply.
+47124 positions win in 25 ply.
+124 positions win in 26 ply.
+34812 positions win in 27 ply.
+74 positions win in 28 ply.
+24785 positions win in 29 ply.
+70 positions win in 30 ply.
+18360 positions win in 31 ply.
+32 positions win in 32 ply.
+13304 positions win in 33 ply.
+30 positions win in 34 ply.
+10241 positions win in 35 ply.
+8 positions win in 36 ply.
+7901 positions win in 37 ply.
+5873 positions win in 39 ply.
+4489 positions win in 41 ply.
+3690 positions win in 43 ply.
+2849 positions win in 45 ply.
+2231 positions win in 47 ply.
+1474 positions win in 49 ply.
+1068 positions win in 51 ply.
+746 positions win in 53 ply.
+459 positions win in 55 ply.
+375 positions win in 57 ply.
+273 positions win in 59 ply.
+211 positions win in 61 ply.
+202 positions win in 63 ply.
+173 positions win in 65 ply.
+179 positions win in 67 ply.
+136 positions win in 69 ply.
+109 positions win in 71 ply.
+52 positions win in 73 ply.
+14 positions win in 75 ply.
+10 positions win in 77 ply.
+9 positions win in 79 ply.
+
+71707618 positions are wins.
+167838237 positions are draws.
+5501919 positions are losses.
+
+1362 positions lose in 0 ply.
+338 positions lose in 1 ply.
+3887824 positions lose in 2 ply.
+370 positions lose in 3 ply.
+714558 positions lose in 4 ply.
+312 positions lose in 5 ply.
+413888 positions lose in 6 ply.
+223368 positions lose in 8 ply.
+127826 positions lose in 10 ply.
+70409 positions lose in 12 ply.
+35220 positions lose in 14 ply.
+15892 positions lose in 16 ply.
+6443 positions lose in 18 ply.
+2353 positions lose in 20 ply.
+988 positions lose in 22 ply.
+371 positions lose in 24 ply.
+214 positions lose in 26 ply.
+139 positions lose in 28 ply.
+32 positions lose in 30 ply.
+12 positions lose in 32 ply.
+
+Longest win for white: 33 ply; 8/1P6/8/8/2N5/6r1/8/3K3k w - -
+Longest win for black: 79 ply; 8/5r2/N7/8/P7/4k3/K7/8 b - -
+
+

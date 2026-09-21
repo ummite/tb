@@ -114,7 +114,7 @@ static inline void bit_set_standard(uint64_t* x, uint64_t y)
 /* Simple bit test macros - replaces __asm__ goto */
 #define jump_bit_set(x,y,lab) do { if ((x) & (1ULL << (y))) goto lab; } while(0)
 #define jump_bit_clear(x,y,lab) do { if (!((x) & (1ULL << (y)))) goto lab; } while(0)
-#define bit_set_jump_set(x,y,lab) do { bit_set_standard(&(x), (y)); if ((x) & (1ULL << (y))) goto lab; } while(0)
+#define bit_set_jump_set(x,y,lab) do { uint64_t bit_set_jump_set_b = (1ULL << (y)); if ((x) & bit_set_jump_set_b) goto lab; (x) |= bit_set_jump_set_b; } while(0)
 
 #define FILL_OCC64_cheap \
   occ = 0; \

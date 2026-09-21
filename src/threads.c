@@ -21,6 +21,7 @@
 #ifdef __linux__
 #include <sched.h>
 #endif
+#include <unistd.h>
 #endif
 
 struct thread_data *thread_data;
@@ -88,6 +89,22 @@ static struct {
 int total_work;
 int numthreads;
 int thread_affinity;
+
+int detect_num_cores(void)
+{
+#ifdef _WIN32
+  SYSTEM_INFO si;
+  GetSystemInfo(&si);
+  if (si.dwNumberOfProcessors < 1)
+    return 1;
+  return (int)si.dwNumberOfProcessors;
+#else
+  long n = sysconf(_SC_NPROCESSORS_ONLN);
+  if (n < 1)
+    return 1;
+  return (int)n;
+#endif
+}
 
 struct timeval start_time, cur_time;
 

@@ -1,0 +1,935 @@
+﻿{
+    "set":  "3pc",
+    "table_count":  5,
+    "generated_at":  "2026-09-14 13:12:25",
+    "threads_flag":  0,
+    "poll_ms":  25,
+    "table_timeout_min":  30,
+    "machine":  {
+                    "machine":  "INTEL13900",
+                    "cpu":  "13th Gen Intel(R) Core(TM) i9-13900KF",
+                    "cores_physical":  24,
+                    "cores_logical":  24,
+                    "max_clock_mhz":  3000,
+                    "total_ram_gb":  95.84,
+                    "os":  "Microsoft Windows 11 Education (10.0.26200)",
+                    "gpu":  "NVIDIA GeForce GTX 1080",
+                    "user":  "Ummite",
+                    "powershell":  "5.1.26100.9444",
+                    "captured":  "2026-09-14 13:12:23"
+                },
+    "generator":  {
+                      "tbgen":  {
+                                    "bytes":  203264,
+                                    "modified":  "2026-09-14 11:25:03"
+                                },
+                      "tbgenp":  {
+                                     "bytes":  217088,
+                                     "modified":  "2026-09-14 11:25:05"
+                                 }
+                  },
+    "summary":  {
+                    "total_wall_ms":  1789,
+                    "max_peak_ram_mb":  30.5,
+                    "total_output_bytes":  26912,
+                    "files_identical":  8,
+                    "files_total":  10,
+                    "tbcheck_ok":  10,
+                    "tbcheck_total":  10
+                },
+    "verdict":  "INVALID - generated files differ from reference",
+    "ref_dir":  "T:\\Syzygy\\3-4-5",
+    "out_dir":  "C:\\Programmation\\tb-1\\gen_3pc",
+    "rtb_path":  "C:\\Programmation\\tb-1\\Syzygy",
+    "entries":  [
+                    {
+                        "table":  "KBvK",
+                        "kind":  "pawnless",
+                        "exe":  "tbgen.exe",
+                        "threads_used":  24,
+                        "wall_ms":  179,
+                        "peak_ram_mb":  4.01,
+                        "exit_code":  -1,
+                        "log":  "C:\\Programmation\\tb-1\\benchmarks\\logs\\3pc\\KBvK.out",
+                        "watchdog":  false,
+                        "steps":  [
+                                      {
+                                          "phase":  "Retrograde iterations: 2",
+                                          "time":  "(see log)"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating mate positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 31332",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 3",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 3",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 3",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 3",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz",
+                                          "time":  "-"
+                                      }
+                                  ],
+                        "files":  [
+                                      {
+                                          "ext":  "rtbw",
+                                          "gen_bytes":  80,
+                                          "gen_sha256":  "BC0D8AB3560DE9038460F0E8F61E3B7EFD3E3D0327D19AE0387C0DA7DDEB244D",
+                                          "gen_trailer":  "4b37ef623e69eadb6756777c16034e6f",
+                                          "ref_bytes":  80,
+                                          "ref_sha256":  "BC0D8AB3560DE9038460F0E8F61E3B7EFD3E3D0327D19AE0387C0DA7DDEB244D",
+                                          "ref_trailer":  "4b37ef623e69eadb6756777c16034e6f",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      },
+                                      {
+                                          "ext":  "rtbz",
+                                          "gen_bytes":  80,
+                                          "gen_sha256":  "6246C8A5C643EEC9D4758D55ED843E31CC28A9B82A6F630C1C950D8B7755975B",
+                                          "gen_trailer":  "338f272b119c02ca67b03a450c375b2e",
+                                          "ref_bytes":  80,
+                                          "ref_sha256":  "6246C8A5C643EEC9D4758D55ED843E31CC28A9B82A6F630C1C950D8B7755975B",
+                                          "ref_trailer":  "338f272b119c02ca67b03a450c375b2e",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      }
+                                  ]
+                    },
+                    {
+                        "table":  "KNvK",
+                        "kind":  "pawnless",
+                        "exe":  "tbgen.exe",
+                        "threads_used":  24,
+                        "wall_ms":  112,
+                        "peak_ram_mb":  5.32,
+                        "exit_code":  -1,
+                        "log":  "C:\\Programmation\\tb-1\\benchmarks\\logs\\3pc\\KNvK.out",
+                        "watchdog":  false,
+                        "steps":  [
+                                      {
+                                          "phase":  "Retrograde iterations: 2",
+                                          "time":  "(see log)"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating mate positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 31332",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 2",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 2",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz",
+                                          "time":  "-"
+                                      }
+                                  ],
+                        "files":  [
+                                      {
+                                          "ext":  "rtbw",
+                                          "gen_bytes":  80,
+                                          "gen_sha256":  "9D3518B12DF3D2006441DF758BCE31E961346E70A11920AAAD75C647003BB6E7",
+                                          "gen_trailer":  "b9eccbff19c677158e928b1b641248b7",
+                                          "ref_bytes":  80,
+                                          "ref_sha256":  "9D3518B12DF3D2006441DF758BCE31E961346E70A11920AAAD75C647003BB6E7",
+                                          "ref_trailer":  "b9eccbff19c677158e928b1b641248b7",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      },
+                                      {
+                                          "ext":  "rtbz",
+                                          "gen_bytes":  80,
+                                          "gen_sha256":  "0E49A0F2810A131C32FC14872E83044AA9810CE2C86DF071851512077291FC25",
+                                          "gen_trailer":  "796ab960a6140d5b030f785e91086175",
+                                          "ref_bytes":  80,
+                                          "ref_sha256":  "0E49A0F2810A131C32FC14872E83044AA9810CE2C86DF071851512077291FC25",
+                                          "ref_trailer":  "796ab960a6140d5b030f785e91086175",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      }
+                                  ]
+                    },
+                    {
+                        "table":  "KPvK",
+                        "kind":  "pawnful",
+                        "exe":  "tbgenp.exe",
+                        "threads_used":  24,
+                        "wall_ms":  1011,
+                        "peak_ram_mb":  27.01,
+                        "exit_code":  -1,
+                        "log":  "C:\\Programmation\\tb-1\\benchmarks\\logs\\3pc\\KPvK.out",
+                        "watchdog":  false,
+                        "steps":  [
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white pawn captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating pawn table.",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 23436",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 14 6",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz, file a",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz, file a",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white pawn captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating pawn table.",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 23436",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 14 6",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz, file b",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz, file b",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white pawn captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating pawn table.",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 23436",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 14 6",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz, file c",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz, file c",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white pawn captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black piece captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating pawn table.",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 23436",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl, file d",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl, file d",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl, file d",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 14 6",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl, file d",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz, file d",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 1",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 6 14",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz, file d",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 2",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 1 14 6",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz, file d",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz, file d",
+                                          "time":  "-"
+                                      }
+                                  ],
+                        "files":  [
+                                      {
+                                          "ext":  "rtbw",
+                                          "gen_bytes":  8848,
+                                          "gen_sha256":  "EBFC5C8CE57E285BEC6258E01DDB52E4B48D1EAFAD6AFA55C8A82914EE5D5236",
+                                          "gen_trailer":  "8d16fe03a65e72dd8b1a418ffe9dc9ba",
+                                          "ref_bytes":  7824,
+                                          "ref_sha256":  "02FD2BDCD92821C869458F019F63524DEF1C9E7A2862CA8D2B16DC7712B16183",
+                                          "ref_trailer":  "7e72bcffff0fc0fa6928728e92d3f652",
+                                          "identical_to_ref":  false,
+                                          "tbcheck":  "OK"
+                                      },
+                                      {
+                                          "ext":  "rtbz",
+                                          "gen_bytes":  4240,
+                                          "gen_sha256":  "53D1AC4D2E88BB6965EEA99D3D5E87F23F0CA2A7FD683F1A81ABE96CD8B2B69C",
+                                          "gen_trailer":  "a7c76c78dbd8a5d464f3b1a4d4833b62",
+                                          "ref_bytes":  4176,
+                                          "ref_sha256":  "AD01AF2076183C90CCEE662CA6C5D74DA3222FF1FEE47C01B5D4E56ED01938DE",
+                                          "ref_trailer":  "f72a3a4f9b1b4afb6e8335bed985b891",
+                                          "identical_to_ref":  false,
+                                          "tbcheck":  "OK"
+                                      }
+                                  ]
+                    },
+                    {
+                        "table":  "KQvK",
+                        "kind":  "pawnless",
+                        "exe":  "tbgen.exe",
+                        "threads_used":  24,
+                        "wall_ms":  236,
+                        "peak_ram_mb":  26.55,
+                        "exit_code":  -1,
+                        "log":  "C:\\Programmation\\tb-1\\benchmarks\\logs\\3pc\\KQvK.out",
+                        "watchdog":  false,
+                        "steps":  [
+                                      {
+                                          "phase":  "Retrograde iterations: 12",
+                                          "time":  "(see log)"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating mate positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 31332",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 5",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 5 6",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 6 14 5",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 6 5 14",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz",
+                                          "time":  "-"
+                                      }
+                                  ],
+                        "files":  [
+                                      {
+                                          "ext":  "rtbw",
+                                          "gen_bytes":  272,
+                                          "gen_sha256":  "517667DFF787162DBB1ED9D5D6484D30EE854E686EE0675C08D99ECF045D2D50",
+                                          "gen_trailer":  "af0d561da4523cb21a8cf05e9bc5cc6e",
+                                          "ref_bytes":  272,
+                                          "ref_sha256":  "517667DFF787162DBB1ED9D5D6484D30EE854E686EE0675C08D99ECF045D2D50",
+                                          "ref_trailer":  "af0d561da4523cb21a8cf05e9bc5cc6e",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      },
+                                      {
+                                          "ext":  "rtbz",
+                                          "gen_bytes":  5392,
+                                          "gen_sha256":  "71EA9444FA5BD42897D781A0C356975EA6F23E0F65A4254E470897031C161C8C",
+                                          "gen_trailer":  "c51fa4b08478f04272ec668ce70d6ca7",
+                                          "ref_bytes":  5392,
+                                          "ref_sha256":  "71EA9444FA5BD42897D781A0C356975EA6F23E0F65A4254E470897031C161C8C",
+                                          "ref_trailer":  "c51fa4b08478f04272ec668ce70d6ca7",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      }
+                                  ]
+                    },
+                    {
+                        "table":  "KRvK",
+                        "kind":  "pawnless",
+                        "exe":  "tbgen.exe",
+                        "threads_used":  24,
+                        "wall_ms":  251,
+                        "peak_ram_mb":  30.5,
+                        "exit_code":  -1,
+                        "log":  "C:\\Programmation\\tb-1\\benchmarks\\logs\\3pc\\KRvK.out",
+                        "watchdog":  false,
+                        "steps":  [
+                                      {
+                                          "phase":  "Retrograde iterations: 18",
+                                          "time":  "(see log)"
+                                      },
+                                      {
+                                          "phase":  "Initialising broken positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating white captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating black captures.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "Calculating mate positions.",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "tb_size = 31332",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 14 6 4",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 6 14 4",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for btm/wdl",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for wtm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 6 14 4",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "find optimal permutation for btm/dtz",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best order: 0",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "best permutation: 6 14 4",
+                                          "time":  "-"
+                                      },
+                                      {
+                                          "phase":  "permute table for wtm/dtz",
+                                          "time":  "0:00.000"
+                                      },
+                                      {
+                                          "phase":  "compressing data for wtm/dtz",
+                                          "time":  "-"
+                                      }
+                                  ],
+                        "files":  [
+                                      {
+                                          "ext":  "rtbw",
+                                          "gen_bytes":  208,
+                                          "gen_sha256":  "386FBDE73308E49A4207836922C68B30B664E83C5A37F7FA37305A15CD16F2F1",
+                                          "gen_trailer":  "81da63fe25b9ed66f459001558f83ca5",
+                                          "ref_bytes":  208,
+                                          "ref_sha256":  "386FBDE73308E49A4207836922C68B30B664E83C5A37F7FA37305A15CD16F2F1",
+                                          "ref_trailer":  "81da63fe25b9ed66f459001558f83ca5",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      },
+                                      {
+                                          "ext":  "rtbz",
+                                          "gen_bytes":  7632,
+                                          "gen_sha256":  "CAB59F42E75C2A25DA3939231850A79FA838593FFF5C28D7772DA92062ED965A",
+                                          "gen_trailer":  "1df564d7e7056f15d9a1d776e8fe5884",
+                                          "ref_bytes":  7632,
+                                          "ref_sha256":  "CAB59F42E75C2A25DA3939231850A79FA838593FFF5C28D7772DA92062ED965A",
+                                          "ref_trailer":  "1df564d7e7056f15d9a1d776e8fe5884",
+                                          "identical_to_ref":  true,
+                                          "tbcheck":  "OK"
+                                      }
+                                  ]
+                    }
+                ]
+}

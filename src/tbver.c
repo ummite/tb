@@ -251,7 +251,7 @@ int main(int argc, char **argv)
   int switched = 0;
 #endif
 
-  numthreads = 1;
+  numthreads = detect_num_cores();
 
   do {
 //    val = getopt_long(argc, argv, "t:lwc", options, &longindex);

@@ -222,14 +222,13 @@ static inline void bit_set_standard(uint64_t* x, uint64_t y)
 #define jump_bit_set(x,y,lab) do { if ((x) & (1ULL << (y))) goto lab; } while(0)
 #define jump_bit_clear(x,y,lab) do { if (!((x) & (1ULL << (y)))) goto lab; } while(0)
 
-/* Portable bit_set_test - replaces inline assembly */
+/* Portable bit_set_test - replaces inline assembly (bts+adcl: v += old bit value) */
 #ifndef USE_POPCNT
 static inline void bit_set_test_standard(uint64_t* x, uint64_t y, int* v)
 {
-  *x |= (1ULL << y);
-  if (*x & (1ULL << y)) {
-    *v += 1;
-  }
+  uint64_t b = (1ULL << y);
+  *v += (*x & b) ? 1 : 0;
+  *x |= b;
 }
 #define bit_set_test(x,y,v) bit_set_test_standard(&(x), (y), (v))
 #endif
@@ -508,6 +507,32 @@ static void func##_pivot1(uint8_t *restrict table, uint64_t idx, bitboard occ, i
 
 #define LOOP_ITER \
   for (idx = thread->begin; idx < end; idx++)
+
+#ifdef _MSC_VER
+#define RETRO_NO_ARG(func) \
+  do { int j; \
+    if (pcs_opp[0] == 0) \
+      func##_pivot0(table_opp, idx, occ, p); \
+    else \
+      func##_pivot1(table_opp, idx, occ, p); \
+    for (j = 1; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p); \
+    } \
+  } while (0)
+
+#define RETRO_1_ARG(func, arg1) \
+  do { int j; \
+    if (pcs_opp[0] == 0) \
+      func##_pivot0(table_opp, idx, occ, p, arg1); \
+    else \
+      func##_pivot1(table_opp, idx, occ, p, arg1); \
+    for (j = 1; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p, arg1); \
+    } \
+  } while (0)
+#endif
 
 #define RETRO(func, ...) \
   do { int j; \

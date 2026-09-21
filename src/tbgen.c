@@ -919,7 +919,7 @@ int main(int argc, char **argv)
   int save_to_disk = 0;
   int switched = 0;
 
-  numthreads = 1;
+  numthreads = detect_num_cores();
   while ((val = getopt_long(argc, argv, "at:gwzsdpA:n", options, &longindex)) != -1) {
     switch (val) {
     case 'a':

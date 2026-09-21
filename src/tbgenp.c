@@ -918,7 +918,7 @@ int main(int argc, char **argv)
   int compress_wide = 0;
   int use_vt = 0;  /* for VirtualTable on 8pc */
 
-  numthreads = 1;
+  numthreads = detect_num_cores();
   thread_affinity = 0;
   while ((val = getopt_long(argc, argv, "at:gwzsd2p", options,
                             &longindex)) != -1)

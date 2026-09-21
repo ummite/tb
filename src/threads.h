@@ -59,6 +59,9 @@ uint64_t *create_work(int n, uint64_t size, uint64_t mask);
 void create_compression_threads(void);
 void run_compression(void (*func)(int t));
 
+/* Logical processors currently online (GetSystemInfo / sysconf). At least 1. */
+int detect_num_cores(void);
+
 extern int numthreads;
 extern int thread_affinity;
 extern int total_work;

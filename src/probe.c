@@ -2135,6 +2135,7 @@ static struct PairsData *setup_pairs(uint8_t *data, uint64_t tb_size,
   d->min_len = min_len;
   *next = &data[12 + 2 * h + 3 * num_syms + (num_syms & 1)];
   free(tmp_base);
+  tmp_base = NULL;
 
   int num_indices = (tb_size + (1ULL << idxbits) - 1) >> idxbits;
   size[0] = 6ULL * num_indices;
@@ -2149,16 +2150,19 @@ static struct PairsData *setup_pairs(uint8_t *data, uint64_t tb_size,
       calc_symlen(d, i, tmp);
   free(tmp);
 
+  /* Use d->base (copy of tmp_base). The GCC original kept tmp_base as a VLA
+     until return; freeing it before this loop was a use-after-free and made
+     Huffman lookup tables heap-layout-dependent (RTBPATH table count). */
   for (i = 0; i < num_lu; i++) {
-    uint64_t code = tmp_base[LUBITS - min_len] + (((uint64_t)i) << (64 - LUBITS));
+    uint64_t code = d->base[LUBITS - min_len] + (((uint64_t)i) << (64 - LUBITS));
     int bits = LUBITS;
     d->lookup_len[i] = 0;
     d->lookup_bits[i] = 0;
     for (;;) {
       int l = 0;
-      while (code < tmp_base[l]) l++;
+      while (code < d->base[l]) l++;
       if (l + min_len > bits) break;
-      int sym = d->offset[l] + ((code - tmp_base[l]) >> (64 - (l + min_len)));
+      int sym = d->offset[l] + ((code - d->base[l]) >> (64 - (l + min_len)));
       d->lookup_len[i] += d->symlen[sym] + 1;
       d->lookup_bits[i] += l + min_len;
       bits -= l + min_len;

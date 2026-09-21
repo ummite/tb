@@ -416,7 +416,7 @@ int main(int argc, char **argv)
   int wdl_only = 0;
   int check_huff = 0;
 
-  numthreads = 1;
+  numthreads = detect_num_cores();
   do {
 //    val = getopt_long(argc, argv, "t:lwc", options, &longindex);
     val = getopt_long(argc, argv, "t:lh", options, &longindex);

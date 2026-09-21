@@ -1,0 +1,113 @@
+Found 95 tablebases.
+number of threads = 12
+Initialising broken positions.
+time taken =   0:00.000
+Calculating white captures.
+time taken =   0:00.000
+time taken =   0:00.001
+Calculating black captures.
+time taken =   0:00.000
+time taken =   0:00.000
+Calculating mate positions.
+time taken =   0:00.001
+Iteration 1 ... done.
+Iteration 2 ... done.
+Iteration 3 ... done.
+Iteration 4 ... done.
+Iteration 5 ... done.
+Iteration 6 ... 
+########## KRvKR ##########
+
+White to move:
+
+376262 positions win in 1 ply.
+14503 positions win in 3 ply.
+1636 positions win in 5 ply.
+58 positions win in 7 ply.
+
+392459 positions are wins.
+946389 positions are draws.
+9058 positions are losses.
+
+603 positions lose in 0 ply.
+7882 positions lose in 2 ply.
+465 positions lose in 4 ply.
+108 positions lose in 6 ply.
+
+Black to move:
+
+376262 positions win in 1 ply.
+14503 positions win in 3 ply.
+1636 positions win in 5 ply.
+58 positions win in 7 ply.
+
+392459 positions are wins.
+946389 positions are draws.
+9058 positions are losses.
+
+603 positions lose in 0 ply.
+7882 positions lose in 2 ply.
+465 positions lose in 4 ply.
+108 positions lose in 6 ply.
+
+Longest win for white: 7 ply; 8/8/8/R7/8/8/8/rk1K4 w - -
+Longest win for black: 7 ply; 8/8/8/r7/8/8/8/RK1k4 b - -
+
+tb_size = 1911252
+find optimal permutation for wtm/wdl
+[ 0] order: 1; perm:  4  6 12 14; 16768
+[ 1] order: 1; perm:  4 12  6 14; 16545
+[ 2] order: 1; perm:  4 14  6 12; 15044
+[ 3] order: 1; perm:  6  4 12 14; 20339
+[ 4] order: 1; perm: 12  4  6 14; 23722
+[ 5] order: 1; perm: 14  4  6 12; 23680
+[ 6] order: 1; perm:  6 12  4 14; 20785
+[ 7] order: 1; perm:  6 14  4 12; 21664
+[ 8] order: 1; perm: 12  6  4 14; 23014
+[ 9] order: 1; perm: 14  6  4 12; 25699
+[10] order: 1; perm: 12 14  4  6; 25545
+[11] order: 1; perm: 14 12  4  6; 25737
+[ 0] order: 1; perm:  4  6 14 12; 16324
+[ 1] order: 1; perm:  4 12 14  6; 16726
+[ 2] order: 1; perm:  4 14 12  6; 15755
+best order: 1
+best permutation: 12 6 14 4
+time taken =   0:00.003
+compressing data for wtm/wdl
+calc_size: 10962
+bits = 6; blocks = 173 (1); size = 11468
+real_num_blocks = 173; num_blocks = 174
+idxbits = 18
+num_indices = 8
+find optimal permutation for wtm/dtz
+[ 0] order: 1; perm:  4  6 12 14; 3415
+[ 1] order: 1; perm:  4 12  6 14; 3121
+[ 2] order: 1; perm:  4 14  6 12; 3150
+[ 3] order: 1; perm:  6  4 12 14; 5279
+[ 4] order: 1; perm: 12  4  6 14; 4137
+[ 5] order: 1; perm: 14  4  6 12; 5934
+[ 6] order: 1; perm:  6 12  4 14; 5379
+[ 7] order: 1; perm:  6 14  4 12; 6687
+[ 8] order: 1; perm: 12  6  4 14; 4502
+[ 9] order: 1; perm: 14  6  4 12; 7570
+[10] order: 1; perm: 12 14  4  6; 4825
+[11] order: 1; perm: 14 12  4  6; 6652
+[ 0] order: 1; perm:  4  6 14 12; 3259
+[ 1] order: 1; perm:  4 12 14  6; 3009
+[ 2] order: 1; perm:  4 14 12  6; 3229
+best order: 1
+best permutation: 6 14 12 4
+permute table for wtm/dtz
+time taken =   0:00.004
+compressing data for wtm/dtz
+calc_size: 2696
+bits = 10; blocks = 30 (0); size = 30792
+bits = 9; blocks = 30 (0); size = 15432
+bits = 8; blocks = 31 (0); size = 8010
+bits = 7; blocks = 33 (0); size = 4302
+bits = 6; blocks = 47 (0); size = 3114
+bits = 5; blocks = 85 (0); size = 2946
+real_num_blocks = 85; num_blocks = 85
+idxbits = 19
+num_indices = 4
+

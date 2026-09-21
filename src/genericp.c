@@ -246,6 +246,17 @@ static uint64_t inline MakeMove(uint64_t idx, int k, int sq)
 
 #endif
 
+#ifdef _MSC_VER
+#define MARK_NO_ARG(func) \
+static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p)
+
+#define MARK_1_ARG(func, arg1) \
+static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, arg1)
+
+#define MARK_2_ARGS(func, arg1, arg2) \
+static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, arg1, arg2)
+#endif
+
 #define MARK(func, ...) \
 static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int *restrict p, ##__VA_ARGS__)
 
@@ -512,6 +523,24 @@ static void func(int k, uint8_t *restrict table, uint64_t idx, bitboard occ, int
 
 #define LOOP_ITER_ALL \
   for (idx = thread->begin; idx < end; idx++)
+
+#ifdef _MSC_VER
+#define RETRO_NO_ARG(func) \
+  do { int j; \
+    for (j = 0; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p); \
+    } \
+  } while (0)
+
+#define RETRO_1_ARG(func, arg1) \
+  do { int j; \
+    for (j = 0; pcs_opp[j] >= 0; j++) { \
+      int k = pcs_opp[j]; \
+      func(k, table_opp, idx & ~mask[k], occ, p, arg1); \
+    } \
+  } while (0)
+#endif
 
 #define RETRO(func, ...) \
   do { int j; \

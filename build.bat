@@ -34,8 +34,8 @@ for %%V in (18 2026 2022) do (
         for %%E in (Insiders Community Professional Enterprise) do (
             if not defined MSBUILD (
                 if exist "C:\Program Files\Microsoft Visual Studio\%%V\%%E\MSBuild\Current\Bin\MSBuild.exe" (
-                    set MSBUILD="C:\Program Files\Microsoft Visual Studio\%%V\%%E\MSBuild\Current\Bin\MSBuild.exe"
-                    set MSBUILD_VERSION=%%V (%%E)
+                    set "MSBUILD=C:\Program Files\Microsoft Visual Studio\%%V\%%E\MSBuild\Current\Bin\MSBuild.exe"
+                    set "MSBUILD_VERSION=%%V-%%E"
                 )
             )
         )
@@ -47,7 +47,7 @@ if not defined MSBUILD (
     for %%V in (2026 2022) do (
         if not defined MSBUILD (
             if exist "C:\Program Files\Microsoft Visual Studio\BuildTools\MSBuild\%%V.0\Bin\MSBuild.exe" (
-                set MSBUILD="C:\Program Files\Microsoft Visual Studio\BuildTools\MSBuild\%%V.0\Bin\MSBuild.exe"
+                set "MSBUILD=C:\Program Files\Microsoft Visual Studio\BuildTools\MSBuild\%%V.0\Bin\MSBuild.exe"
                 set MSBUILD_VERSION=BuildTools %%V
             )
         )
@@ -82,16 +82,16 @@ echo.
 REM Show configuration info
 if "%BUILD_TARGET%"=="info" (
     echo Platform: Windows x64
-    echo Compiler: MSVC (Microsoft Visual C++)
+    echo Compiler: MSVC ^[Microsoft Visual C++]
     echo C Standard: C11
     echo.
     echo Available targets:
-    echo   all      - Build Release configuration (default)
+    echo   all      - Build Release configuration ^[default]
     echo   release  - Build Release configuration
     echo   debug    - Build Debug configuration
     echo   clean    - Clean build artifacts
-    echo   verify   - Build and verify executables (25 total incl. loser)
-echo   6/7 test - See docs\TESTING_SYZYGY_6_7.md + test_syzygy67.bat for 6-piece and 7-piece testing sequence
+    echo   verify   - Build and verify executables ^[25 total incl. loser]
+    echo   6/7 test - See docs\TESTING_SYZYGY_6_7.md + test_syzygy67.bat for 6-piece and 7-piece testing sequence
     echo   info     - Show this info
     goto :eof
 )

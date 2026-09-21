@@ -8,18 +8,29 @@ Chess tablebase generator for up to 7 pieces, producing Syzygy-style compressed 
 
 All source is in `src/`. All source files are C, compiled as C11. The project uses the C compiler (not C++) — `.c` files only, no C++ standard library.
 
+### Port / fix history (2026-09)
+
+- MSVC shims: `#ifdef _MSC_VER` `MARK_*` / `RETRO_*` in `src/genericp.c` and `src/generics.c` (named-arity replacements for GCC `##__VA_ARGS__`).
+- tbgenp AV crash: restored `if (FILL_OCC_PAWNS) { iterate(); } else { reduce_tables(); }` in `src/tbgenp.c`.
+- 2026-09-13 Q/R diffs were a stale `tbgen.exe` (2026-09-11). Build 2026-09-14 matches `T:\Syzygy` on KRvKR and KQvKB.
+- Use-after-free in `src/probe.c` `setup_pairs` (LOOKUP): VLA `tmp_base` was `malloc`+`free` too early, so Huffman lookup tables depended on heap layout / RTBPATH table count. Fixed 2026-09-14: loop uses `d->base`.
+- `bit_set_test` in `src/generics.c` (non-POPCNT path) and `bit_set_jump_set` in `src/generic.c` now test the bit **before** setting it (bts/adcl and bts;jc semantics). Current Release builds define `USE_POPCNT`, so this is latent.
+- Pawnful official 2021 files predate upstream mapping commits `aae0f26` / `ea44cb9` / `976c128`. KPvK is not byte-identical to `T:\Syzygy\3-4-5`; pawnless 3pc is.
+
 ## Build
 
 Three build systems. All produce executables in `bin/`.
 
 ### Visual Studio (Windows, primary)
 ```bash
-build.bat              # Release, all 21 projects
+build.bat              # Release, all 25 projects (VS 2026 Insiders)
 build.bat debug        # Debug configuration
 build.bat clean        # Clean build artifacts
 build.bat verify       # Build and verify all executables exist
 ```
-Solution: `tbgen.sln` (21 projects, x64, VS 2022+, toolset v145). `build.bat` auto-discovers MSBuild by scanning VS 2026/2022/Insiders/Community/Professional/Enterprise and BuildTools install paths.
+Solution: `tbgen.sln` (25 projects, x64, VS 2026 Insiders, toolset v145). `build.bat` auto-discovers MSBuild by scanning VS 2026/2022/Insiders/Community/Professional/Enterprise and BuildTools install paths.
+
+Common MSVC package (all generators/verifiers): defines `USE_POPCNT;BMI2` (not MAGIC), flags `/Ob2 /GS- /arch:AVX2 /GL /LTCG /O2`, SDLCheck=false.
 
 ### CMake (Cross-platform)
 ```bash
@@ -46,14 +57,16 @@ Variables: `ATTACK_METHOD` (MAGIC default), `USE_COMPRESSION` (LZ4|ZSTD), `TBPIE
 
 | Variant | Generator | Pawnful Generator | Verifier | Pawnful Verifier |
 |---------|-----------|-------------------|----------|------------------|
-| Regular | rtbgen | rtbgenp | rtbver | rtbverp |
+| Regular | tbgen | tbgenp | tbver | tbverp |
 | Atomic | atbgen | atbgenp | atbver | atbverp |
 | Suicide | stbgen | stbgenp | stbver | stbverp |
 | Giveaway | gtbgen | gtbgenp | gtbver | gtbverp |
 | Shatranj | jtbgen | jtbgenp | jtbver | jtbverp |
 | Loser | ltbgen | ltbgenp | ltbver | ltbverp | (integrated 2026) |
 
-Plus `tbcheck` for checksum verification (shared). Loser chess reuses suicide chess code — `ltbgen.c` defines `GIVEAWAY` then `#include "stbgen.c"`. Same pattern for `ltbgenp.c`, `ltbver.c`, `ltbverp.c`. Now fully supported in Makefile, Visual Studio solution (ltbgen.vcxproj etc), and CMakeLists.txt (loser target + build_all). Use -DLOSER -DGIVEAWAY -DSUICIDE for compilation. Produces ltbgen/ltbver etc. and .ltbw/.ltbz files with LTBPATH magic handling.
+Plus `tbcheck` for checksum verification (shared). On Windows/VS the regular binaries are `tbgen` / `tbgenp` / `tbver` / `tbverp` (renamed 2026-09). GCC/Makefile still builds `rtbgen` / `rtbgenp` / `rtbver` / `rtbverp` with `tbgen` aliases. Stale `bin/rtbgen*.exe` / `bin/rtbver*.exe` dated 9/8–9/12 are obsolete untracked leftovers.
+
+Loser chess reuses suicide chess code — `ltbgen.c` defines `GIVEAWAY` then `#include "stbgen.c"`. Same pattern for `ltbgenp.c`, `ltbver.c`, `ltbverp.c`. Now fully supported in Makefile, Visual Studio solution (`C:\Programmation\tb-1\src\ltbgen.vcxproj` etc), and CMakeLists.txt (loser target + build_all). Use -DLOSER -DGIVEAWAY -DSUICIDE for compilation. Produces ltbgen/ltbver etc. and .ltbw/.ltbz files with LTBPATH magic handling.
 
 ## Generate and Verify Tablebases
 
@@ -62,17 +75,49 @@ Plus `tbcheck` for checksum verification (shared). Loser chess reuses suicide ch
 export RTBPATH=/path/to/tablebases   # Linux
 set RTBPATH=C:\path\to\tablebases    # Windows
 
-# Generate single tablebases
-rtbgen -t 8 --stats KQRvKR           # Pawnless
-rtbgenp -t 8 --stats KRPvKR          # Pawnful
+# Generate single tablebases (Windows/VS names; GCC uses rtbgen/rtbgenp)
+tbgen -t 8 --stats KQRvKR            # Pawnless
+tbgenp -t 8 --stats KRPvKR           # Pawnful
 
 # Verify
 tbcheck KQRvKR.rtbw                   # Checksum check only
-rtbver --log KQRvKR                   # Full verification
+tbver --log KQRvKR                    # Full verification
 
 # Bulk operations (Python, runs from cwd)
 python src/run.py --generate --min 3 --max 5 --threads 8
 python src/run.py --verify --threads 8
+```
+
+### Mandatory benchmark (every generation)
+
+Whenever tablebases are generated via Grok **or** by invoking the `.exe` directly (including a partial / interrupted run), a benchmark report **must** be written. Never generate without leaving a log.
+
+Tool: `C:\Programmation\tb-1\benchmarks\tb_benchmark.ps1`  
+Reports: `C:\Programmation\tb-1\benchmarks\<Set>.benchmark.md` + `.json`  
+Per-table logs (stdout/stderr/tbcheck, the partial-log fallback): `C:\Programmation\tb-1\benchmarks\logs\<Set>\`
+
+Required fields in every report:
+- Machine name (`$env:COMPUTERNAME`)
+- CPU type, cores physical / logical, max clock, total RAM, OS, GPU
+- Threads requested (`-t N`) and threads actually used (parsed from generator log `number of threads = N`)
+- Per-table wall time (`Stopwatch`) and **peak RAM** (max `WorkingSet64`, sampled ~25 ms)
+- Generation **steps** (each `time taken =` phase from the generator log)
+- Output file sizes, SHA-256, 16-byte trailer
+- **100% validation**: SHA-256 byte-identical to the working network reference (`T:\Syzygy\...`) **and** `tbcheck.exe` exit 0 on every `.rtbw` / `.rtbz`
+
+PowerShell 5.1 constraints for the tool (do not regress):
+- Pure ASCII, CRLF line endings
+- No backtick line-continuation
+- Never reassign a `[string]` parameter under a different case (`$tables` is `$Tables`)
+- `Start-Process -ArgumentList` must not be an empty array
+- Table-list separator: comma, semicolon, or whitespace (the host shell often turns `,` / `;` into spaces)
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\Programmation\tb-1\benchmarks\tb_benchmark.ps1 `
+  -Set 3pc -Tables "KRvK KQvK KBvK KNvK KPvK" `
+  -OutDir C:\Programmation\tb-1\test_gen_3pc_full `
+  -RtbPath C:\Programmation\tb-1\test_gen_3pc_full `
+  -RefDir T:\Syzygy\3-4-5
 ```
 
 Key generator options: `-t N` (threads), `--stats` (save stats to `$RTBSTATSDIR`), `--wdl`/`--dtz` (only one file type), `-d` (reduce RAM, **required** for 6-piece on typical machines), `-g` (generate without compressing), `-p` (ply-accurate DTZ), `-A -n N` (auto-generate all N-piece pawnless tables).
@@ -256,6 +301,6 @@ Solutions implemented/ in progress:
 - Distribution: Share backing files on SAN. Shard by the natural 4 pawn-files (or work partitions). Each "node" (machine/process) runs generator with local cache against shared backing. Use num_saves for checkpoints/resume. Coordinator assigns slices. "More disk" across volumes/machines + "more compute" via parallel nodes.
 - Safety preserved: low threads, monitoring, RTBPATH for subtables, post-tbcheck, etc. 8pc only traditional (variants at 7pc).
 
-See the approved plan.md for the detailed 8pc disk/distrib plan, remaining integration steps (VT in main table accesses + prefetch calls in calc paths), and verification (build, low-RAM demo on 8pc candidate like KPPPPPPvK, multi-backing, tbcheck on output).
+See `C:\Programmation\tb-1\docs\` (8pc notes live next to the VirtualTable sources in `src/virtual_table.h`) for the disk/distrib plan, remaining integration steps (VT in main table accesses + prefetch calls in calc paths), and verification (build, low-RAM demo on 8pc candidate like KPPPPPPvK, multi-backing, tbcheck on output).
 
 Run drive setup first on your volumes, then safe launcher with -UseVT. The current alloc_mapped gives immediate disk benefit; VT adds explicit control + multi-backing.

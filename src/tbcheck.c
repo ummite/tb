@@ -61,7 +61,7 @@ int main(int argc, char **argv)
   int only_print = 0;
   int compare = 0;
 
-  numthreads = 1;
+  numthreads = detect_num_cores();
 
   do {
     val = getopt_long(argc, argv, "t:pc", options, &longindex);
