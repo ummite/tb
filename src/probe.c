@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #ifdef _MSC_VER
 #include "wincompat.h"
@@ -152,15 +153,37 @@ void add_to_hash(struct TBEntry *ptr, uint64_t key)
 
 static char pchr[] = {'K', 'Q', 'R', 'B', 'N', 'P'};
 
+static void note_subtable(const char *str, int found)
+{
+  static unsigned checked;
+  static unsigned opened;
+  static time_t last;
+  time_t now;
+
+  checked++;
+  if (found)
+    opened++;
+  now = time(NULL);
+  if (checked == 1 || now != last) {
+    last = now;
+    printf("Loading subtables: checked %u, found %u, last %s\n",
+        checked, opened, str);
+    fflush(stdout);
+  }
+}
+
 static void init_tb(char *str)
 {
   struct TBEntry *entry;
   int i, j, pcs[16];
   uint64_t key, key2;
   int color;
+  int found;
 
   FD fd = open_tb(str);
-  if (fd == FD_ERR) return;
+  found = (fd != FD_ERR);
+  note_subtable(str, found);
+  if (!found) return;
   close_file(fd);
 
   for (i = 0; i < 16; i++)

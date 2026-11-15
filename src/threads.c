@@ -83,8 +83,82 @@ static struct {
   void (*func)(struct thread_data *);
   uint64_t *work;
   int counter;
+  int done;
   int total;
 } queue;
+
+static char progress_text[160];
+static int progress_step;
+static int progress_steps;
+static struct timeval progress_pass_start;
+static long progress_last_print;
+static int progress_lines;
+
+static void format_span(long secs, char *buf, size_t cap)
+{
+  long h, m, s;
+
+  if (secs < 0)
+    secs = 0;
+  h = secs / 3600;
+  m = (secs / 60) % 60;
+  s = secs % 60;
+  if (h > 0)
+    snprintf(buf, cap, "%ld:%02ld:%02ld", h, m, s);
+  else
+    snprintf(buf, cap, "%ld:%02ld", m, s);
+}
+
+void progress_set(int step, int steps, const char *phase)
+{
+  progress_step = step;
+  progress_steps = steps;
+  snprintf(progress_text, sizeof(progress_text), "%s", phase ? phase : "");
+  if (steps > 0)
+    printf("[%d/%d] %s\n", step, steps, progress_text);
+  else
+    printf("%s\n", progress_text);
+  fflush(stdout);
+}
+
+static void progress_line(int done, int total, int force)
+{
+  struct timeval now;
+  long elapsed, eta;
+  int pct;
+  char ebuf[24], tbuf[24];
+
+  gettimeofday(&now, NULL);
+  elapsed = (long)now.tv_sec - (long)progress_pass_start.tv_sec;
+  if (!force) {
+    if (elapsed < 2)
+      return;
+    if (elapsed == progress_last_print)
+      return;
+    if (done >= total)
+      return;
+  } else if (!progress_lines && elapsed < 2) {
+    return;
+  }
+  progress_last_print = elapsed;
+  progress_lines = 1;
+  pct = (total > 0) ? (int)((100ull * (unsigned)done) / (unsigned)total) : 0;
+  format_span(elapsed, ebuf, sizeof(ebuf));
+  if (progress_steps > 0)
+    printf("[%d/%d] %s  ", progress_step, progress_steps, progress_text);
+  else if (progress_text[0])
+    printf("%s  ", progress_text);
+  else
+    printf("pass  ");
+  if (done > 0 && done < total) {
+    eta = (long)(((double)elapsed * (double)(total - done)) / (double)done);
+    format_span(eta, tbuf, sizeof(tbuf));
+    printf("%d/%d  %d%%  elapsed %s  ETA %s\n", done, total, pct, ebuf, tbuf);
+  } else {
+    printf("%d/%d  %d%%  elapsed %s\n", done, total, pct, ebuf);
+  }
+  fflush(stdout);
+}
 
 int total_work;
 int numthreads;
@@ -203,6 +277,9 @@ int worker(void *arg)
       thread->begin = queue.work[w];
       thread->end = queue.work[w + 1];
       queue.func(thread);
+      __sync_add_and_fetch(&queue.done, 1);
+      if (t == numthreads - 1)
+        progress_line(queue.done, total, 0);
     }
 
     barrier_wait(&barrier);
@@ -215,13 +292,46 @@ void run_threaded(void (*func)(struct thread_data *), uint64_t *work, int report
 {
   int secs, usecs;
   struct timeval stop_time;
+  uint64_t slice_work[101];
+  uint64_t *use = work;
+  int local_total = total_work;
+  uint64_t span;
+
+  span = work[total_work] - work[0];
+  /* One thread keeps total_work at 1 so compression stays unchanged.
+     Split that single range here, only for this pass, so ETA can move. */
+  if (total_work < 20 && span >= (1ull << 20)) {
+    int n = 100;
+    int i;
+    if (span / 64 < 100)
+      n = (int)(span / 64);
+    if (n >= 2) {
+      slice_work[0] = work[0];
+      slice_work[n] = work[total_work];
+      for (i = 1; i < n; i++) {
+        uint64_t v = (work[0] + ((span * (uint64_t)i) / (uint64_t)n)) & ~0x3full;
+        if (v < slice_work[i - 1])
+          v = slice_work[i - 1];
+        if (v > work[total_work])
+          v = work[total_work];
+        slice_work[i] = v;
+      }
+      use = slice_work;
+      local_total = n;
+    }
+  }
 
   queue.func = func;
-  queue.work = work;
-  queue.total = total_work;
+  queue.work = use;
+  queue.total = local_total;
   queue.counter = 0;
+  queue.done = 0;
+  progress_lines = 0;
+  progress_last_print = -1;
+  gettimeofday(&progress_pass_start, NULL);
 
   worker((void *)&(thread_data[numthreads - 1]));
+  progress_line(local_total, local_total, 1);
 
   gettimeofday(&stop_time, NULL);
   secs = stop_time.tv_sec - cur_time.tv_sec;

@@ -904,8 +904,101 @@ static struct option options[] = {
   { "disk", 0, NULL, 'd' },
   { "affinity", 0, NULL, 'a' },
   { "use-vt", 0, NULL, 1000 },  /* long-only for VirtualTable 8pc low-RAM + multi-backing */
+  { "vt-config", 1, NULL, 1001 },
+  { "vt-cache-gb", 1, NULL, 1002 },
+  { "vt-backings", 1, NULL, 1003 },
   { 0, 0, NULL, 0 }
 };
+
+/* Config for the --use-vt backing probe.  Priority: command line > environment
+   (VT_CACHE_GB / VT_BACKINGS / VT_CONFIG) > config file.  Backing paths live in
+   a static buffer that is split in place, so nothing here mallocs. */
+static int vt_fill_config(VTConfig *cfg, const char *cli_path, double cli_gb,
+                         const char *cli_backings, uint64_t total_size)
+{
+  static char pathbuf[4096];
+  static VTBackingStore stores[8];
+  const char *backings_src = cli_backings;
+  const char *env;
+  double gb = cli_gb;
+  int from_file = 0, shift = 0, n = 0, i;
+
+  memset(cfg, 0, sizeof(*cfg));
+
+  if (gb <= 0.0 && (env = getenv("VT_CACHE_GB")) != NULL) gb = atof(env);
+  if (!backings_src && (env = getenv("VT_BACKINGS")) != NULL) backings_src = env;
+
+  env = cli_path ? cli_path : getenv("VT_CONFIG");
+  {
+    FILE *f = fopen(env ? env : "vt_config.txt", "r");
+    if (f) {
+      char line[4096];
+      while (fgets(line, sizeof(line), f)) {
+        char *p = line;
+        while (*p == ' ' || *p == '\t') p++;
+        if (*p == '#' || *p == '\n' || *p == '\r' || *p == 0) continue;
+        if (strncmp(p, "cache_gb=", 9) == 0) {
+          if (gb <= 0.0) gb = atof(p + 9);
+        } else if (strncmp(p, "reserve_gb=", 11) == 0) {
+          cfg->reserve_gb = (size_t) atof(p + 11);
+        } else if (strncmp(p, "page_shift=", 11) == 0) {
+          if (!shift) shift = atoi(p + 11);
+        } else if (strncmp(p, "backings=", 9) == 0) {
+          if (!backings_src) {
+            strncpy(pathbuf, p + 9, sizeof(pathbuf) - 1);
+            pathbuf[sizeof(pathbuf) - 1] = 0;
+            backings_src = pathbuf;
+            from_file = 1;
+          }
+        }
+      }
+      fclose(f);
+    }
+  }
+
+  if (backings_src && !from_file) {
+    strncpy(pathbuf, backings_src, sizeof(pathbuf) - 1);
+    pathbuf[sizeof(pathbuf) - 1] = 0;
+  }
+
+  /* ';' or ',' separated; the first listed store gets the highest priority */
+  {
+    char *p = pathbuf;
+    while (*p && n < 8) {
+      char *start, *sep, *end;
+      while (*p == ';' || *p == ',' || *p == ' ' || *p == '\t' || *p == '\n' || *p == '\r') p++;
+      if (!*p) break;
+      start = p;
+      sep = p;
+      while (*sep && *sep != ';' && *sep != ',') sep++;
+      end = sep;
+      while (end > start && (end[-1] == ' ' || end[-1] == '\t' || end[-1] == '\n' || end[-1] == '\r')) end--;
+      /* Advance past the separator before writing the NUL. Otherwise
+         "a;b" loses every backing after the first. */
+      p = *sep ? sep + 1 : sep;
+      *end = 0;
+      if (end > start) {
+        stores[n].path = start;
+        stores[n].type = VT_BACKING_FILE;
+        stores[n].max_size = 0;
+        n++;
+      }
+    }
+    for (i = 0; i < n; i++) stores[i].priority = n - 1 - i;
+  }
+
+  if (n == 0) return -1;
+
+  cfg->total_size = total_size;
+  cfg->cache_size = (gb > 0.0) ? (size_t)(gb * 1073741824.0)
+                               : (size_t)(64u * 1024u * 1024u);
+  cfg->page_size_shift = shift ? shift : 20;
+  cfg->backings = stores;
+  cfg->num_backings = n;
+  cfg->use_memory_mapping = 0;
+  cfg->enable_prefetch = 0;
+  return 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -917,6 +1010,9 @@ int main(int argc, char **argv)
   int save_to_disk = 0;
   int compress_wide = 0;
   int use_vt = 0;  /* for VirtualTable on 8pc */
+  const char *vt_config_path = NULL;
+  double vt_cache_gb = 0.0;
+  const char *vt_backings = NULL;
 
   numthreads = detect_num_cores();
   thread_affinity = 0;
@@ -954,6 +1050,15 @@ int main(int argc, char **argv)
       break;
     case 1000:  /* --use-vt */
       use_vt = 1;
+      break;
+    case 1001:  /* --vt-config */
+      vt_config_path = optarg;
+      break;
+    case 1002:  /* --vt-cache-gb */
+      vt_cache_gb = atof(optarg);
+      break;
+    case 1003:  /* --vt-backings */
+      vt_backings = optarg;
       break;
     }
   } while (val != EOF);
@@ -1232,10 +1337,31 @@ int main(int argc, char **argv)
   int use_disk_table = save_to_disk || (numpcs >= 7);
   static void *table_map_handle = NULL;  /* for the analysis table */
 
-  if (use_vt || (numpcs >= 8)) {
-    printf("VirtualTable mode requested/required for 8pc (bounded RAM cache + multi-backing for disk/distributed).\n");
-    /* TODO: create VT here with config from cmd/env, use for table instead of alloc_mapped */
-    /* For now: still use mapped, but flag is parsed and logged for integration. */
+  if (numpcs >= 8 && !use_vt) {
+    printf("8pc: table_w stays on alloc_mapped. Pass --use-vt to probe the backing stores.\n");
+  }
+
+  if (use_vt) {
+    /* Probe only: total_size is deliberately 1 MiB, never 2*size, so this must
+       not create a second huge file next to the alloc_mapped analysis table. */
+    VTConfig cfg;
+    if (vt_fill_config(&cfg, vt_config_path, vt_cache_gb, vt_backings,
+                       (uint64_t)1 << 20) != 0) {
+      printf("--use-vt ignored: no backing store (use --vt-backings, VT_BACKINGS, or a config file).\n");
+    } else {
+      VirtualTable *probe = vt_create(&cfg, "vtprobe");
+      if (!probe) {
+        printf("--use-vt ignored: vt_create failed on %d backing store(s).\n", cfg.num_backings);
+      } else {
+        int ok;
+        vt_write_u8(probe, 0, 0x5A);
+        ok = (vt_read_u8(probe, 0) == 0x5A);
+        printf("VirtualTable backing probe on %d store(s): %s. "
+               "table_w still uses alloc_mapped (VT gives no contiguous pointer, cache is not thread-safe).\n",
+               cfg.num_backings, ok ? "OK" : "FAIL");
+        vt_destroy(probe);
+      }
+    }
   }
 
   /* 8pc (and large 7pc) low-RAM path:

@@ -1187,6 +1187,8 @@ int main(int argc, char **argv)
      Trades RAM for more disk I/O + CPU time (as requested). */
   int use_disk_table = save_to_disk || (numpcs >= 7);
   static void *table_map_handle = NULL;
+  printf("[1/8] Allocating the work table\n");
+  fflush(stdout);
   if (use_disk_table) {
     table_w = alloc_mapped(2 * alloc_size, 1, tablename ? tablename : "8pc", &table_map_handle);
   } else {
@@ -1194,6 +1196,8 @@ int main(int argc, char **argv)
     table_w = alloc_huge(2 * alloc_size);
   }
   table_b = table_w + alloc_size;
+  printf("[1/8] Work table ready\n");
+  fflush(stdout);
 
   init_threads(0);
   init_tables();
@@ -1206,11 +1210,11 @@ int main(int argc, char **argv)
   gettimeofday(&start_time, NULL);
   cur_time = start_time;
 
-  printf("Initialising broken positions.\n");
+  progress_set(2, 8, "Initialising broken positions");
   run_threaded(calc_broken, work_g, 1);
-  printf("Calculating white captures.\n");
+  progress_set(3, 8, "Calculating white captures");
   calc_captures_w();
-  printf("Calculating black captures.\n");
+  progress_set(4, 8, "Calculating black captures");
   calc_captures_b();
   for (i = 0; i < numpcs; i++)
     if (cursed_capt[i]) {
@@ -1219,17 +1223,19 @@ int main(int argc, char **argv)
     }
 #ifndef SUICIDE
 #ifndef SHATRANJ
-  printf("Calculating mate positions.\n");
+  progress_set(5, 8, "Calculating mate positions");
   run_threaded(calc_mates, work_g, 1);
 #else
-  printf("Calculating white mate positions.\n");
+  progress_set(5, 8, "Calculating white mate positions");
   run_threaded(calc_mates_w, work_g, 1);
-  printf("Calculating black mate positions.\n");
+  progress_set(5, 8, "Calculating black mate positions");
   run_threaded(calc_mates_b, work_g, 1);
 #endif
 #endif
 
+  progress_set(6, 8, "Retrograde");
   iterate();
+  progress_set(7, 8, "Collecting statistics");
   collect_stats(1);
 
   printf("\n########## %s ##########\n\n", tablename);
@@ -1311,6 +1317,7 @@ int main(int argc, char **argv)
 
   if (generate_wdl) {
     uint8_t v[256];
+    progress_set(8, 8, "Compressing WDL");
 #ifndef SUICIDE
     reset_captures_w();
     test_closs(total_stats_w, table_w, to_fix_w);

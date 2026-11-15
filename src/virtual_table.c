@@ -49,8 +49,8 @@ struct VirtualTable {
     /* Simple MRU heuristic: on hit, move-to-front. Evict from tail. */
     /* For faster lookup in hot path we also maintain a small open-address hash
        page -> resident_slot (size ~2*max). Linear probe. */
-    uint64_t *hash_page;           /* keys, 0 = empty */
-    int      *hash_slot;           /* corresponding resident index, or -1 */
+    uint64_t *hash_page;           /* key of an occupied slot; only valid if hash_slot >= 0 */
+    int      *hash_slot;           /* resident index, -1 = empty, -2 = tombstone */
     uint32_t  hash_size;
 
     /* Backing stores (sorted by priority desc at create time: [0] is preferred/fastest for reads/writes) */
@@ -59,6 +59,42 @@ struct VirtualTable {
 
     VTStats stats;
 };
+
+/* Backing files can be far past 2 GiB, so every seek/offset must be 64-bit
+   (MSVC has no fseeko/ftello and plain fseek/ftell take a 32-bit long). */
+static int vt_seek(FILE *f, uint64_t off)
+{
+#if defined(_WIN32)
+    return _fseeki64(f, (long long)off, SEEK_SET);
+#else
+    return fseeko(f, (off_t)off, SEEK_SET);
+#endif
+}
+
+/* Write one whole page to the primary backing store. Returns 0 only when the
+   seek and the full page_size write both succeeded; the byte counter moves
+   here and nowhere else, so a failed write never inflates it. */
+static int vt_write_page(VirtualTable *vt, uint64_t page, const uint8_t *data)
+{
+    if (!vt || !data || vt->num_backings_effective < 1) return -1;
+    if (!vt->backing_files || !vt->backing_files[0]) return -1;
+    if (vt_seek(vt->backing_files[0], page * vt->page_size) != 0) return -1;
+    if (fwrite(data, 1, vt->page_size, vt->backing_files[0]) != vt->page_size) return -1;
+    vt->stats.bytes_written_to_backing += vt->page_size;
+    return 0;
+}
+
+static uint64_t vt_tell_end(FILE *f)
+{
+#if defined(_WIN32)
+    if (_fseeki64(f, 0, SEEK_END) != 0) return 0;
+    long long sz = _ftelli64(f);
+#else
+    if (fseeko(f, 0, SEEK_END) != 0) return 0;
+    off_t sz = ftello(f);
+#endif
+    return sz < 0 ? 0 : (uint64_t)sz;
+}
 
 /* Improved creation with better multi-backing support */
 VirtualTable *vt_create(const VTConfig *config, const char *table_name)
@@ -125,14 +161,25 @@ VirtualTable *vt_create(const VTConfig *config, const char *table_name)
         if (!f) f = fopen(path, "w+b");
         if (f) {
             /* Ensure sparse file big enough */
-            fseek(f, 0, SEEK_END);
-            if (ftell(f) < (long long)config->total_size) {
-                fseek(f, (long long)config->total_size - 1, SEEK_SET);
-                fputc(0, f);
+            uint64_t cur_size = vt_tell_end(f);
+            int usable = 1;
+            if (cur_size < (uint64_t)config->total_size) {
+                if (vt_seek(f, (uint64_t)config->total_size - 1) != 0) {
+                    fprintf(stderr, "Warning: could not extend backing %s to the table size\n",
+                            config->backings[i].path);
+                    usable = 0;
+                } else {
+                    fputc(0, f);
+                }
             }
-            rewind(f);
-            vt->backing_files[vt->num_backings_effective] = f;
-            vt->num_backings_effective++;
+            if (!usable) {
+                /* Never claim a backing that is smaller than total_size. */
+                fclose(f);
+            } else {
+                rewind(f);
+                vt->backing_files[vt->num_backings_effective] = f;
+                vt->num_backings_effective++;
+            }
         } else {
             fprintf(stderr, "Warning: could not open/create backing %s (priority %d)\n",
                     config->backings[i].path, config->backings[i].priority);
@@ -185,23 +232,43 @@ static int vt_hash_lookup(VirtualTable *vt, uint64_t page) {
     uint32_t h = vt_hash(vt, page);
     for (uint32_t probe=0; probe < vt->hash_size; probe++) {
         uint32_t idx = (h + probe) % vt->hash_size;
-        if (vt->hash_page[idx] == 0) return -1; /* empty */
-        if (vt->hash_page[idx] == page) return vt->hash_slot[idx];
+        int s = vt->hash_slot[idx];
+        if (s == -1) return -1;                /* empty: end of the probe chain */
+        if (s == -2) continue;                 /* tombstone: chain continues past it */
+        if (vt->hash_page[idx] == page) return s;
     }
     return -1;
 }
 
 static void vt_hash_insert(VirtualTable *vt, uint64_t page, int slot) {
     uint32_t h = vt_hash(vt, page);
+    int tomb = -1;                             /* first reusable tombstone */
     for (uint32_t probe=0; probe < vt->hash_size; probe++) {
         uint32_t idx = (h + probe) % vt->hash_size;
-        if (vt->hash_page[idx] == 0 || vt->hash_page[idx] == page) {
-            vt->hash_page[idx] = page;
-            vt->hash_slot[idx] = slot;
-            return;
+        int s = vt->hash_slot[idx];
+        if (s == -1) {
+            if (tomb < 0) tomb = (int)idx;
+            break;
         }
+        if (s == -2) { if (tomb < 0) tomb = (int)idx; continue; }
+        if (vt->hash_page[idx] == page) { vt->hash_slot[idx] = slot; return; }
+    }
+    if (tomb >= 0) {
+        vt->hash_page[tomb] = page;
+        vt->hash_slot[tomb] = slot;
     }
     /* table full - very unlikely with 2x sizing; fall back to linear in get_page */
+}
+
+static void vt_hash_remove(VirtualTable *vt, uint64_t page) {
+    uint32_t h = vt_hash(vt, page);
+    for (uint32_t probe=0; probe < vt->hash_size; probe++) {
+        uint32_t idx = (h + probe) % vt->hash_size;
+        int s = vt->hash_slot[idx];
+        if (s == -1) return;                                       /* not present */
+        if (s == -2) continue;
+        if (vt->hash_page[idx] == page) { vt->hash_slot[idx] = -2; return; } /* keep the chain */
+    }
 }
 
 /* Bounded resident page cache with MRU move-to-front + hash lookup + multi-backing */
@@ -211,6 +278,12 @@ static uint8_t *vt_get_page(VirtualTable *vt, uint64_t page)
 
     /* Fast path via hash */
     int slot = vt_hash_lookup(vt, page);
+    if (slot >= 0 && slot < (int)vt->num_resident) {
+        if (vt->resident_page_idx[slot] != page) {
+            vt_hash_remove(vt, page);   /* stale key: treat this lookup as a miss */
+            slot = -1;
+        }
+    }
     if (slot >= 0 && slot < (int)vt->num_resident) {
         /* MRU: move to front if not already */
         if (slot != 0) {
@@ -243,17 +316,14 @@ static uint8_t *vt_get_page(VirtualTable *vt, uint64_t page)
         new_slot = vt->num_resident - 1; /* evict LRU-ish (tail) */
         uint32_t evict = new_slot;
         if (vt->dirty[evict/8] & (1u << (evict % 8))) {
-            /* flush to primary backing (highest priority = [0]) */
-            if (vt->backing_files[0] && vt->resident_pages[evict]) {
-                fseek(vt->backing_files[0], (long long)vt->resident_page_idx[evict] * vt->page_size, SEEK_SET);
-                fwrite(vt->resident_pages[evict], 1, vt->page_size, vt->backing_files[0]);
-                vt->stats.bytes_written_to_backing += vt->page_size;
-            }
+            /* flush to primary backing (highest priority = [0]); if the disk
+               refuses the page, keep it resident: still dirty, still hashed */
+            if (vt_write_page(vt, vt->resident_page_idx[evict], vt->resident_pages[evict]) != 0)
+                return NULL;
             vt->dirty[evict/8] &= ~(1u << (evict % 8));
         }
-        /* remove old from hash */
-        uint64_t oldp = vt->resident_page_idx[evict];
-        /* (hash remove omitted for brevity - re-insert will overwrite) */
+        /* drop the evicted page from the hash before overwriting its slot */
+        vt_hash_remove(vt, vt->resident_page_idx[evict]);
     }
 
     if (!vt->resident_pages[new_slot]) {
@@ -268,7 +338,7 @@ static uint8_t *vt_get_page(VirtualTable *vt, uint64_t page)
     int loaded = 0;
     for (int b = 0; b < vt->num_backings_effective; b++) {
         if (vt->backing_files[b]) {
-            fseek(vt->backing_files[b], (long long)page * vt->page_size, SEEK_SET);
+            if (vt_seek(vt->backing_files[b], page * vt->page_size) != 0) continue;
             if (fread(vt->resident_pages[new_slot], 1, vt->page_size, vt->backing_files[b]) == vt->page_size) {
                 vt->stats.bytes_read_from_backing += vt->page_size;
                 loaded = 1;
@@ -314,7 +384,6 @@ void vt_write_u8(VirtualTable *vt, uint64_t offset, uint8_t value)
     if (slot >= 0) {
         vt->dirty[slot / 8] |= (1u << (slot % 8));
     }
-    vt->stats.bytes_written_to_backing++; /* rough */
 }
 
 uint16_t vt_read_u16(VirtualTable *vt, uint64_t offset)
@@ -346,19 +415,20 @@ int vt_flush(VirtualTable *vt)
 {
     if (!vt || vt->num_backings_effective == 0 || !vt->backing_files[0]) return -1;
 
-    /* Flush all dirty resident pages to primary backing [0] (highest priority) */
+    /* Flush all dirty resident pages to primary backing [0] (highest priority).
+       A page stays dirty until its write really reached the disk. */
+    int write_failed = 0;
     for (uint32_t i = 0; i < vt->num_resident; i++) {
         if (vt->dirty[i / 8] & (1u << (i % 8))) {
-            if (vt->resident_pages[i] && vt->backing_files[0]) {
-                fseek(vt->backing_files[0], (long long)vt->resident_page_idx[i] * vt->page_size, SEEK_SET);
-                fwrite(vt->resident_pages[i], 1, vt->page_size, vt->backing_files[0]);
-                vt->stats.bytes_written_to_backing += vt->page_size;
+            if (vt_write_page(vt, vt->resident_page_idx[i], vt->resident_pages[i]) != 0) {
+                write_failed = 1;
+            } else {
+                vt->dirty[i / 8] &= ~(1u << (i % 8));
             }
-            vt->dirty[i / 8] &= ~(1u << (i % 8));
         }
     }
-    fflush(vt->backing_files[0]);
-    return 0;
+    if (vt->backing_files[0]) fflush(vt->backing_files[0]);
+    return write_failed ? -1 : 0;
 }
 
 void vt_get_stats(VirtualTable *vt, VTStats *out)

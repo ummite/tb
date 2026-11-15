@@ -104,6 +104,7 @@
     <ClCompile Include="checksum.c" />
     <ClCompile Include="city-c.c" />
     <ClCompile Include="util.c" />
+    <ClCompile Include="virtual_table.c" />
     <ClCompile Include="crc32c.c" />
     <ClCompile Include="wincompat.c" />
                             <ClCompile Include="decompress.c" />

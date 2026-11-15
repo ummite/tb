@@ -62,6 +62,9 @@ void run_compression(void (*func)(int t));
 /* Logical processors currently online (GetSystemInfo / sysconf). At least 1. */
 int detect_num_cores(void);
 
+/* Print a numbered phase line. Later slice lines reuse this label. */
+void progress_set(int step, int steps, const char *phase);
+
 extern int numthreads;
 extern int thread_affinity;
 extern int total_work;

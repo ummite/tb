@@ -548,6 +548,13 @@ static void calc_captures_w(void)
         pcs2[j++] = black_pcs[k];
     pcs2[j] = -1;
     captured_piece = i;
+    {
+      int kind = pt[i] & 7;
+      char ch = (kind >= 1 && kind <= 6) ? " PNBRQK"[kind] : '?';
+      char phase[80];
+      snprintf(phase, sizeof(phase), "White captures, taking black %c", ch);
+      progress_set(3, 8, phase);
+    }
     run_threaded(probe_captures_w, work_g, 1);
   }
 }
@@ -566,6 +573,13 @@ static void calc_captures_b(void)
         pcs2[j++] = white_pcs[k];
     pcs2[j] = -1;
     captured_piece = i;
+    {
+      int kind = pt[i] & 7;
+      char ch = (kind >= 1 && kind <= 6) ? " PNBRQK"[kind] : '?';
+      char phase[80];
+      snprintf(phase, sizeof(phase), "Black captures, taking white %c", ch);
+      progress_set(4, 8, phase);
+    }
     run_threaded(probe_captures_b, work_g, 1);
   }
 }
@@ -666,22 +680,27 @@ static int iter_wtm;
 
 static void run_iter(void)
 {
+  char phase[96];
+
   if (iter_wtm) {
     iter_table = table_w;
     iter_table_opp = table_b;
     iter_pcs = white_pcs;
     iter_pcs_opp = black_pcs;
-    printf("Iteration %d ... ", ++iter_cnt);
-    fflush(stdout);
+    snprintf(phase, sizeof(phase),
+        "Retrograde iteration %d white, ply %d (ceiling %d)",
+        ++iter_cnt, ply, REDUCE_PLY);
   } else {
     iter_table = table_b;
     iter_table_opp = table_w;
     iter_pcs = black_pcs;
     iter_pcs_opp = white_pcs;
+    snprintf(phase, sizeof(phase),
+        "Retrograde iteration %d black, ply %d (ceiling %d)",
+        iter_cnt, ply, REDUCE_PLY);
   }
+  progress_set(6, 8, phase);
   run_threaded(iter, work_g, 0);
-  if (!iter_wtm)
-    printf("done.\n");
   iter_wtm ^= 1;
 }
 

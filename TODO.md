@@ -2,6 +2,15 @@
 
 ## Next Task ID: 10
 
+## Syzygy 8 + Stockfish
+
+Plan détaillé : `C:\Programmation\tb-1\docs\TODO_SYZYGY8_STOCKFISH.md` (2026-11-10).
+
+- [ ] #10 Cloner Stockfish 19 (le PC a seulement `dev-20260529` et, sur le NAS, Stockfish 18)
+- [ ] #11 Patch `tbprobe.cpp` : `TBPIECES` 8, boucles, binômes, pions de tête
+- [ ] #12 Volume de scratch ≥ 50 To hors NVMe, puis générer `KQQQQQPvK` (pawnful, 48 Tio de table de travail)
+- [ ] #13 `--scratch` et `--output` pour écrire le final sur `\\ds1817\40TB Raid 0 B\Syzygy` sans y mettre le scratch
+
 ## Active / Backlog
 
 - [x] #1 Add README.md with project overview and build instructions | Priority: High | Complexity: Low | Status: Done (already existed)
